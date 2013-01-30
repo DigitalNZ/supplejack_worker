@@ -46,7 +46,6 @@ group :development do
   gem "better_errors",      ">= 0.2.0"
   gem 'guard-rspec'
   gem 'rb-fsevent',         '~> 0.9.1'
-  gem 'zeus'
 end
 
 group :development, :test do
