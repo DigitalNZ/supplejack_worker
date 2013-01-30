@@ -12,7 +12,7 @@ gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
 
 gem "oai", git: "https://github.com/code4lib/ruby-oai.git"
 
-gem "active_model_serializers", :git => "git://github.com/rails-api/active_model_serializers.git"
+gem "active_model_serializers", git: "https://github.com/rails-api/active_model_serializers.git"
 
 gem "thin",         ">= 1.5.0"
 gem "mongoid",      "~> 3.0.19"
