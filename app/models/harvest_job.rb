@@ -14,6 +14,7 @@ class HarvestJob
   field :average_record_time, type: Float
   field :stop,                type: Boolean, default: false
   field :user_id,             type: String
+  field :parser_id,           type: String
 
   embeds_many :harvest_job_errors
 
@@ -21,6 +22,10 @@ class HarvestJob
 
   def enqueue
     HarvestWorker.perform_async(self.id)
+  end
+
+  def parser
+    Parser.find(self.parser_id)
   end
 
   def finished?

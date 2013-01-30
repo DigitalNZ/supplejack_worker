@@ -3,6 +3,10 @@ require "spec_helper"
 describe HarvestJobsController do
 
   let(:job) { mock_model(HarvestJob).as_null_object }
+
+  before(:each) do
+    controller.stub(:authenticate_user!) { true }
+  end
   
   describe "POST create" do
     before(:each) do

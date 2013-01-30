@@ -7,7 +7,14 @@ describe HarvestJob do
     HarvestJob.create
   end
 
-  let(:job) { FactoryGirl.build(:harvest_job) }
+  let(:job) { FactoryGirl.build(:harvest_job, parser_id: "12345") }
+
+  describe "#parser" do
+    it "finds the parser by id" do
+      Parser.should_receive(:find).with("12345")
+      job.parser
+    end
+  end
 
   describe "#finished?" do
     it "returns true with a end_time" do

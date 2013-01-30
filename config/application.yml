@@ -11,17 +11,20 @@
 development:
   API_HOST: "http://localhost:3000"
   MANAGER_HOST: "http://localhost:3001"
+  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
 
 production:
   API_HOST: "http://api.uat.digitalnz.org"
   MANAGER_HOST: "http://harvester.uat.digitalnz.org"
+  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
 
 test:
   API_HOST: "http://localhost:3000"
   MANAGER_HOST: "http://localhost:3001"
+  MANAGER_API_KEY: "12345"
   HARVESTER_CACHING_ENABLED: false
   HONEYBADGER_API_KEY: "e2a36ad9"

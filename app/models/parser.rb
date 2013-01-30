@@ -1,6 +1,7 @@
 class Parser < ActiveResource::Base
 
   self.site = ENV['MANAGER_HOST']
+  self.user = ENV['MANAGER_API_KEY']
   
   def file_name
     @file_name ||= self.name.downcase.gsub(/\s/, "_") + ".rb"

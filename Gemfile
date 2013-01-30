@@ -17,6 +17,7 @@ gem "active_model_serializers", :git => "git://github.com/rails-api/active_model
 gem "thin",         ">= 1.5.0"
 gem "mongoid",      "~> 3.0.19"
 gem "figaro",       ">= 0.5.0"
+gem "devise",       ">= 2.1.2"
 
 gem 'honeybadger'
 gem "sidekiq"
