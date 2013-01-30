@@ -15,6 +15,13 @@ development:
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
 
+staging:
+  API_HOST: "http://api.uat.digitalnz.org"
+  MANAGER_HOST: "http://harvester.uat.digitalnz.org"
+  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
+  HARVESTER_CACHING_ENABLED: true
+  HONEYBADGER_API_KEY: "e2a36ad9"
+
 production:
   API_HOST: "http://api.uat.digitalnz.org"
   MANAGER_HOST: "http://harvester.uat.digitalnz.org"
