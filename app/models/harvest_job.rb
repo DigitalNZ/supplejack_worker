@@ -19,6 +19,7 @@ class HarvestJob
   embeds_many :harvest_job_errors
 
   after_create :enqueue
+  before_save :calculate_average_record_time
 
   def enqueue
     HarvestWorker.perform_async(self.id)
@@ -30,5 +31,16 @@ class HarvestJob
 
   def finished?
     !!end_time
+  end
+
+  def calculate_average_record_time
+    if finished?
+      self.average_record_time = records_harvested.to_f / duration.to_f
+    end
+  end
+
+  def duration
+    return nil unless start_time && end_time
+    end_time.to_time - start_time.to_time
   end
 end
