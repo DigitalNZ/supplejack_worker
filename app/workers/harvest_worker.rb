@@ -1,4 +1,4 @@
-require "shared_module"
+require "snippet"
 
 class HarvestWorker
   include Sidekiq::Worker
