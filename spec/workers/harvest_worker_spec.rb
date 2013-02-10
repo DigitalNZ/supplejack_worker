@@ -25,8 +25,8 @@ describe HarvestWorker do
       worker.perform(1)
     end
 
-    it "updates record as started" do
-      worker.should_receive(:update_as_started).with(job)
+    it "starts the harvest job" do
+      job.should_receive(:start!)
       worker.perform(1)
     end
 
@@ -51,22 +51,6 @@ describe HarvestWorker do
       job.harvest_job_errors.first.message.should eq "Everything broke"
     end
   end
-
-  describe "#update_as_started" do
-    it "records the start time" do
-      time = Time.now
-      Timecop.freeze(time) do
-        worker.update_as_started(job)
-        job.start_time.to_i.should eq time.to_i
-      end
-    end
-
-    it "saves the job" do
-      job.should_receive(:save)
-      worker.update_as_started(job)
-    end
-  end
-
 
   describe "#process_record" do
     let(:record) { mock(:record, attributes: {title: "Hi"}) }
@@ -102,32 +86,17 @@ describe HarvestWorker do
     end
   end
 
-  describe "#update_as_finished" do
-    it "records the end time" do
-      time = Time.now
-      Timecop.freeze(time) do
-        worker.update_as_finished(job)
-        job.end_time.to_i.should eq time.to_i
-      end
-    end
-
-    it "saves the job" do
-      job.should_receive(:save)
-      worker.update_as_finished(job)
-    end
-  end
-
   describe "#stop_harvest?" do
     
-    context "stop is true" do
-      let(:job) { HarvestJob.create(stop: true) }
+    context "status is stopped" do
+      let(:job) { HarvestJob.create(status: "stopped") }
 
       it "returns true" do
         worker.stop_harvest?(job).should be_true
       end
 
       it "updates the job with the end time" do
-        worker.should_receive(:update_as_finished).with(job)
+        job.should_receive(:finish!)
         worker.stop_harvest?(job)
       end
 
@@ -137,8 +106,8 @@ describe HarvestWorker do
       end
     end
 
-    context "stop is false" do
-      let(:job) { HarvestJob.create(stop: false) }
+    context "status is active" do
+      let(:job) { HarvestJob.create(status: "active") }
 
       it "returns true true when more 5 errors" do
         6.times { job.harvest_job_errors.create(message: "Hi") }

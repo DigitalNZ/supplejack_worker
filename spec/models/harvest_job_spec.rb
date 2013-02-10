@@ -7,7 +7,7 @@ describe HarvestJob do
     HarvestJob.create
   end
 
-  let(:job) { FactoryGirl.build(:harvest_job, parser_id: "12345") }
+  let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345") }
 
   describe "#parser" do
     it "finds the parser by id" do
@@ -16,21 +16,68 @@ describe HarvestJob do
     end
   end
 
+  describe "#start!" do
+    it "sets the status to active" do
+      job.start!
+      job.reload
+      job.status.should eq "active"
+    end
+
+    it "sets the start_time" do
+      time = Time.now
+      Timecop.freeze(time) do
+        job.start!
+        job.reload
+        job.start_time.to_i.should eq time.to_i
+      end
+    end
+  end
+
+  describe "#finish!" do
+    it "sets the status to finished" do
+      job.finish!
+      job.reload
+      job.status.should eq "finished"
+    end
+
+    it "sets the end_time" do
+      time = Time.now
+      Timecop.freeze(time) do
+        job.finish!
+        job.reload
+        job.end_time.to_i.should eq time.to_i
+      end
+    end
+  end
+
   describe "#finished?" do
-    it "returns true with a end_time" do
-      job.end_time = Time.now
+    it "returns true" do
+      job.status = "finished"
       job.finished?.should be_true
     end
 
-    it "returns false without a end_time" do
-      job.end_time = nil
+    it "returns false" do
+      job.status = "active"
       job.finished?.should be_false
+    end
+  end
+
+  describe "#stopped?" do
+    it "returns true" do
+      job.status = "stopped"
+      job.stopped?.should be_true
+    end
+
+    it "returns false" do
+      job.status = "finished"
+      job.stopped?.should be_false
     end
   end
 
   describe "calculate_average_record_time" do
     before(:each) do
       job.end_time = Time.now
+      job.status = "finished"
     end
 
     it "should calculate the average record time" do

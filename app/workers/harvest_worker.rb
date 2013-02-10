@@ -5,7 +5,7 @@ class HarvestWorker
 
   def perform(harvest_job_id)
     job = HarvestJob.find(harvest_job_id)
-    self.update_as_started(job)
+    job.start!
 
     begin
       parser = job.parser
@@ -19,12 +19,7 @@ class HarvestWorker
       job.harvest_job_errors.create(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
     end
 
-    self.update_as_finished(job)
-  end
-
-  def update_as_started(job)
-    job.start_time = Time.now
-    job.save
+    job.finish!
   end
 
   def process_record(record, job)
@@ -47,16 +42,11 @@ class HarvestWorker
     puts "POST (#{measure.real.round(4)}): #{attributes[:identifier].try(:first)}" unless Rails.env.test?
   end
 
-  def update_as_finished(job)
-    job.end_time = Time.now
-    job.save
-  end
-
   def stop_harvest?(job)
     job.reload
 
-    if stop = job.stop || job.harvest_job_errors.count > 5
-      update_as_finished(job)
+    if stop = job.stopped? || job.harvest_job_errors.count > 5
+      job.finish!
     end
 
     stop

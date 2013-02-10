@@ -4,15 +4,14 @@ class HarvestJob
 
   include ActiveModel::SerializerSupport
 
-  field :version,             type: Integer
-  field :limit,               type: Integer, default: 0
+  index status: 1
 
+  field :limit,               type: Integer, default: 0
   field :start_time,          type: DateTime
   field :end_time,            type: DateTime
-
   field :records_harvested,   type: Integer, default: 0
   field :average_record_time, type: Float
-  field :stop,                type: Boolean, default: false
+  field :status,              type: String, default: "active"
   field :user_id,             type: String
   field :parser_id,           type: String
 
@@ -29,8 +28,24 @@ class HarvestJob
     Parser.find(self.parser_id)
   end
 
+  def start!
+    self.status = "active"
+    self.start_time = Time.now
+    self.save
+  end
+
+  def finish!
+    self.status = "finished"
+    self.end_time = Time.now
+    self.save
+  end
+
   def finished?
-    !!end_time
+    self.status == "finished"
+  end
+
+  def stopped?
+    self.status == "stopped"
   end
 
   def calculate_average_record_time
