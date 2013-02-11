@@ -144,6 +144,9 @@ GEM
     json (1.7.6)
     jsonpath (0.5.1)
       multi_json
+    kaminari (0.14.1)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
     libv8 (3.11.8.13)
     libwebsocket (0.1.7.1)
       addressable
@@ -296,6 +299,7 @@ DEPENDENCIES
   harvester_core!
   honeybadger
   jquery-rails
+  kaminari (~> 0.14.1)
   mongoid (~> 3.0.19)
   oai!
   quiet_assets (>= 1.0.1)

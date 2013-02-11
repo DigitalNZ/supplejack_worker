@@ -14,11 +14,20 @@ class HarvestJob
   field :status,              type: String, default: "active"
   field :user_id,             type: String
   field :parser_id,           type: String
+  field :environment,         type: String
 
   embeds_many :harvest_job_errors
 
   after_create :enqueue
   before_save :calculate_average_record_time
+
+  def self.search(params)
+    search_params = params.try(:dup).try(:symbolize_keys) || {}
+    valid_fields = [:status]
+    page = search_params.delete(:page) || 1
+    search_params.delete_if {|key, value| !valid_fields.include?(key) }
+    self.page(page.to_i).where(search_params)
+  end
 
   def enqueue
     HarvestWorker.perform_async(self.id)

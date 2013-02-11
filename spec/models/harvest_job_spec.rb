@@ -9,6 +9,21 @@ describe HarvestJob do
 
   let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345") }
 
+  describe ".search" do
+    let!(:active_job) { FactoryGirl.create(:harvest_job, status: "active") }
+
+    it "returns all active harvest jobs" do
+      finished_job = FactoryGirl.create(:harvest_job, status: "finished")
+      HarvestJob.search("status" => "active").should eq [active_job]
+    end
+
+    it "paginates through the records" do
+      active_job2 = FactoryGirl.create(:harvest_job, status: "active")
+      HarvestJob.paginates_per 1
+      HarvestJob.search("status" => "active", "page" => 2).should eq [active_job2]
+    end
+  end
+
   describe "#parser" do
     it "finds the parser by id" do
       Parser.should_receive(:find).with("12345")

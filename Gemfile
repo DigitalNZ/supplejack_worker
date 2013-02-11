@@ -18,6 +18,7 @@ gem "thin",         ">= 1.5.0"
 gem "mongoid",      "~> 3.0.19"
 gem "figaro",       ">= 0.5.0"
 gem "devise",       ">= 2.1.2"
+gem "kaminari",     "~> 0.14.1"
 
 gem 'honeybadger'
 gem "sidekiq"
