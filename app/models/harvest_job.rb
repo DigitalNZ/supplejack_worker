@@ -26,7 +26,7 @@ class HarvestJob
     valid_fields = [:status]
     page = search_params.delete(:page) || 1
     search_params.delete_if {|key, value| !valid_fields.include?(key) }
-    self.page(page.to_i).where(search_params)
+    self.page(page.to_i).where(search_params).desc(:start_time)
   end
 
   def enqueue

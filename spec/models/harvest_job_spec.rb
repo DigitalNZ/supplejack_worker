@@ -18,9 +18,14 @@ describe HarvestJob do
     end
 
     it "paginates through the records" do
-      active_job2 = FactoryGirl.create(:harvest_job, status: "active")
+      active_job2 = FactoryGirl.create(:harvest_job, status: "active", start_time: Time.now)
       HarvestJob.paginates_per 1
-      HarvestJob.search("status" => "active", "page" => 2).should eq [active_job2]
+      HarvestJob.search("status" => "active", "page" => 2).should eq [active_job]
+    end
+
+    it "returns the recent harvest jobs first" do
+      active_job2 = FactoryGirl.create(:harvest_job, status: "active", start_time: Time.now + 5.seconds)
+      HarvestJob.search("status" => "active").first.should eq active_job2
     end
   end
 
