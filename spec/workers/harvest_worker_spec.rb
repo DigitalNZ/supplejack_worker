@@ -3,7 +3,7 @@ require "spec_helper"
 describe HarvestWorker do
   let(:worker) { HarvestWorker.new }
   let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < HarvesterCore::Xml::Base; end") }
-  let(:job) { HarvestJob.new }
+  let(:job) { HarvestJob.new(environment: nil) }
 
   before(:each) do
     RestClient.stub(:post)
@@ -32,6 +32,12 @@ describe HarvestWorker do
 
     it "gets records from parser class" do
       NatlibPages.should_receive(:records)
+      worker.perform(1)
+    end
+
+    it "sets the proper environment from the harvest job" do
+      job.stub(:environment) { "staging" }
+      NatlibPages.should_receive("environment=").with("staging")
       worker.perform(1)
     end
 
