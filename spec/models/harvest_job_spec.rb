@@ -7,7 +7,7 @@ describe HarvestJob do
     HarvestJob.create
   end
 
-  let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345") }
+  let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345", version_id: "666") }
 
   describe ".search" do
     let!(:active_job) { FactoryGirl.create(:harvest_job, status: "active") }
@@ -31,7 +31,7 @@ describe HarvestJob do
 
   describe "#parser" do
     it "finds the parser by id" do
-      Parser.should_receive(:find).with("12345")
+      Parser.should_receive(:find).with("666", params: {parser_id: "12345"})
       job.parser
     end
   end

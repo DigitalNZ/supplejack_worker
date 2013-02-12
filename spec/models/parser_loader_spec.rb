@@ -6,7 +6,7 @@ describe ParserLoader do
     def self.clear_definitions; end
   end
 
-  let(:parser) { Parser.new(strategy: "json", name: "Europeana", content: "class Europeana \n end") }
+  let(:parser) { Parser.new(strategy: "json", name: "Europeana", content: "class Europeana \n end", file_name: "europeana.rb") }
   let(:loader) { ParserLoader.new(parser) }
   
   describe "#path" do
@@ -15,7 +15,7 @@ describe ParserLoader do
     end
 
     it "memoizes the path" do
-      parser.should_receive(:name).once { "/path" }
+      parser.should_receive(:file_name).once { "/path" }
       loader.path
       loader.path
     end

@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe HarvestWorker do
   let(:worker) { HarvestWorker.new }
-  let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < HarvesterCore::Xml::Base; end") }
+  let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < HarvesterCore::Xml::Base; end", file_name: "natlib_pages.rb") }
   let(:job) { HarvestJob.new(environment: nil) }
 
   before(:each) do

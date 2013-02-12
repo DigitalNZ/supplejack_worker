@@ -1,11 +1,8 @@
 class Parser < ActiveResource::Base
 
-  self.site = ENV['MANAGER_HOST']
+  self.site = ENV['MANAGER_HOST'] + "/parsers/:parser_id/"
   self.user = ENV['MANAGER_API_KEY']
-  
-  def file_name
-    @file_name ||= self.name.downcase.gsub(/\s/, "_") + ".rb"
-  end
+  self.element_name = "version"
 
   def loader
     @loader ||= ParserLoader.new(self)

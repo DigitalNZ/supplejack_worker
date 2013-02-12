@@ -14,6 +14,7 @@ class HarvestJob
   field :status,              type: String, default: "active"
   field :user_id,             type: String
   field :parser_id,           type: String
+  field :version_id,          type: String
   field :environment,         type: String
 
   embeds_many :harvest_job_errors
@@ -34,7 +35,7 @@ class HarvestJob
   end
 
   def parser
-    Parser.find(self.parser_id)
+    Parser.find(self.version_id, params: {parser_id: self.parser_id})
   end
 
   def start!
