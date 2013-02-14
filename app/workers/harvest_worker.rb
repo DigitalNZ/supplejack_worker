@@ -4,6 +4,8 @@ class HarvestWorker
   include Sidekiq::Worker
 
   def perform(harvest_job_id)
+    harvest_job_id = harvest_job_id["$oid"] if harvest_job_id.is_a?(Hash)
+
     job = HarvestJob.find(harvest_job_id)
     job.start!
 
