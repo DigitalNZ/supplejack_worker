@@ -94,7 +94,7 @@ describe HarvestJob do
     end
   end
 
-  describe "calculate_average_record_time" do
+  describe "calculate_throughput" do
     before(:each) do
       job.end_time = Time.now
       job.status = "finished"
@@ -103,8 +103,8 @@ describe HarvestJob do
     it "should calculate the average record time" do
       job.records_harvested = 100
       job.stub(:duration) { 100 }
-      job.calculate_average_record_time
-      job.average_record_time.should eq 1.0
+      job.calculate_throughput
+      job.throughput.should eq 1.0
     end
   end
 

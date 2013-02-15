@@ -10,7 +10,7 @@ class HarvestJob
   field :start_time,          type: DateTime
   field :end_time,            type: DateTime
   field :records_harvested,   type: Integer, default: 0
-  field :average_record_time, type: Float
+  field :throughput,          type: Float
   field :status,              type: String, default: "active"
   field :user_id,             type: String
   field :parser_id,           type: String
@@ -20,7 +20,7 @@ class HarvestJob
   embeds_many :harvest_job_errors
 
   after_create :enqueue
-  before_save :calculate_average_record_time
+  before_save :calculate_throughput
 
   def self.search(params)
     search_params = params.try(:dup).try(:symbolize_keys) || {}
@@ -58,9 +58,9 @@ class HarvestJob
     self.status == "stopped"
   end
 
-  def calculate_average_record_time
+  def calculate_throughput
     if finished?
-      self.average_record_time = records_harvested.to_f / duration.to_f
+      self.throughput = records_harvested.to_f / duration.to_f
     end
   end
 
