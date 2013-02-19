@@ -21,7 +21,7 @@ class ParserLoader
   end
 
   def parser_class_name
-    parser.name.gsub(/\s|\.rb/, "").camelize
+    parser.name.gsub(/\s/, "_").camelize
   end
 
   def parser_class
@@ -50,6 +50,7 @@ class ParserLoader
   def clear_parser_class_definitions
     if Object.const_defined?(parser_class_name)
       parser_class.clear_definitions
+      Object.send(:remove_const, parser_class_name.to_sym)
     end
   end
 end

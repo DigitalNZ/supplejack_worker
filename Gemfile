@@ -5,7 +5,7 @@ end
 
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.11'
+gem 'rails', '3.2.12'
 
 gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
 # gem "harvester_core", path: "/Users/fede/code/hippo/harvester/core"

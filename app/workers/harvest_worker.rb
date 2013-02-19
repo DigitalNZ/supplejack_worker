@@ -16,6 +16,7 @@ class HarvestWorker
       parser_klass.environment = job.environment if job.environment.present?
       records = parser_klass.records(limit: job.limit.to_i > 0 ? job.limit : nil)
       records.each do |record|
+        next unless record.valid?
         self.process_record(record, job)
         return if self.stop_harvest?(job)
       end

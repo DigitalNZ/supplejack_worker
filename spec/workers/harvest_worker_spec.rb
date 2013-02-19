@@ -11,7 +11,7 @@ describe HarvestWorker do
   end
   
   describe "#perform" do
-    let(:record) { mock(:record, attributes: {}) }
+    let(:record) { mock(:record, attributes: {}, valid?: true) }
 
     before(:each) do
       HarvestJob.stub(:find) { job }
@@ -55,6 +55,13 @@ describe HarvestWorker do
       NatlibPages.stub(:records).and_raise "Everything broke"
       worker.perform(1)
       job.harvest_job_errors.first.message.should eq "Everything broke"
+    end
+
+    it "skips invalid records" do
+      invalid_record = mock(:record, attributes: {}, valid?: false)
+      NatlibPages.stub(:records) { [record, invalid_record] }
+      worker.should_receive(:process_record).once
+      worker.perform(1)
     end
   end
 
