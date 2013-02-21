@@ -1,4 +1,4 @@
-class HarvestJobError
+class HarvestFailure
   include Mongoid::Document
   include Mongoid::Timestamps
 
@@ -9,5 +9,4 @@ class HarvestJobError
   field :backtrace,       type: Array
 
   embedded_in :harvest_job
-
 end

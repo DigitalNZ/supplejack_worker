@@ -16,12 +16,11 @@ class HarvestWorker
       parser_klass.environment = job.environment if job.environment.present?
       records = parser_klass.records(limit: job.limit.to_i > 0 ? job.limit : nil)
       records.each do |record|
-        next unless record.valid?
         self.process_record(record, job)
         return if self.stop_harvest?(job)
       end
     rescue StandardError => e
-      job.harvest_job_errors.create(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
+      job.build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
     end
 
     job.finish!
@@ -29,11 +28,16 @@ class HarvestWorker
 
   def process_record(record, job)
     begin
-      self.post_to_api(record)
+      if record.valid?
+        self.post_to_api(record) unless job.test?
+        job.records_harvested += 1
+      else
+        job.invalid_records.build(raw_data: record.raw_data, error_messages: record.errors.full_messages)
+      end
     rescue StandardError => e
-      job.harvest_job_errors.build(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
+      job.failed_records.build(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
     end
-    job.records_harvested += 1
+
     job.save
   end
 
@@ -50,7 +54,7 @@ class HarvestWorker
   def stop_harvest?(job)
     job.reload
 
-    if stop = job.stopped? || job.harvest_job_errors.count > 5
+    if stop = job.stopped? || job.failed_records.count > 5 || job.invalid_records.count > 25
       job.finish!
     end
 

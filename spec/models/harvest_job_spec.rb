@@ -27,12 +27,33 @@ describe HarvestJob do
       active_job2 = FactoryGirl.create(:harvest_job, status: "active", start_time: Time.now + 5.seconds)
       HarvestJob.search("status" => "active").first.should eq active_job2
     end
+
+    it "returns only test harvest jobs of a specific parser" do
+      job2 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "test")
+      HarvestJob.search("parser_id" => "333", "environment" => "test").should eq [job2]
+    end
+
+    it "limits the number of harvest jobs returned" do
+      job2 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "test", start_time: Time.now + 5.seconds)
+      HarvestJob.search("limit" => "1").to_a.size.should eq 1
+    end
   end
 
   describe "#parser" do
-    it "finds the parser by id" do
-      Parser.should_receive(:find).with("666", params: {parser_id: "12345"})
-      job.parser
+    context "with version_id" do
+      it "finds the parser by id" do
+        ParserVersion.should_receive(:find).with("666", params: {parser_id: "12345"})
+        job.parser
+      end
+    end
+
+    context "without version_id" do
+      before { job.version_id = "" }
+
+      it "finds the parser by id" do
+        Parser.should_receive(:find).with("12345")
+        job.parser
+      end
     end
   end
 
@@ -91,6 +112,18 @@ describe HarvestJob do
     it "returns false" do
       job.status = "finished"
       job.stopped?.should be_false
+    end
+  end
+
+  describe "test?" do
+    it "returns true" do
+      job.environment = "test"
+      job.test?.should be_true
+    end
+
+    it "returns false" do
+      job.environment = "staging"
+      job.test?.should be_false
     end
   end
 

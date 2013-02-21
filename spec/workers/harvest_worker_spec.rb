@@ -51,25 +51,25 @@ describe HarvestWorker do
       job.end_time.should_not be_nil
     end
 
-    it "rescues exceptions from records method and adds them to job errors" do
+    it "rescues exceptions from the whole harvest and stores it" do
       NatlibPages.stub(:records).and_raise "Everything broke"
       worker.perform(1)
-      job.harvest_job_errors.first.message.should eq "Everything broke"
-    end
-
-    it "skips invalid records" do
-      invalid_record = mock(:record, attributes: {}, valid?: false)
-      NatlibPages.stub(:records) { [record, invalid_record] }
-      worker.should_receive(:process_record).once
-      worker.perform(1)
+      job.harvest_failure.message.should eq "Everything broke"
     end
   end
 
   describe "#process_record" do
-    let(:record) { mock(:record, attributes: {title: "Hi"}) }
+    let(:errors) { mock(:errors, full_messages: []) }
+    let(:record) { mock(:record, attributes: {title: "Hi"}, valid?: true, raw_data: "</record>", errors: errors) }
 
     it "posts the record to the api" do
       worker.should_receive(:post_to_api).with(record)
+      worker.process_record(record, job)
+    end
+
+    it "doesn't post to the API on a test harvest" do
+      job.stub(:test?) { true }
+      worker.should_not_receive(:post_to_api).with(record)
       worker.process_record(record, job)
     end
     
@@ -83,10 +83,18 @@ describe HarvestWorker do
       worker.process_record(record, job)
     end
 
-    it "rescues exceptions from a record and adds it to the job errors" do
+    it "stores invalid record's raw data" do
+      record.stub(:valid?) { false }
+      errors.stub(:full_messages) { ["Title can't be blank"] }
+      worker.process_record(record, job)
+      job.invalid_records.first.raw_data.should eq "</record>"
+      job.invalid_records.first.error_messages.should eq ["Title can't be blank"]
+    end
+
+    it "rescues exceptions from a record and adds it to the failed records" do
       worker.stub(:post_to_api).and_raise "Post failed"
       worker.process_record(record, job)
-      job.harvest_job_errors.first.message.should eq "Post failed"
+      job.failed_records.first.message.should eq "Post failed"
     end
   end
 
@@ -113,8 +121,8 @@ describe HarvestWorker do
         worker.stop_harvest?(job)
       end
 
-      it "returns true true when more 5 errors" do
-        6.times { job.harvest_job_errors.create(message: "Hi") }
+      it "returns true true when more 5 failures" do
+        6.times { job.failed_records.create(message: "Hi") }
         worker.stop_harvest?(job).should be_true
       end
     end
@@ -122,8 +130,13 @@ describe HarvestWorker do
     context "status is active" do
       let(:job) { HarvestJob.create(status: "active") }
 
-      it "returns true true when more 5 errors" do
-        6.times { job.harvest_job_errors.create(message: "Hi") }
+      it "returns true with more 5 than failures" do
+        6.times { job.failed_records.create(message: "Hi") }
+        worker.stop_harvest?(job).should be_true
+      end
+
+      it "returns true with more than 25 invalid records" do
+        26.times { job.invalid_records.create(raw_data: "<record></record>") }
         worker.stop_harvest?(job).should be_true
       end
 

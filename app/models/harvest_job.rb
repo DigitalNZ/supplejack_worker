@@ -17,17 +17,25 @@ class HarvestJob
   field :version_id,          type: String
   field :environment,         type: String
 
-  embeds_many :harvest_job_errors
+  embeds_many :invalid_records
+  embeds_many :failed_records
+  embeds_one :harvest_failure
 
   after_create :enqueue
   before_save :calculate_throughput
 
   def self.search(params)
     search_params = params.try(:dup).try(:symbolize_keys) || {}
-    valid_fields = [:status]
+    valid_fields = [:status, :environment, :parser_id]
+
     page = search_params.delete(:page) || 1
+    amount = search_params.delete(:limit) || nil
+
     search_params.delete_if {|key, value| !valid_fields.include?(key) }
-    self.page(page.to_i).where(search_params).desc(:start_time)
+
+    scope = self.page(page.to_i).where(search_params).desc(:start_time)
+    scope = scope.limit(amount.to_i) if amount
+    scope
   end
 
   def enqueue
@@ -35,7 +43,11 @@ class HarvestJob
   end
 
   def parser
-    Parser.find(self.version_id, params: {parser_id: self.parser_id})
+    if version_id.present?
+      ParserVersion.find(self.version_id, params: {parser_id: self.parser_id})
+    else
+      Parser.find(self.parser_id)
+    end
   end
 
   def start!
@@ -56,6 +68,10 @@ class HarvestJob
 
   def stopped?
     self.status == "stopped"
+  end
+
+  def test?
+    self.environment == "test"
   end
 
   def calculate_throughput
