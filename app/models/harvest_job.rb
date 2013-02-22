@@ -33,7 +33,16 @@ class HarvestJob
 
     search_params.delete_if {|key, value| !valid_fields.include?(key) }
 
-    scope = self.page(page.to_i).where(search_params).desc(:start_time)
+    scope = self.page(page.to_i).desc(:start_time)
+
+    search_params.each_pair do |attribute, value|
+      if value.is_a?(Array)
+        scope = scope.in(attribute => value)
+        search_params.delete(attribute)
+      end
+    end
+
+    scope = scope.where(search_params)
     scope = scope.limit(amount.to_i) if amount
     scope
   end

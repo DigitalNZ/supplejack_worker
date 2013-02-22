@@ -10,7 +10,7 @@ describe HarvestJob do
   let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345", version_id: "666") }
 
   describe ".search" do
-    let!(:active_job) { FactoryGirl.create(:harvest_job, status: "active") }
+    let(:active_job) { FactoryGirl.create(:harvest_job, status: "active") }
 
     it "returns all active harvest jobs" do
       finished_job = FactoryGirl.create(:harvest_job, status: "finished")
@@ -36,6 +36,13 @@ describe HarvestJob do
     it "limits the number of harvest jobs returned" do
       job2 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "test", start_time: Time.now + 5.seconds)
       HarvestJob.search("limit" => "1").to_a.size.should eq 1
+    end
+
+    it "should find all harvest jobs either in staging or production" do
+      job1 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "staging", start_time: Time.now)
+      job2 = FactoryGirl.create(:harvest_job, parser_id: "334", environment: "production", start_time: Time.now + 2.seconds)
+      HarvestJob.search("environment" => ["staging", "production"]).to_a.should include(job2)
+      HarvestJob.search("environment" => ["staging", "production"]).to_a.should include(job1)
     end
   end
 
