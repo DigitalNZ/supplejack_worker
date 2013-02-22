@@ -32,7 +32,7 @@ class HarvestWorker
         self.post_to_api(record) unless job.test?
         job.records_harvested += 1
       else
-        job.invalid_records.build(raw_data: record.raw_data, error_messages: record.errors.full_messages)
+        job.invalid_records.build(raw_data: record.full_raw_data, error_messages: record.errors.full_messages)
       end
     rescue StandardError => e
       job.failed_records.build(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])

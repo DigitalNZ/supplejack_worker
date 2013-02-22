@@ -60,7 +60,7 @@ describe HarvestWorker do
 
   describe "#process_record" do
     let(:errors) { mock(:errors, full_messages: []) }
-    let(:record) { mock(:record, attributes: {title: "Hi"}, valid?: true, raw_data: "</record>", errors: errors) }
+    let(:record) { mock(:record, attributes: {title: "Hi"}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
 
     it "posts the record to the api" do
       worker.should_receive(:post_to_api).with(record)
@@ -99,7 +99,7 @@ describe HarvestWorker do
   end
 
   describe "#post_to_api" do
-    let(:record) { mock(:record, attributes: {title: "Hi"}) }
+    let(:record) { mock(:record, attributes: {title: "Hi"}).as_null_object }
 
     it "should post to the API" do
       RestClient.should_receive(:post).with("#{ENV["API_HOST"]}/harvester/records.json", {record: {title: "Hi"}}.to_json, :content_type => :json, :accept => :json)
