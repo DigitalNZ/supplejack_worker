@@ -20,7 +20,7 @@ class HarvestWorker
         return if self.stop_harvest?(job)
       end
     rescue StandardError => e
-      job.build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
+      job.build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
     end
 
     job.finish!
