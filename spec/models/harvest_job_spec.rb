@@ -46,6 +46,14 @@ describe HarvestJob do
     end
   end
 
+  describe ".clear_raw_data" do
+    it "should fetch harvest jobs older than a week" do
+      HarvestJob.should_receive(:disposable) { [job] }
+      job.should_receive(:clear_raw_data)
+      HarvestJob.clear_raw_data
+    end
+  end
+
   describe "#parser" do
     context "with version_id" do
       it "finds the parser by id" do
@@ -95,6 +103,16 @@ describe HarvestJob do
         job.reload
         job.end_time.to_i.should eq time.to_i
       end
+    end
+
+    it "calculates the throughput" do
+      job.should_receive(:calculate_throughput)
+      job.finish!
+    end
+
+    it "calculates the errors count" do
+      job.should_receive(:calculate_errors_count)
+      job.finish!
     end
   end
 
@@ -146,6 +164,13 @@ describe HarvestJob do
       job.calculate_throughput
       job.throughput.should eq 1.0
     end
+
+    it "returns 0 when records harvested is 0" do
+      job.records_harvested = 0
+      job.stub(:duration) { 100 }
+      job.calculate_throughput
+      job.throughput.should eq 0
+    end
   end
 
   describe "#duration" do
@@ -167,6 +192,57 @@ describe HarvestJob do
     it "returns nil end_time is nil" do
       job.end_time = nil
       job.duration.should be_nil
+    end
+
+    it "returns the proper duration" do
+      time = Time.now
+      Timecop.freeze(time) do
+        job = FactoryGirl.create(:harvest_job, start_time: time)
+        job.end_time = Time.now + 5.seconds
+        job.duration.should eq 5
+      end
+    end
+  end
+
+  describe "total_errors_count" do
+    it "should return a sum of failed and invalid records" do
+      job.stub(:invalid_records) { mock(:array, count: 10) }
+      job.stub(:failed_records) { mock(:array, count: 20) }
+      job.total_errors_count.should eq 30
+    end
+  end
+
+  describe "#errors_over_limit?" do
+    context "errors count over 100" do
+      before { job.stub(:total_errors_count) { 101 } }
+
+      it "should return true" do
+        job.errors_over_limit?.should be_true
+      end
+    end
+
+    context "errors count under 100" do
+      before { job.stub(:total_errors_count) { 99 } }
+
+      it "should return false" do
+        job.errors_over_limit?.should be_false
+      end
+    end
+  end
+
+  describe "clear_raw_data" do
+    it "should remove invalid records" do
+      job.invalid_records.create(raw_data: "Wrong", errors_messages: [])
+      job.clear_raw_data
+      job.reload
+      job.invalid_records.count.should eq 0
+    end
+
+    it "should remove failed records" do
+      job.failed_records.create(message: "Hi")
+      job.clear_raw_data
+      job.reload
+      job.failed_records.count.should eq 0
     end
   end
 

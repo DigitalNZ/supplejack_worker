@@ -35,7 +35,8 @@ class HarvestWorker
         job.invalid_records.build(raw_data: record.full_raw_data, error_messages: record.errors.full_messages)
       end
     rescue StandardError => e
-      job.failed_records.build(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
+      failed_record = job.failed_records.build(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
+      failed_record.raw_data = record.try(:raw_data) rescue nil
     end
 
     job.save
@@ -54,7 +55,7 @@ class HarvestWorker
   def stop_harvest?(job)
     job.reload
 
-    if stop = job.stopped? || job.failed_records.count > 5 || job.invalid_records.count > 25
+    if stop = job.stopped? || job.errors_over_limit?
       job.finish!
     end
 

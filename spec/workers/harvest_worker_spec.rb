@@ -121,8 +121,8 @@ describe HarvestWorker do
         worker.stop_harvest?(job)
       end
 
-      it "returns true true when more 5 failures" do
-        6.times { job.failed_records.create(message: "Hi") }
+      it "returns true true when errors over limit" do
+        job.stub(:errors_over_limit?) { true }
         worker.stop_harvest?(job).should be_true
       end
     end
@@ -130,13 +130,8 @@ describe HarvestWorker do
     context "status is active" do
       let(:job) { HarvestJob.create(status: "active") }
 
-      it "returns true with more 5 than failures" do
-        6.times { job.failed_records.create(message: "Hi") }
-        worker.stop_harvest?(job).should be_true
-      end
-
-      it "returns true with more than 25 invalid records" do
-        26.times { job.invalid_records.create(raw_data: "<record></record>") }
+      it "returns true when errors over limit" do
+        job.stub(:errors_over_limit?) { true }
         worker.stop_harvest?(job).should be_true
       end
 

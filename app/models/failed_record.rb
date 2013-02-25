@@ -7,6 +7,7 @@ class FailedRecord
   field :exception_class, type: String
   field :message,         type: String
   field :backtrace,       type: Array
+  field :raw_data,        type: String
 
   embedded_in :harvest_job
 
