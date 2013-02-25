@@ -93,7 +93,7 @@ class HarvestJob
   end
 
   def calculate_throughput
-    if self.duration.present?
+    if self.duration.to_f > 0
       self.throughput = self.records_harvested.to_f / self.duration.to_f
     end
   end

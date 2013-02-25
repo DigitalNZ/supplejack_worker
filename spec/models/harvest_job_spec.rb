@@ -171,6 +171,13 @@ describe HarvestJob do
       job.calculate_throughput
       job.throughput.should eq 0
     end
+
+    it "should not return NaN" do
+      job.records_harvested = 0
+      job.stub(:duration) { 0.0 }
+      job.calculate_throughput
+      job.throughput.should be_nil
+    end
   end
 
   describe "#duration" do
