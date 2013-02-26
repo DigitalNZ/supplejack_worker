@@ -18,14 +18,18 @@ class HarvestJob
   field :environment,           type: String
   field :invalid_records_count, type: Integer
   field :failed_records_count,  type: Integer
+  field :incremental,           type: Boolean, default: false
 
   embeds_many :invalid_records
   embeds_many :failed_records
   embeds_one :harvest_failure
 
-  scope :disposable, -> { lt(created_at: Time.now-7.days).gt(created_at: Time.now-21.days) }
-
+  belongs_to :harvest_schedule
   after_create :enqueue
+
+  validates_uniqueness_of :parser_id, scope: [:environment, :status], if: :active?
+
+  scope :disposable, -> { lt(created_at: Time.now-7.days).gt(created_at: Time.now-21.days) }
 
   def self.search(params)
     search_params = params.try(:dup).try(:symbolize_keys) || {}
@@ -61,6 +65,11 @@ class HarvestJob
   def parser
     if version_id.present?
       ParserVersion.find(self.version_id, params: {parser_id: self.parser_id})
+    elsif environment.present?
+      version = ParserVersion.find(:one, from: :current, params: {parser_id: self.parser_id, environment: self.environment})
+      version.parser_id = self.parser_id
+      self.version_id = version.id if version.present?
+      version
     else
       Parser.find(self.parser_id)
     end
@@ -78,6 +87,10 @@ class HarvestJob
     self.calculate_throughput
     self.calculate_errors_count
     self.save
+  end
+
+  def active?
+    self.status == "active"
   end
 
   def finished?

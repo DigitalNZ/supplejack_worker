@@ -7,14 +7,21 @@ class HarvestWorker
     harvest_job_id = harvest_job_id["$oid"] if harvest_job_id.is_a?(Hash)
 
     job = HarvestJob.find(harvest_job_id)
-    job.start!
 
     begin
       parser = job.parser
+
+      options = {}
+      options[:limit] = job.limit.to_i if job.limit.to_i > 0
+      options[:from] = parser.last_harvested_at if job.incremental && parser.last_harvested_at
+
+      job.start!
+
       parser.load_file
       parser_klass = parser.loader.parser_class
       parser_klass.environment = job.environment if job.environment.present?
-      records = parser_klass.records(limit: job.limit.to_i > 0 ? job.limit : nil)
+
+      records = parser_klass.records(options)
       records.each do |record|
         self.process_record(record, job)
         return if self.stop_harvest?(job)
