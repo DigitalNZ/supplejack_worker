@@ -29,6 +29,7 @@ gem 'sinatra', :require => nil
 gem 'activeresource', require: 'active_resource'
 
 gem 'whenever', :require => false
+gem 'parse-cron'
 
 # Gems used only for assets and not required
 # in production environments by default.

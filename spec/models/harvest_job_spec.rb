@@ -18,7 +18,7 @@ describe HarvestJob do
     end
 
     it "paginates through the records" do
-      active_job2 = FactoryGirl.create(:harvest_job, status: "active", start_time: Time.now)
+      active_job2 = FactoryGirl.create(:harvest_job, status: "active", start_time: Time.now, parser_id: "666")
       HarvestJob.paginates_per 1
       HarvestJob.search("status" => "active", "page" => 2).should eq [active_job]
     end
@@ -54,7 +54,23 @@ describe HarvestJob do
     end
   end
 
+  context "validations" do
+    it "should not be possible to have 2 active jobs for the same parser/environment" do
+      job1 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "staging", status: "active")
+      job2 = FactoryGirl.build(:harvest_job, parser_id: "333", environment: "staging", status: "active")
+      job2.should_not be_valid
+    end
+
+    it "should be possible to have 2 finished jobs for the same parser/environment" do
+      job1 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "staging", status: "finished")
+      job2 = FactoryGirl.build(:harvest_job, parser_id: "333", environment: "staging", status: "finished")
+      job2.should be_valid
+    end
+  end
+
   describe "#parser" do
+    let!(:version) { mock_model(ParserVersion).as_null_object }
+
     context "with version_id" do
       it "finds the parser by id" do
         ParserVersion.should_receive(:find).with("666", params: {parser_id: "12345"})
@@ -63,7 +79,28 @@ describe HarvestJob do
     end
 
     context "without version_id" do
-      before { job.version_id = "" }
+      before(:each) do
+        job.version_id = ""
+        job.environment = "staging"
+      end
+
+      it "finds the current parser version for the environment" do
+        ParserVersion.should_receive(:find).with(:one, from: :current, params: {parser_id: "12345", environment: "staging"}) { version }
+        job.parser
+      end
+
+      it "should set the version_id of the fetched version" do
+        ParserVersion.should_receive(:find) { mock_model(ParserVersion, id: "888").as_null_object }
+        job.parser
+        job.version_id.should eq "888"
+      end
+    end
+
+    context "without version_id and environment" do
+      before do 
+        job.version_id = ""
+        job.environment = nil
+      end
 
       it "finds the parser by id" do
         Parser.should_receive(:find).with("12345")
@@ -170,6 +207,13 @@ describe HarvestJob do
       job.stub(:duration) { 100 }
       job.calculate_throughput
       job.throughput.should eq 0
+    end
+
+    it "should not return NaN" do
+      job.records_harvested = 0
+      job.stub(:duration) { 0.0 }
+      job.calculate_throughput
+      job.throughput.should be_nil
     end
   end
 

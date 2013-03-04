@@ -1,0 +1,78 @@
+class HarvestSchedule
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  include ActiveModel::SerializerSupport
+
+  has_many :harvest_jobs
+  
+  index status: 1
+
+  field :parser_id,       type: String  
+  field :start_time,      type: DateTime
+  field :cron,            type: String
+  field :frequency,       type: String
+  field :at_hour,         type: Integer
+  field :at_minutes,      type: Integer
+  field :offset,          type: Integer
+  field :environment,     type: String
+  field :recurrent,       type: Boolean, default: true
+  field :last_run_at,     type: DateTime, default: nil
+  field :next_run_at,     type: DateTime
+  field :status,          type: String, default: "active"
+  field :incremental,     type: Boolean, default: false
+
+  before_save :generate_cron
+  before_save :generate_next_run_at
+
+  validates_uniqueness_of :parser_id, scope: [:environment, :status], if: :active?
+
+  default_scope -> { where(status: "active") }
+
+  scope :one_off, -> { where(recurrent: false).exists(last_run_at: false) }
+  scope :recurrent, -> { where(recurrent: true) }
+
+  def self.one_offs_to_be_run
+    self.one_off.lte(start_time: Time.now).gte(start_time: Time.now - 16.minutes)
+  end
+
+  def self.create_one_off_jobs
+    self.one_offs_to_be_run.each(&:create_job)
+  end
+
+  def self.recurrents_to_be_run
+    self.recurrent.lte(next_run_at: Time.now).lte(start_time: Time.now)
+  end
+
+  def self.create_recurrent_jobs
+    self.recurrents_to_be_run.each(&:create_job)
+  end
+
+  def active?
+    self.status == "active"
+  end
+
+  def next_job
+    return nil unless self.cron.present?
+    parser = CronParser.new(self.cron)
+    parser.next(Time.now)
+  end
+
+  def generate_cron
+    if self.frequency.present?
+      self.cron = CronGenerator.new(frequency, at_hour, at_minutes, offset).output
+    end
+  end
+
+  def generate_next_run_at
+    self.next_run_at = self.next_job
+  end
+
+  def create_job
+    self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, incremental: self.incremental)
+    self.last_run_at = Time.now
+    self.status = "inactive" unless self.recurrent
+    self.save
+  end
+
+end

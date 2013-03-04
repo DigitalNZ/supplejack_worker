@@ -19,8 +19,11 @@ class HarvestJobsController < ApplicationController
 
   def create
     @harvest_job = HarvestJob.new(params[:harvest_job])
-    @harvest_job.save
-    respond_with @harvest_job
+    if @harvest_job.save
+      respond_with @harvest_job
+    else
+      render json: {errors: @harvest_job.errors }, status: 422
+    end
   end
 
   def update
