@@ -66,7 +66,8 @@ class HarvestJob
     if version_id.present?
       ParserVersion.find(self.version_id, params: {parser_id: self.parser_id})
     elsif environment.present?
-      version = ParserVersion.find(:one, from: :current, params: {parser_id: self.parser_id, environment: self.environment})
+      version_environment = environment == "test" ? "staging" : environment
+      version = ParserVersion.find(:one, from: :current, params: {parser_id: self.parser_id, environment: version_environment})
       version.parser_id = self.parser_id
       self.version_id = version.id if version.present?
       version
