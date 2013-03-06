@@ -94,12 +94,6 @@ describe HarvestJob do
         job.parser
         job.version_id.should eq "888"
       end
-
-      it "finds the staging version when is in test mode" do
-        job.environment = "test"
-        ParserVersion.should_receive(:find).with(:one, from: :current, params: {parser_id: "12345", environment: "staging"}) { version }
-        job.parser
-      end
     end
 
     context "without version_id and environment" do
