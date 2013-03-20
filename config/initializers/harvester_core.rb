@@ -1,0 +1,1 @@
+HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"

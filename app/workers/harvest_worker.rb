@@ -37,7 +37,7 @@ class HarvestWorker
     begin
       if record.valid?
         self.post_to_api(record) unless job.test?
-        job.records_harvested += 1
+        job.records_count += 1
       else
         job.invalid_records.build(raw_data: record.full_raw_data, error_messages: record.errors.full_messages)
       end

@@ -16,16 +16,15 @@ class HarvestSchedule
   field :at_minutes,      type: Integer
   field :offset,          type: Integer
   field :environment,     type: String
-  field :recurrent,       type: Boolean, default: true
+  field :recurrent,       type: Boolean,  default: true
   field :last_run_at,     type: DateTime, default: nil
   field :next_run_at,     type: DateTime
-  field :status,          type: String, default: "active"
-  field :incremental,     type: Boolean, default: false
+  field :status,          type: String,   default: "active"
+  field :incremental,     type: Boolean,  default: false
+  field :enrichments,     type: Array
 
   before_save :generate_cron
   before_save :generate_next_run_at
-
-  validates_uniqueness_of :parser_id, scope: [:environment, :status], if: :active?
 
   default_scope -> { where(status: "active") }
 
@@ -69,7 +68,7 @@ class HarvestSchedule
   end
 
   def create_job
-    self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, incremental: self.incremental)
+    self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, incremental: self.incremental, enrichments: self.enrichments)
     self.last_run_at = Time.now
     self.status = "inactive" unless self.recurrent
     self.save

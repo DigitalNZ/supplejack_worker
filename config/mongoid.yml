@@ -27,6 +27,12 @@ development:
         # The time in seconds that Moped should wait before retrying an
         # operation on failure. (default: 1)
         # retry_interval: 1
+    api:
+      database: dnz_api_development
+      hosts:
+        - localhost:27017
+      options:
+        consistency: :strong
   # Configure Mongoid specific options. (optional)
   options:
     # Configuration for whether or not to allow access to fields that do
@@ -66,6 +72,7 @@ development:
 
     # Ensure all times are UTC in the app side. (default: false)
     # use_utc: false
+
 test:
   sessions:
     default:
@@ -78,11 +85,23 @@ test:
         # low amounts for fast failures.
         max_retries: 1
         retry_interval: 0
+    api:
+      database: dnz_api_test
+      hosts:
+        - localhost:27017
+      options:
+        consistency: :strong
 
 staging:
   sessions:
     default:
       database: worker_staging
+      hosts:
+        - localhost:27017
+      options:
+        consistency: :strong
+    api:
+      database: dnz_api_staging
       hosts:
         - localhost:27017
       options:
@@ -96,3 +115,11 @@ production:
         - localhost:27017
       options:
         consistency: :strong
+    api:
+      database: dnz_api_production
+      hosts:
+        - dnz01.digitalnz.org:27017
+        - dnz04.digitalnz.org:27017
+        - dnz02.digitalnz.org:27017
+      options:
+        consistency: :eventual

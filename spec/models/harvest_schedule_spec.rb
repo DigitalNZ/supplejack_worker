@@ -88,20 +88,6 @@ describe HarvestSchedule do
     end
   end
 
-  context "validations" do
-    it "should not be valid when a schedule for the same parser and environment already exists" do
-      schedule1 = HarvestSchedule.create(parser_id: "123456", environment: "staging")
-      schedule2 = HarvestSchedule.new(parser_id: "123456", environment: "staging")
-      schedule2.should_not be_valid
-    end
-
-    it "should be valid when a schedule for the smae parser but different environment already exists" do
-      schedule1 = HarvestSchedule.create(parser_id: "123456", environment: "staging")
-      schedule2 = HarvestSchedule.new(parser_id: "123456", environment: "production")
-      schedule2.should be_valid
-    end
-  end
-
   describe "#next_job" do
     it "returns the next time on a weekly cron" do
       Timecop.freeze(time) do
@@ -158,7 +144,7 @@ describe HarvestSchedule do
   end
 
   describe "#create_job" do
-    let(:schedule) { HarvestSchedule.create(parser_id: "1234", environment: "staging") }
+    let(:schedule) { FactoryGirl.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
 
     it "should create a new harvest job" do
       schedule.create_job
@@ -188,6 +174,14 @@ describe HarvestSchedule do
       schedule.reload
       job = schedule.harvest_jobs.last
       job.incremental.should be_true
+    end
+
+    it "should create a new harvest job with enrichments" do
+      schedule.enrichments = ["ndha_rights"]
+      schedule.create_job
+      schedule.reload
+      job = schedule.harvest_jobs.last
+      job.enrichments.should eq ["ndha_rights"]
     end
   end
 end

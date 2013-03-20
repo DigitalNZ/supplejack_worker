@@ -2,7 +2,9 @@ HarvesterWorker::Application.routes.draw do
 
   devise_for :users, skip: :sessions
 
-  resources :harvest_jobs, only: [:index, :create, :update, :show]
+  resources :abstract_jobs, only: [:index]
+  resources :harvest_jobs, only: [:create, :update, :show]
+  resources :enrichment_jobs, only: [:create, :update, :show]
   resources :harvest_schedules, only: [:index, :create, :update, :show, :destroy]
   
   require 'sidekiq/web'

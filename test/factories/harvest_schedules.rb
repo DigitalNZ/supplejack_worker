@@ -2,8 +2,10 @@
 
 FactoryGirl.define do
   factory :harvest_schedule do
-    harvest_job_id "MyString"
     start_time "2013-02-26 16:09:29"
-    cron "MyString"
+    cron "* * * * *"
+
+    environment   "test"
+    sequence(:parser_id)  {|n| "abc#{n}" }
   end
 end

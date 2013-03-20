@@ -6,7 +6,7 @@ describe Parser do
 
   describe "#loader" do
     it "should initialize a loader object" do
-      ParserLoader.should_receive(:new).with(parser)
+      HarvesterCore::Loader.should_receive(:new).with(parser)
       parser.loader
     end
   end

@@ -1,6 +1,5 @@
 FactoryGirl.define do
-  factory :harvest_job do
-    limit         nil
+  factory :abstract_job do
     start_time    Time.now
     status        "active"
     environment   "test"

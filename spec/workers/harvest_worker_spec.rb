@@ -6,6 +6,7 @@ describe HarvestWorker do
   let(:job) { HarvestJob.new(environment: nil) }
 
   before(:each) do
+    HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
     RestClient.stub(:post)
     parser.load_file
   end
@@ -73,9 +74,9 @@ describe HarvestWorker do
       worker.process_record(record, job)
     end
     
-    it "increments records_harvested" do
+    it "increments records_count" do
       worker.process_record(record, job)
-      job.records_harvested.should eq 1
+      job.records_count.should eq 1
     end
 
     it "saves the job" do
@@ -108,9 +109,10 @@ describe HarvestWorker do
   end
 
   describe "#stop_harvest?" do
+    before { job.stub(:enqueue_enrichment_jobs) { nil }  }
     
     context "status is stopped" do
-      let(:job) { HarvestJob.create(status: "stopped") }
+      let(:job) { FactoryGirl.create(:harvest_job, status: "stopped") }
 
       it "returns true" do
         worker.stop_harvest?(job).should be_true
@@ -128,7 +130,7 @@ describe HarvestWorker do
     end
 
     context "status is active" do
-      let(:job) { HarvestJob.create(status: "active") }
+      let(:job) { FactoryGirl.create(:harvest_job, status: "active") }
 
       it "returns true when errors over limit" do
         job.stub(:errors_over_limit?) { true }
