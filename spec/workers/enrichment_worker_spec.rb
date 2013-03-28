@@ -67,7 +67,7 @@ describe EnrichmentWorker do
 
     it "should fetch records based on the source_id" do
       TestClass.stub(:get_source_id) { "nlnzcat" }
-      DnzApi::Record.should_receive(:where).with("sources.source_id" => "nlnzcat")
+      Repository::Record.should_receive(:where).with("sources.source_id" => "nlnzcat")
       worker.records
     end
   end
@@ -78,12 +78,13 @@ describe EnrichmentWorker do
 
     before do
       worker.send(:setup_parser)
+      parser.stub(:enrichment_definitions) { {ndha_rights: {}} }
       HarvesterCore::Enrichment.stub(:new) { enrichment }
       worker.stub(:post_to_api) { nil }
     end
 
     it "should initialize a enrichment" do
-      HarvesterCore::Enrichment.should_receive(:new).with("ndha_rights", worker.send(:enrichment_block), record, TestClass)
+      HarvesterCore::Enrichment.should_receive(:new).with("ndha_rights", worker.send(:enrichment_options), record, TestClass)
       worker.process_record(record)
     end
 
@@ -136,17 +137,36 @@ describe EnrichmentWorker do
     end
   end
 
-  describe "#enrichment_block" do
+  describe "#enrichment_options" do
     let(:block) { Proc.new { "Hi" } }
 
     before(:each) do
-      parser.stub(:enrichment_definitions) { {ndha_rights: block} }
+      parser.stub(:enrichment_definitions) { {ndha_rights: {block: block}} }
     end
 
-    it "should fetch the enrichment definition block" do
+    it "should fetch the enrichment definition options" do
       job.enrichment = "ndha_rights"
       worker.send(:setup_parser)
-      worker.send(:enrichment_block).should eq block
+      worker.send(:enrichment_options).should eq({block: block})
+    end
+  end
+
+  describe "#enrichment_class" do
+    let(:block) { Proc.new { "Hi" } }
+
+    before(:each) do
+      parser.stub(:enrichment_definitions) { {ndha_rights: {block: block}} }
+      job.enrichment = "ndha_rights"
+      worker.send(:setup_parser)
+    end
+
+    it "defaults to HarvesterCore::Enrichment" do
+      worker.send(:enrichment_class).should eq HarvesterCore::Enrichment
+    end
+
+    it "uses a the custom TapuhiRelationships enrichment" do
+      parser.stub(:enrichment_definitions) { {ndha_rights: {type: "TapuhiRelationships"}} }
+      worker.send(:enrichment_class).should eq HarvesterCore::TapuhiRelationshipsEnrichment
     end
   end
 end

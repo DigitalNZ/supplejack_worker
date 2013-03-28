@@ -49,26 +49,6 @@ describe AbstractJob do
     end
   end
 
-  context "validations" do
-    it "should not be possible to have 2 active jobs for the same parser/environment" do
-      job1 = FactoryGirl.create(:abstract_job, parser_id: "333", environment: "staging", status: "active")
-      job2 = FactoryGirl.build(:abstract_job, parser_id: "333", environment: "staging", status: "active")
-      job2.should_not be_valid
-    end
-
-    it "should be possible to have 2 finished jobs for the same parser/environment" do
-      job1 = FactoryGirl.create(:abstract_job, parser_id: "333", environment: "staging", status: "finished")
-      job2 = FactoryGirl.build(:abstract_job, parser_id: "333", environment: "staging", status: "finished")
-      job2.should be_valid
-    end
-
-    it "should be possible to enqueue a harvest and enrichment jobs simultaneously" do
-      job = FactoryGirl.create(:abstract_job, parser_id: "333", environment: "staging", status: "active")
-      enrichment = FactoryGirl.build(:enrichment_job, parser_id: "333", environment: "staging", status: "active")
-      enrichment.should be_valid
-    end
-  end
-
   describe "#parser" do
     let!(:version) { mock_model(ParserVersion).as_null_object }
 

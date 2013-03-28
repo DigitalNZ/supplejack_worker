@@ -56,7 +56,7 @@ class HarvestWorker
       RestClient.post "#{ENV["API_HOST"]}/harvester/records.json", {record: attributes}.to_json, :content_type => :json, :accept => :json
     end
 
-    puts "POST (#{measure.real.round(4)}): #{attributes[:identifier].try(:first)}" unless Rails.env.test?
+    puts "HarvestJob: POST (#{measure.real.round(4)}): #{attributes[:identifier].try(:first)}" unless Rails.env.test?
   end
 
   def stop_harvest?(job)

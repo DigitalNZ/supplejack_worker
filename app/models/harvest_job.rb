@@ -6,6 +6,8 @@ class HarvestJob < AbstractJob
 
   after_create :enqueue
 
+  validates_uniqueness_of :parser_id, scope: [:environment, :status, :_type], if: :active?
+
   def enqueue
     HarvestWorker.perform_async(self.id)
   end
@@ -16,7 +18,7 @@ class HarvestJob < AbstractJob
   end
 
   def enqueue_enrichment_jobs
-    self.parser.enrichment_definitions.each do |name, block|
+    self.parser.enrichment_definitions.each do |name, options|
       EnrichmentJob.create_from_harvest_job(self, name) if Array(self.enrichments).include?(name.to_s)
     end
   end

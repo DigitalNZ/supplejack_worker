@@ -6,6 +6,8 @@ class EnrichmentJob < AbstractJob
 
   field :enrichment,  type: String
 
+  validates_uniqueness_of :enrichment, scope: [:environment, :status, :_type, :parser_id], if: :active?
+
   def self.create_from_harvest_job(job, enrichment)
     self.create(parser_id:      job.parser_id,
                 version_id:     job.version_id,

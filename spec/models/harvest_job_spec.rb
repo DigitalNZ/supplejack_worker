@@ -1,6 +1,26 @@
 require "spec_helper"
 
 describe HarvestJob do
+
+  context "validations" do
+    it "should not be possible to have 2 active jobs for the same parser/environment" do
+      job1 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "staging", status: "active")
+      job2 = FactoryGirl.build(:harvest_job, parser_id: "333", environment: "staging", status: "active")
+      job2.should_not be_valid
+    end
+
+    it "should be possible to have 2 finished jobs for the same parser/environment" do
+      job1 = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "staging", status: "finished")
+      job2 = FactoryGirl.build(:harvest_job, parser_id: "333", environment: "staging", status: "finished")
+      job2.should be_valid
+    end
+
+    it "should be possible to enqueue a harvest and enrichment jobs simultaneously" do
+      job = FactoryGirl.create(:harvest_job, parser_id: "333", environment: "staging", status: "active")
+      enrichment = FactoryGirl.build(:enrichment_job, parser_id: "333", environment: "staging", status: "active")
+      enrichment.should be_valid
+    end
+  end
   
   it "enqueues a job after_create" do
     HarvestWorker.should_receive(:perform_async)

@@ -22,17 +22,17 @@ class EnrichmentWorker
   end
 
   def records
-    DnzApi::Record.where("sources.source_id" => @parser_class.get_source_id)
+    Repository::Record.where("sources.source_id" => @parser_class.get_source_id)
   end
 
   def process_record(record)
     begin
-      enrichment = HarvesterCore::Enrichment.new(enrichment_job.enrichment, enrichment_block, record, @parser_class)
+      enrichment = enrichment_class.new(enrichment_job.enrichment, enrichment_options, record, @parser_class)
       enrichment.set_attribute_values
       post_to_api(enrichment) unless enrichment_job.test?
       enrichment_job.increment_records_count!
     rescue RestClient::ResourceNotFound => e
-      Rails.logger.info "Resource Not Found: #{enrichment.try(:_url)}"
+      Rails.logger.info "Resource Not Found: #{enrichment.inspect}"
     rescue StandardError => e
       Rails.logger.info "\n#{e.message}, #{e.class.inspect}"
       e.backtrace.each {|b| Rails.logger.info b }
@@ -48,8 +48,13 @@ class EnrichmentWorker
     @parser_class.environment = enrichment_job.environment
   end
 
-  def enrichment_block
+  def enrichment_options
     @parser.enrichment_definitions[enrichment_job.enrichment.to_sym]
+  end
+
+  def enrichment_class
+    klass = "HarvesterCore::#{enrichment_options[:type]}Enrichment"
+    klass.constantize
   end
 
   def post_to_api(enrichment)
@@ -60,7 +65,7 @@ class EnrichmentWorker
       RestClient.post "#{ENV["API_HOST"]}/harvester/records/#{record.id}/sources.json", {source: attributes}.to_json, :content_type => :json, :accept => :json
     end
 
-    puts "POST (#{measure.real.round(4)}): #{enrichment._url}" unless Rails.env.test?
+    puts "EnrichmentJob: POST (#{measure.real.round(4)})" unless Rails.env.test?
   end
 
   def stop_harvest?
