@@ -29,8 +29,13 @@ class EnrichmentWorker
     begin
       enrichment = enrichment_class.new(enrichment_job.enrichment, enrichment_options, record, @parser_class)
       enrichment.set_attribute_values
+    unless enrichment.errors.any?
       post_to_api(enrichment) unless enrichment_job.test?
       enrichment_job.increment_records_count!
+    else
+      Rails.logger.info "Enrichment Errors: #{enrichment.errors.inspect}"
+    end
+
     rescue RestClient::ResourceNotFound => e
       Rails.logger.info "Resource Not Found: #{enrichment.inspect}"
     rescue StandardError => e
