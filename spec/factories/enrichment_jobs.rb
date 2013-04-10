@@ -4,6 +4,8 @@ FactoryGirl.define do
     status        "active"
     environment   "test"
     enrichment    "ndha_rights"
+    records_count 100
+    posted_records_count 100
 
     sequence(:parser_id)  {|n| "abc#{n}" }
     sequence(:version_id) {|n| "abc#{n}" }

@@ -14,6 +14,10 @@ class EnrichmentWorker
       process_record(record)
     end
 
+    while not api_update_finished?
+      sleep(2)
+    end
+
     enrichment_job.finish!
   end
 
@@ -49,6 +53,11 @@ class EnrichmentWorker
 
   private
 
+  def api_update_finished?
+    enrichment_job.reload
+    enrichment_job.posted_records_count == enrichment_job.records_count
+  end
+
   def setup_parser
     @parser = enrichment_job.parser
     @parser.load_file
@@ -66,14 +75,10 @@ class EnrichmentWorker
   end
 
   def post_to_api(enrichment)
-    record = enrichment.record
+    record_id = enrichment.record.id
     attributes = enrichment.attributes
 
-    measure = Benchmark.measure do
-      RestClient.post "#{ENV["API_HOST"]}/harvester/records/#{record.id}/sources.json", {source: attributes}.to_json, :content_type => :json, :accept => :json
-    end
-
-    puts "EnrichmentJob: POST (#{measure.real.round(4)})" unless Rails.env.test?
+    ApiUpdateWorker.perform_async(record_id, attributes, enrichment_job.id)
   end
 
   def stop_harvest?

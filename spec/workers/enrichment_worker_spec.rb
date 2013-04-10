@@ -14,6 +14,7 @@ describe EnrichmentWorker do
   before(:each) do
     job.stub(:parser) { parser }
     worker.stub(:enrichment_job) { job }
+    worker.stub(:api_update_finished?) { true }
   end
 
   describe "#perform" do
@@ -51,6 +52,11 @@ describe EnrichmentWorker do
       worker.should_not_receive(:process_record)
       worker.perform(1)
     end
+
+    it "should check the api update has finished" do
+      worker.should_receive(:api_update_finished?)
+      worker.perform(1)
+    end
   end
   
   describe "#enrichment_job" do
@@ -74,7 +80,7 @@ describe EnrichmentWorker do
 
   describe "#process_record" do
     let(:record) { mock(:record).as_null_object }
-    let(:enrichment) { mock(:enrichment).as_null_object }
+    let(:enrichment) { mock(:enrichment, errors: []).as_null_object }
 
     before do
       worker.send(:setup_parser)
@@ -112,6 +118,28 @@ describe EnrichmentWorker do
     it "should rescue from a exception in processing the record" do
       enrichment.stub(:set_attribute_values).and_raise(StandardError.new("Hi"))
       worker.process_record(record)
+    end
+  end
+
+  describe "#api_update_finished?" do
+
+    before { worker.unstub(:api_update_finished?) }
+    
+    it "should return true if the api update is finished" do
+      job.stub(:posted_records_count) { 100 }
+      job.stub(:records_count) { 100 }
+      worker.send(:api_update_finished?).should be_true
+    end
+
+    it "should return false if the api update is not finished" do
+      job.stub(:posted_records_count) { 10 }
+      job.stub(:records_count) { 100 }
+      worker.send(:api_update_finished?).should be_false
+    end
+
+    it "should reload the enrichment job" do
+      job.should_receive(:reload)
+      worker.send(:api_update_finished?)
     end
   end
 
@@ -167,6 +195,16 @@ describe EnrichmentWorker do
     it "uses a the custom TapuhiRelationships enrichment" do
       parser.stub(:enrichment_definitions) { {ndha_rights: {type: "TapuhiRelationships"}} }
       worker.send(:enrichment_class).should eq HarvesterCore::TapuhiRelationshipsEnrichment
+    end
+  end
+
+  describe "#post_to_api" do
+    let(:record) { mock(:record, id: 123) }
+    let(:enrichment) { mock(:enrichment, record: record, attributes: {title: 'foo'} ) }
+
+    it "enqueues an ApiUpdate job with record_id, attributes and enrichment_job_id" do
+      worker.send(:post_to_api, enrichment)
+      expect(ApiUpdateWorker).to have_enqueued_job(123, {title: 'foo'}, job.id)
     end
   end
 end

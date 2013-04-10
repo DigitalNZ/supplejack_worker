@@ -17,6 +17,7 @@ class AbstractJob
   field :environment,           type: String
   field :invalid_records_count, type: Integer,  default: 0
   field :failed_records_count,  type: Integer,  default: 0
+  field :posted_records_count,  type: Integer,  default: 0
 
   embeds_many :invalid_records
   embeds_many :failed_records
