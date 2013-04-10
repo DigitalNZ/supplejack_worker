@@ -26,22 +26,25 @@ class EnrichmentWorker
   end
 
   def process_record(record)
-    begin
-      enrichment = enrichment_class.new(enrichment_job.enrichment, enrichment_options, record, @parser_class)
-      enrichment.set_attribute_values
-    unless enrichment.errors.any?
-      post_to_api(enrichment) unless enrichment_job.test?
-      enrichment_job.increment_records_count!
-    else
-      Rails.logger.info "Enrichment Errors: #{enrichment.errors.inspect}"
-    end
+    measure = Benchmark.measure do
+      begin
+        enrichment = enrichment_class.new(enrichment_job.enrichment, enrichment_options, record, @parser_class)
+        enrichment.set_attribute_values
+      unless enrichment.errors.any?
+        post_to_api(enrichment) unless enrichment_job.test?
+        enrichment_job.increment_records_count!
+      else
+        Rails.logger.info "Enrichment Errors: #{enrichment.errors.inspect}"
+      end
 
-    rescue RestClient::ResourceNotFound => e
-      Rails.logger.info "Resource Not Found: #{enrichment.inspect}"
-    rescue StandardError => e
-      Rails.logger.info "\n#{e.message}, #{e.class.inspect}"
-      e.backtrace.each {|b| Rails.logger.info b }
+      rescue RestClient::ResourceNotFound => e
+        Rails.logger.info "Resource Not Found: #{enrichment.inspect}"
+      rescue StandardError => e
+        Rails.logger.info "\n#{e.message}, #{e.class.inspect}"
+        e.backtrace.each {|b| Rails.logger.info b }
+      end
     end
+    puts "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   end
 
   private
