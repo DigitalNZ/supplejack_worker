@@ -1,6 +1,6 @@
 require "snippet"
 
-class HarvestWorker
+class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
 
   def perform(harvest_job_id)
@@ -59,13 +59,4 @@ class HarvestWorker
     puts "HarvestJob: POST (#{measure.real.round(4)}): #{attributes[:identifier].try(:first)}" unless Rails.env.test?
   end
 
-  def stop_harvest?(job)
-    job.reload
-
-    if stop = job.stopped? || job.errors_over_limit?
-      job.finish!
-    end
-
-    stop
-  end
 end

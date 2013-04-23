@@ -193,8 +193,8 @@ describe EnrichmentWorker do
     end
 
     it "uses a the custom TapuhiRelationships enrichment" do
-      parser.stub(:enrichment_definitions) { {ndha_rights: {type: "TapuhiRelationships"}} }
-      worker.send(:enrichment_class).should eq HarvesterCore::TapuhiRelationshipsEnrichment
+      parser.stub(:enrichment_definitions) { {ndha_rights: {type: "TapuhiRecords"}} }
+      worker.send(:enrichment_class).should eq HarvesterCore::TapuhiRecordsEnrichment
     end
   end
 

@@ -1,4 +1,4 @@
-class EnrichmentWorker
+class EnrichmentWorker < AbstractWorker
   include Sidekiq::Worker
 
   attr_reader :parser, :parser_class
@@ -10,7 +10,7 @@ class EnrichmentWorker
     setup_parser
 
     records.each do |record|
-      break if stop_harvest?
+      break if stop_harvest?(enrichment_job)
       process_record(record)
     end
 
@@ -81,8 +81,4 @@ class EnrichmentWorker
     ApiUpdateWorker.perform_async(record_id, attributes, enrichment_job.id)
   end
 
-  def stop_harvest?
-    enrichment_job.reload
-    enrichment_job.stopped?
-  end
 end
