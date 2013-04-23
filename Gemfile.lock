@@ -1,6 +1,6 @@
 GIT
   remote: git@scm.digitalnz.org:harvester/core
-  revision: b1c98fa6c522e727defd37e96f2f538bd47633ad
+  revision: ebe516f270e6c77d0a3f3c50c307a9c86a288e0d
   specs:
     harvester_core (0.0.1)
       actionpack (~> 3.2)
@@ -211,7 +211,7 @@ GEM
     rb-fsevent (0.9.3)
     rdoc (3.12.1)
       json (~> 1.4)
-    redis (3.0.3)
+    redis (3.0.4)
     redis-namespace (1.2.1)
       redis (~> 3.0.0)
     ref (1.0.2)
