@@ -34,6 +34,10 @@ class EnrichmentWorker < AbstractWorker
     measure = Benchmark.measure do
       begin
         enrichment = enrichment_class.new(enrichment_job.enrichment, enrichment_options, record, @parser_class)
+        puts enrichment.inspect
+        puts enrichment.enrichable?.inspect
+        return unless enrichment.enrichable?
+        
         enrichment.set_attribute_values
       unless enrichment.errors.any?
         post_to_api(enrichment) unless enrichment_job.test?

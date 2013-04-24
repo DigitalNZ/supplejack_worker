@@ -94,30 +94,55 @@ describe EnrichmentWorker do
       worker.process_record(record)
     end
 
-    it "should set the enrichment attributes" do
-      enrichment.should_receive(:set_attribute_values)
-      worker.process_record(record)
+    context "enrichable" do
+
+      before { enrichment.stub(:enrichable?) { true } }
+
+      it "should set the enrichment attributes" do
+        enrichment.should_receive(:set_attribute_values)
+        worker.process_record(record)
+      end
+
+      it "should post to the api" do
+        worker.should_receive(:post_to_api).with(enrichment)
+        worker.process_record(record)
+      end
+
+      it "should post to the api in a test environment" do
+        job.stub(:test?) { true }
+        worker.should_not_receive(:post_to_api).with(enrichment)
+        worker.process_record(record)
+      end
+
+      it "should increment the records count on the job" do
+        job.should_receive(:increment_records_count!)
+        worker.process_record(record)
+      end
+
+      it "should rescue from a exception in processing the record" do
+        enrichment.stub(:set_attribute_values).and_raise(StandardError.new("Hi"))
+        worker.process_record(record)
+      end
     end
 
-    it "should post to the api" do
-      worker.should_receive(:post_to_api).with(enrichment)
-      worker.process_record(record)
-    end
+    context "not enrichable" do
 
-    it "should post to the api in a test environment" do
-      job.stub(:test?) { true }
-      worker.should_not_receive(:post_to_api).with(enrichment)
-      worker.process_record(record)
-    end
+      before { enrichment.stub(:enrichable?) { false } }
 
-    it "should increment the records count on the job" do
-      job.should_receive(:increment_records_count!)
-      worker.process_record(record)
-    end
+      it "should not set the enrichment attributes" do
+        enrichment.should_not_receive(:set_attribute_values)
+        worker.process_record(record)
+      end
 
-    it "should rescue from a exception in processing the record" do
-      enrichment.stub(:set_attribute_values).and_raise(StandardError.new("Hi"))
-      worker.process_record(record)
+      it "should not post to the api" do
+        worker.should_not_receive(:post_to_api).with(enrichment)
+        worker.process_record(record)
+      end
+
+      it "should not increment the records count on the job" do
+        job.should_not_receive(:increment_records_count!)
+        worker.process_record(record)
+      end
     end
   end
 
