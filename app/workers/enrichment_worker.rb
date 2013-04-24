@@ -15,6 +15,7 @@ class EnrichmentWorker < AbstractWorker
     end
 
     while not api_update_finished?
+      break if stop_harvest?(enrichment_job)
       sleep(2)
     end
 
