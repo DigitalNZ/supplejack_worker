@@ -27,7 +27,11 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def records
-    Repository::Record.where("sources.source_id" => @parser_class.get_source_id)
+    if enrichment_job.record_id.nil?
+      Repository::Record.where("sources.source_id" => @parser_class.get_source_id)
+    else
+      Repository::Record.where(record_id: enrichment_job.record_id, "sources.source_id" => @parser_class.get_source_id)
+    end
   end
 
   def process_record(record)

@@ -5,6 +5,7 @@ class EnrichmentJob < AbstractJob
   after_create :enqueue
 
   field :enrichment,  type: String
+  field :record_id,   type: Integer
 
   validates_uniqueness_of :enrichment, scope: [:environment, :status, :_type, :parser_id], if: :active?
 
