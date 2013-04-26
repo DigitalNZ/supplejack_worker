@@ -1,10 +1,6 @@
 GIT
   remote: git@scm.digitalnz.org:harvester/core
-<<<<<<< HEAD
-  revision: a9c7f798edf55fbf37ad087661ee244378247dbb
-=======
-  revision: 6b257c8e0442d416f7398aa205b262df1bae0944
->>>>>>> added enrich record option
+  revision: c444152599fcbffe100d43a6138d8a01955eba96
   specs:
     harvester_core (0.0.1)
       actionpack (~> 3.2)
