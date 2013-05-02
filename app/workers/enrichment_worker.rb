@@ -9,6 +9,8 @@ class EnrichmentWorker < AbstractWorker
     enrichment_job.start!
     setup_parser
 
+    enrichment_class.before(enrichment_job.enrichment)
+
     records.each do |record|
       break if stop_harvest?(enrichment_job)
       process_record(record)
@@ -18,6 +20,8 @@ class EnrichmentWorker < AbstractWorker
       break if stop_harvest?(enrichment_job)
       sleep(2)
     end
+
+    enrichment_class.after(enrichment_job.enrichment)
 
     enrichment_job.finish!
   end
@@ -43,7 +47,6 @@ class EnrichmentWorker < AbstractWorker
         enrichment.set_attribute_values
       unless enrichment.errors.any?
         post_to_api(enrichment) unless enrichment_job.test?
-        enrichment_job.increment_records_count!
       else
         Rails.logger.info "Enrichment Errors: #{enrichment.errors.inspect}"
       end
@@ -82,10 +85,10 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def post_to_api(enrichment)
-    record_id = enrichment.record.id
-    attributes = enrichment.attributes
-
-    ApiUpdateWorker.perform_async(record_id, attributes, enrichment_job.id)
+    enrichment.record_attributes.each do |record_id, attributes|
+      ApiUpdateWorker.perform_async(record_id, attributes, enrichment_job.id)
+      enrichment_job.increment_records_count!
+    end
   end
 
 end

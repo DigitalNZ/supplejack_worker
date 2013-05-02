@@ -9,7 +9,7 @@ describe EnrichmentWorker do
 
   let(:worker) { EnrichmentWorker.new }
   let(:job) { FactoryGirl.create(:enrichment_job, environment: "production", enrichment: "ndha_rights") }
-  let(:parser) { mock(:parser, loader: mock(:loader, parser_class: TestClass)).as_null_object }
+  let(:parser) { mock(:parser, enrichment_definitions: {ndha_rights: {type: "TapuhiRecords"}}, loader: mock(:loader, parser_class: TestClass)).as_null_object }
 
   before(:each) do
     job.stub(:parser) { parser }
@@ -31,7 +31,7 @@ describe EnrichmentWorker do
 
     it "should setup the parser" do
       worker.stub(:records) { [] }
-      worker.should_receive(:setup_parser)
+      worker.should_receive(:setup_parser).and_call_original
       worker.perform(1234)
     end
 
@@ -55,6 +55,12 @@ describe EnrichmentWorker do
 
     it "should check the api update has finished" do
       worker.should_receive(:api_update_finished?)
+      worker.perform(1)
+    end
+
+    it "should call before and after on the Enrichment class" do
+      HarvesterCore::TapuhiRecordsEnrichment.should_receive(:before).with("ndha_rights")
+      HarvesterCore::TapuhiRecordsEnrichment.should_receive(:after).with("ndha_rights")
       worker.perform(1)
     end
   end
@@ -114,10 +120,7 @@ describe EnrichmentWorker do
         worker.process_record(record)
       end
 
-      it "should increment the records count on the job" do
-        job.should_receive(:increment_records_count!)
-        worker.process_record(record)
-      end
+
 
       it "should rescue from a exception in processing the record" do
         enrichment.stub(:set_attribute_values).and_raise(StandardError.new("Hi"))
@@ -225,11 +228,17 @@ describe EnrichmentWorker do
 
   describe "#post_to_api" do
     let(:record) { mock(:record, id: 123) }
-    let(:enrichment) { mock(:enrichment, record: record, attributes: {title: 'foo'} ) }
+    let(:enrichment) { mock(:enrichment, record: record, record_attributes: {'1' => {title: 'foo'}, '2' => {category: 'books'}} ) }
 
-    it "enqueues an ApiUpdate job with record_id, attributes and enrichment_job_id" do
+    it "enqueues an ApiUpdate job with record_id, attributes and enrichment_job_id for each enriched record" do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_job(123, {title: 'foo'}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("2", {category: 'books'}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("1", {title: 'foo'}, job.id)
+    end
+
+    it "should increment the records count on the job" do
+      job.should_receive(:increment_records_count!).twice
+      worker.send(:post_to_api, enrichment)
     end
   end
 end
