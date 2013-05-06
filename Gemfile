@@ -7,7 +7,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.12'
 
-#gem "harvester_core", path: "~/Projects/dnz/squirrel/core"
+#gem "harvester_core", path: "~/dev/harvester-core"
 gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
 
 gem "oai", git: "https://github.com/code4lib/ruby-oai.git"
@@ -15,7 +15,7 @@ gem "oai", git: "https://github.com/code4lib/ruby-oai.git"
 gem "active_model_serializers", git: "https://github.com/rails-api/active_model_serializers.git"
 
 gem "thin",         ">= 1.5.0"
-gem "mongoid",      "~> 3.0.19"
+gem "mongoid",      "~> 3.1.3"
 gem "figaro",       ">= 0.5.0"
 gem "devise",       ">= 2.1.2"
 gem "kaminari",     "~> 0.14.1"

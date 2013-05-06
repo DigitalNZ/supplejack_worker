@@ -79,7 +79,8 @@ describe EnrichmentWorker do
 
     it "should fetch records based on the source_id" do
       TestClass.stub(:get_source_id) { "nlnzcat" }
-      Repository::Record.should_receive(:where).with("sources.source_id" => "nlnzcat")
+      query = mock(:query).as_null_object
+      Repository::Record.should_receive(:where).with("sources.source_id" => "nlnzcat") { query }
       worker.records
     end
   end
