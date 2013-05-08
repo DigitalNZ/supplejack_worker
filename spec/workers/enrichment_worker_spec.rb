@@ -101,6 +101,12 @@ describe EnrichmentWorker do
       worker.process_record(record)
     end
 
+    it "should call increment_processed_count!" do
+      worker.stub(:enrichment_job) { job }
+      job.should_receive(:increment_processed_count!)
+      worker.process_record(record)
+    end
+
     context "enrichable" do
 
       before { enrichment.stub(:enrichable?) { true } }
@@ -120,8 +126,6 @@ describe EnrichmentWorker do
         worker.should_not_receive(:post_to_api).with(enrichment)
         worker.process_record(record)
       end
-
-
 
       it "should rescue from a exception in processing the record" do
         enrichment.stub(:set_attribute_values).and_raise(StandardError.new("Hi"))

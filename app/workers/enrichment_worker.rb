@@ -39,6 +39,8 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def process_record(record)
+    enrichment_job.increment_processed_count!
+    
     measure = Benchmark.measure do
       begin
         enrichment = enrichment_class.new(enrichment_job.enrichment, enrichment_options, record, @parser_class)

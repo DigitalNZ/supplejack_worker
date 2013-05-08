@@ -9,6 +9,7 @@ class AbstractJob
   field :start_time,            type: DateTime
   field :end_time,              type: DateTime
   field :records_count,         type: Integer, default: 0
+  field :processed_count,       type: Integer, default: 0
   field :throughput,            type: Float
   field :status,                type: String, default: "active"
   field :user_id,               type: String
@@ -76,6 +77,8 @@ class AbstractJob
   def start!
     self.status = "active"
     self.start_time = Time.now
+    self.records_count = 0
+    self.processed_count = 0
     self.save
   end
 
@@ -134,6 +137,11 @@ class AbstractJob
 
   def increment_records_count!
     self.records_count += 1
+    self.save
+  end
+
+  def increment_processed_count!
+    self.processed_count += 1
     self.save
   end
 end

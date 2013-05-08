@@ -105,6 +105,18 @@ describe AbstractJob do
         job.start_time.to_i.should eq time.to_i
       end
     end
+
+    it "resets the record_count" do
+      job.records_count = 100
+      job.start!
+      job.reload.records_count.should eq 0
+    end
+
+    it "resets the processed_count" do
+      job.processed_count = 100
+      job.start!
+      job.reload.processed_count.should eq 0
+    end
   end
 
   describe "#finish!" do
@@ -282,6 +294,14 @@ describe AbstractJob do
       job.increment_records_count!
       job.reload
       job.records_count.should eq 1
+    end
+  end
+
+  describe "#increment_processed_count!" do
+    it "should increment the records count" do
+      job.increment_processed_count!
+      job.reload
+      job.processed_count.should eq 1
     end
   end
 
