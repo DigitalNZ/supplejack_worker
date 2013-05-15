@@ -7,8 +7,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.12'
 
-#gem "harvester_core", path: "~/dev/harvester-core"
-gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
+gem "harvester_core", path: "~/Projects/dnz/squirrel/core"
+#gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
 
 gem "oai", git: "https://github.com/code4lib/ruby-oai.git"
 
@@ -50,6 +50,7 @@ group :development do
   gem "better_errors",      ">= 0.2.0"
   gem 'guard-rspec'
   gem 'rb-fsevent',         '~> 0.9.1'
+  gem 'pry-rails'
 end
 
 group :development, :test do

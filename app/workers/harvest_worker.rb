@@ -3,10 +3,12 @@ require "snippet"
 class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
 
+  attr_reader :last_processed_record
+
   def perform(harvest_job_id)
     harvest_job_id = harvest_job_id["$oid"] if harvest_job_id.is_a?(Hash)
 
-    job = HarvestJob.find(harvest_job_id)
+    @job_id = harvest_job_id
 
     begin
       parser = job.parser
@@ -22,14 +24,26 @@ class HarvestWorker < AbstractWorker
       parser_klass.environment = job.environment if job.environment.present?
 
       records = parser_klass.records(options)
-      records.each do |record|
+
+      records.each_with_index do |record, i|
+        next if job.index.present? and i < job.index  #skip records up to index
+        @last_processed_record = record
         self.process_record(record, job)
-        return if self.stop_harvest?(job)
+
+        return if self.stop_harvest?
       end
-    rescue StandardError => e
+
+      while not api_update_finished?
+        break if stop_harvest?
+        sleep(2)
+      end
+
+      job.enqueue_enrichment_jobs
+      
+    rescue StandardError, ScriptError => e
       job.build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
     end
-
+    
     job.finish!
   end
 
@@ -50,13 +64,7 @@ class HarvestWorker < AbstractWorker
   end
 
   def post_to_api(record)
-    attributes = record.attributes
-
-    measure = Benchmark.measure do
-      RestClient.post "#{ENV["API_HOST"]}/harvester/records.json", {record: attributes}.to_json, :content_type => :json, :accept => :json
-    end
-
-    puts "HarvestJob: POST (#{measure.real.round(4)}): #{attributes[:identifier].try(:first)}" unless Rails.env.test?
+    ApiUpdateWorker.perform_async("/harvester/records.json", {record: record.attributes}, job.id)
   end
 
 end

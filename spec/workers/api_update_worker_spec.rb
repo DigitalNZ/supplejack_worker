@@ -6,21 +6,32 @@ describe ApiUpdateWorker do
 	let(:job) { mock(:enrichment_job).as_null_object }
 
 	describe "#perform" do
+		let(:response) { {record_id: 123}.to_json }
 		before(:each) do
-		  EnrichmentJob.stub(:find).with(1) {job}
-
+		  AbstractJob.stub(:find).with(1) {job}
+		  RestClient.stub(:post) { response }
 		end
 
 		it "should post attributes to the api" do
-		  RestClient.should_receive(:post).with("#{ENV["API_HOST"]}/harvester/records/123/sources.json", '{"source":{}}', content_type: :json, accept: :json)
-		  worker.perform(123, {}, 1)
+		  RestClient.should_receive(:post).with("#{ENV["API_HOST"]}/harvester/records/123/sources.json", "{}", content_type: :json, accept: :json) { response }
+		  worker.perform("/harvester/records/123/sources.json", {}, 1)
 		end
 
-		it "should update the posted_records_count on the enrichment job" do
-			RestClient.stub(:post) {}
+		it "should set the jobs last_posted_record_id" do
+			job.should_receive(:set).with(:last_posted_record_id, 123)
+		  RestClient.should_receive(:post) { response }
+		  worker.perform("/harvester/records/123/sources.json", {}, 1)
+		end
+
+		it "should update the posted_records_count on the job" do
 		  job.should_receive(:inc).with(:posted_records_count, 1)
 		  worker.perform(123, {}, 1)
 		end
-	end
 
+		it "merges preview=true into attributes if environment is preview" do
+			job.stub(:environment) { "preview" }
+			RestClient.should_receive(:post).with(anything, "{\"preview\":true}", anything) { response }
+			worker.perform("/harvester/records/123/sources.json", {}, 1)
+		end
+	end
 end

@@ -19,6 +19,8 @@ class AbstractJob
   field :invalid_records_count, type: Integer,  default: 0
   field :failed_records_count,  type: Integer,  default: 0
   field :posted_records_count,  type: Integer,  default: 0
+  field :parser_code,           type: String
+  field :last_posted_record_id,  type: String  
 
   embeds_many :invalid_records
   embeds_many :failed_records
@@ -64,13 +66,15 @@ class AbstractJob
   def parser
     if version_id.present?
       ParserVersion.find(self.version_id, params: {parser_id: self.parser_id})
-    elsif environment.present?
+    elsif environment.present? and not preview?
       version = ParserVersion.find(:one, from: :current, params: {parser_id: self.parser_id, environment: self.environment})
       version.parser_id = self.parser_id
       self.version_id = version.id if version.present?
       version
     else
-      Parser.find(self.parser_id)
+      parser = Parser.find(self.parser_id)
+      parser.content = self.parser_code if self.parser_code.present?
+      parser
     end
   end
 
@@ -104,6 +108,10 @@ class AbstractJob
 
   def test?
     self.environment == "test"
+  end
+
+  def preview?
+    self.environment == "preview"
   end
 
   def calculate_throughput

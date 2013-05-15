@@ -2,7 +2,7 @@ class EnrichmentJob < AbstractJob
   
   belongs_to :harvest_job
 
-  after_create :enqueue
+  after_create :enqueue, unless: :preview?
 
   field :enrichment,  type: String
   field :record_id,   type: Integer

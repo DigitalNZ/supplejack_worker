@@ -8,6 +8,7 @@ describe HarvestWorker do
   before(:each) do
     HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
     RestClient.stub(:post)
+    worker.stub(:job) { job }
     parser.load_file
   end
   
@@ -15,15 +16,20 @@ describe HarvestWorker do
     let(:record) { mock(:record, attributes: {}, valid?: true) }
 
     before(:each) do
-      HarvestJob.stub(:find) { job }
-
       job.stub(:parser) { parser }
       NatlibPages.stub(:records) { [record] }
+      worker.stub(:stop_harvest?) { false }
+      worker.stub(:api_update_finished?) { true }
     end
 
-    it "fetches the harvest_job from the database" do
-      HarvestJob.should_receive(:find).with(1)
-      worker.perform(1)
+    context "index is defined" do
+      before { NatlibPages.stub(:records) { [mock(:record), mock(:record),mock(:record), record] } }
+      
+      it "only processes the record at position == index" do
+        job.index = 3
+        worker.should_receive(:process_record).once.with(record, job)
+        worker.perform(1)
+      end
     end
 
     it "starts the harvest job" do
@@ -57,6 +63,11 @@ describe HarvestWorker do
       worker.perform(1)
       job.harvest_failure.message.should eq "Everything broke"
     end
+
+    it "enqueues enrichment jobs" do
+      job.should_receive(:enqueue_enrichment_jobs)
+      worker.perform(1)
+    end
   end
 
   describe "#process_record" do
@@ -75,6 +86,7 @@ describe HarvestWorker do
     end
     
     it "increments records_count" do
+      worker.stub(:post_to_api) 
       worker.process_record(record, job)
       job.records_count.should eq 1
     end
@@ -103,44 +115,8 @@ describe HarvestWorker do
     let(:record) { mock(:record, attributes: {title: "Hi"}).as_null_object }
 
     it "should post to the API" do
-      RestClient.should_receive(:post).with("#{ENV["API_HOST"]}/harvester/records.json", {record: {title: "Hi"}}.to_json, :content_type => :json, :accept => :json)
       worker.post_to_api(record)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: {title: 'Hi'}}, job.id)
     end
-  end
-
-  describe "#stop_harvest?" do
-    before { job.stub(:enqueue_enrichment_jobs) { nil }  }
-    
-    context "status is stopped" do
-      let(:job) { FactoryGirl.create(:harvest_job, status: "stopped") }
-
-      it "returns true" do
-        worker.stop_harvest?(job).should be_true
-      end
-
-      it "updates the job with the end time" do
-        job.should_receive(:finish!)
-        worker.stop_harvest?(job)
-      end
-
-      it "returns true true when errors over limit" do
-        job.stub(:errors_over_limit?) { true }
-        worker.stop_harvest?(job).should be_true
-      end
-    end
-
-    context "status is active" do
-      let(:job) { FactoryGirl.create(:harvest_job, status: "active") }
-
-      it "returns true when errors over limit" do
-        job.stub(:errors_over_limit?) { true }
-        worker.stop_harvest?(job).should be_true
-      end
-
-      it "returns false" do
-        worker.stop_harvest?(job).should be_false
-      end
-    end
-
   end
 end

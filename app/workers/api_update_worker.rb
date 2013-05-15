@@ -1,14 +1,19 @@
 class ApiUpdateWorker
 	include Sidekiq::Worker
 
-	def perform(record_id, attributes, enrichment_job_id)
+	def perform(path, attributes, job_id)
+		job = AbstractJob.find(job_id)
+
+		attributes.merge!(preview: true) if job.environment == "preview"
+
 		measure = Benchmark.measure do
-      RestClient.post "#{ENV["API_HOST"]}/harvester/records/#{record_id}/sources.json", {source: attributes}.to_json, :content_type => :json, :accept => :json
+      response = RestClient.post "#{ENV["API_HOST"]}#{path}", attributes.to_json, content_type: :json, accept: :json
+      response = JSON.parse(response)
+      job.set(:last_posted_record_id, response["record_id"])
     end
 
-    job = EnrichmentJob.find(enrichment_job_id)
-    job.inc(:posted_records_count,1)
+    job.inc(:posted_records_count, 1)
 
-    puts "EnrichmentJob: POST (#{measure.real.round(4)})" unless Rails.env.test?
+    puts "#{job.class}: POST (#{measure.real.round(4)})" unless Rails.env.test?
 	end
 end

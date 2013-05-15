@@ -75,6 +75,25 @@ describe AbstractJob do
         job.parser
         job.version_id.should eq "888"
       end
+
+      context "the environment is preview and parser_code is present" do
+        let(:parser) {mock(:parser).as_null_object}
+        before(:each) do
+          job.environment = "preview"
+          job.parser_code = "new code"
+          Parser.stub(:find) {parser}
+        end
+
+        it "finds the parser by id" do
+          Parser.should_receive(:find).with("12345")
+          job.parser
+        end
+
+        it "sets the parser content to parser_code" do
+          parser.should_receive(:content=).with("new code")
+          job.parser
+        end
+      end
     end
 
     context "without version_id and environment" do
@@ -185,6 +204,18 @@ describe AbstractJob do
     it "returns false" do
       job.environment = "staging"
       job.test?.should be_false
+    end
+  end
+
+  describe "#preview?" do
+    it "returns true" do
+      job.environment = "preview"
+      job.preview?.should be_true
+    end
+
+    it "returns false" do
+      job.environment = "staging"
+      job.preview?.should be_false
     end
   end
 

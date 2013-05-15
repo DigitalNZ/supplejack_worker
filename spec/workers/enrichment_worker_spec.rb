@@ -13,15 +13,15 @@ describe EnrichmentWorker do
 
   before(:each) do
     job.stub(:parser) { parser }
-    worker.stub(:enrichment_job) { job }
+    worker.stub(:job) { job }
     worker.stub(:api_update_finished?) { true }
   end
 
   describe "#perform" do
 
-    it "should set the @enrichment_job_id" do
+    it "should set the @job_id" do
       worker.perform(1234)
-      worker.instance_variable_get("@enrichment_job_id").should eq 1234
+      worker.instance_variable_get("@job_id").should eq 1234
     end
 
     it "should mark the job as started" do
@@ -64,24 +64,38 @@ describe EnrichmentWorker do
       worker.perform(1)
     end
   end
-  
-  describe "#enrichment_job" do
-    it "should find the enrichment job" do
-      worker.instance_variable_set("@enrichment_job_id", job.id)
-      worker.enrichment_job.should eq job
-    end
-  end
 
   describe "#records" do
+
+    let(:query) { mock(:query).as_null_object }
+
     before(:each) do
       worker.send(:setup_parser)
+      TestClass.stub(:get_source_id) { "nlnzcat" }
     end
 
     it "should fetch records based on the source_id" do
-      TestClass.stub(:get_source_id) { "nlnzcat" }
-      query = mock(:query).as_null_object
       Repository::Record.should_receive(:where).with("sources.source_id" => "nlnzcat") { query }
       worker.records
+    end
+
+    context "record_id is set" do
+      before { job.stub(:record_id) {"abc123"} }
+
+      it "should fetch a specific record" do
+        Repository::Record.should_receive(:where).with(record_id: job.record_id, "sources.source_id" => "nlnzcat") { query }
+        worker.records
+      end
+
+      context "preview environment" do
+
+        before { job.stub(:preview?) { true } }
+
+        it "should fetch a specific record from the preview_records collection" do
+          Repository::PreviewRecord.should_receive(:where).and_call_original
+          worker.records
+        end
+      end
     end
   end
 
@@ -154,28 +168,6 @@ describe EnrichmentWorker do
     end
   end
 
-  describe "#api_update_finished?" do
-
-    before { worker.unstub(:api_update_finished?) }
-    
-    it "should return true if the api update is finished" do
-      job.stub(:posted_records_count) { 100 }
-      job.stub(:records_count) { 100 }
-      worker.send(:api_update_finished?).should be_true
-    end
-
-    it "should return false if the api update is not finished" do
-      job.stub(:posted_records_count) { 10 }
-      job.stub(:records_count) { 100 }
-      worker.send(:api_update_finished?).should be_false
-    end
-
-    it "should reload the enrichment job" do
-      job.should_receive(:reload)
-      worker.send(:api_update_finished?)
-    end
-  end
-
   describe "#setup_parser" do
     it "should initialize a parser" do
       worker.send(:setup_parser)
@@ -237,8 +229,8 @@ describe EnrichmentWorker do
 
     it "enqueues an ApiUpdate job with record_id, attributes and enrichment_job_id for each enriched record" do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_job("2", {category: 'books'}, job.id)
-      expect(ApiUpdateWorker).to have_enqueued_job("1", {title: 'foo'}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/sources.json", {source: {category: 'books'}}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo'}}, job.id)
     end
 
     it "should increment the records count on the job" do

@@ -27,20 +27,14 @@ describe HarvestJob do
     FactoryGirl.create(:harvest_job)
   end
 
-  let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345", version_id: "666") }
-
-  describe "#finish!" do
-    let(:parser) { mock(:parser, enrichment_definitions: {}).as_null_object }
-
-    before do
-      job.stub(:parser) { parser }
-    end
-
-    it "enqueues enrichment jobs" do
-      job.should_receive(:enqueue_enrichment_jobs)
-      job.finish!
+  context "preview environment" do
+    it "does not enque a job after create" do
+      HarvestWorker.should_not_receive(:perform_async)
+      FactoryGirl.create(:harvest_job, environment: "preview")
     end
   end
+
+  let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345", version_id: "666") }
 
   describe "#enqueue_enrichment_jobs" do
     let(:parser) { mock(:parser, enrichment_definitions: {ndha_rights: Proc.new{} }).as_null_object }

@@ -42,4 +42,14 @@ describe EnrichmentJob do
       EnrichmentJob.create_from_harvest_job(job, :ndha_rights)
     end
   end
+
+  context "preview environment" do
+
+    before {job.environment = "preview"}
+    
+    it "does not enque a job after create" do
+      EnrichmentWorker.should_not_receive(:perform_async)
+      EnrichmentJob.create_from_harvest_job(job, :ndha_rights)
+    end
+  end
 end
