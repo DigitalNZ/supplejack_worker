@@ -9,8 +9,6 @@ module Repository
 
       embeds_many :sources, cascade_callbacks: true, class_name: "Repository::Source"
       delegate :title, :shelf_location, :relation, to: :primary
-
-      default_scope where(status: "active")
     end
 
     def primary

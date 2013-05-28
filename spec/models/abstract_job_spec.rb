@@ -52,6 +52,11 @@ describe AbstractJob do
   describe "#parser" do
     let!(:version) { mock_model(ParserVersion).as_null_object }
 
+    it "returns @parser if @parser is set" do
+      job.instance_variable_set(:@parser, 'a parser!')
+      job.parser.should eq 'a parser!'
+    end
+
     context "with version_id" do
       it "finds the parser by id" do
         ParserVersion.should_receive(:find).with("666", params: {parser_id: "12345"})
@@ -106,6 +111,13 @@ describe AbstractJob do
         Parser.should_receive(:find).with("12345")
         job.parser
       end
+    end
+  end
+
+  describe "#required_enrichments" do
+    it "should return an array of enrichments with required: true" do
+      job.stub_chain(:parser, :enrichment_definitions).and_return({ndha_rights: {required_for_active_record: true}, thumbnails: {} })
+      job.required_enrichments.should eq [:ndha_rights]
     end
   end
 

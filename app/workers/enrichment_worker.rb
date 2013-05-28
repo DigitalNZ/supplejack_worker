@@ -80,7 +80,7 @@ class EnrichmentWorker < AbstractWorker
 
   def post_to_api(enrichment)
     enrichment.record_attributes.each do |record_id, attributes|
-      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/sources.json", {source: attributes}, job.id)
+      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/sources.json", {source: attributes, required_sources: job.required_enrichments}, job.id)
       job.increment_records_count!
     end
   end

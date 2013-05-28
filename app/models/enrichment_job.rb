@@ -15,7 +15,8 @@ class EnrichmentJob < AbstractJob
                 user_id:        job.user_id,
                 environment:    job.environment,
                 harvest_job_id: job.id,
-                enrichment:     enrichment)
+                enrichment:     enrichment,
+                parser_code:    job.parser_code)
   end
 
   def enqueue

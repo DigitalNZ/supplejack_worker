@@ -229,13 +229,21 @@ describe EnrichmentWorker do
 
     it "enqueues an ApiUpdate job with record_id, attributes and enrichment_job_id for each enriched record" do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/sources.json", {source: {category: 'books'}}, job.id)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo'}}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/sources.json", {source: {category: 'books'}, required_sources: []}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo'}, required_sources: []}, job.id)
     end
 
     it "should increment the records count on the job" do
       job.should_receive(:increment_records_count!).twice
       worker.send(:post_to_api, enrichment)
+    end
+
+    context "required sources" do
+      it "should send the required enricments to the api" do
+        job.stub(:required_enrichments) { [:ndha_rights] }
+        worker.send(:post_to_api, enrichment)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo'}, required_sources: [:ndha_rights]}, job.id)
+      end
     end
   end
 end

@@ -115,8 +115,17 @@ describe HarvestWorker do
     let(:record) { mock(:record, attributes: {title: "Hi"}).as_null_object }
 
     it "should post to the API" do
+      job.stub(:required_enrichments) { }
       worker.post_to_api(record)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: {title: 'Hi'}}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: {title: 'Hi'}, required_sources: nil}, job.id)
+    end
+
+    context "required sources" do
+      it "should send the required enricments to the api" do
+        job.stub(:required_enrichments) { [:ndha_rights] }
+        worker.post_to_api(record)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: {title: 'Hi'}, required_sources: [:ndha_rights]}, job.id)
+      end
     end
   end
 end

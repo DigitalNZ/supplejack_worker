@@ -31,7 +31,7 @@ development:
       database: dnz_api_development
       hosts:
         #- localhost:27017
-        - 192.168.0.70
+        - 192.168.0.70:27017
       options:
         consistency: :strong
   # Configure Mongoid specific options. (optional)

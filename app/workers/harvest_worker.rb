@@ -64,7 +64,7 @@ class HarvestWorker < AbstractWorker
   end
 
   def post_to_api(record)
-    ApiUpdateWorker.perform_async("/harvester/records.json", {record: record.attributes}, job.id)
+    ApiUpdateWorker.perform_async("/harvester/records.json", {record: record.attributes, required_sources: job.required_enrichments}, job.id)
   end
 
 end
