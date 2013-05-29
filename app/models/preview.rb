@@ -70,7 +70,7 @@ class Preview
 			@last_processed_record = harvest_worker.last_processed_record
 			record_id = @harvest_job.reload.last_posted_record_id
 
-			if @last_processed_record.valid? 
+			if @last_processed_record.present? and @last_processed_record.valid?
 
 				@harvest_job.parser.enrichment_definitions.each do |name, options|
 					next if options.has_key?(:type)
