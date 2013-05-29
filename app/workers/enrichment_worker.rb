@@ -70,7 +70,7 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def enrichment_options
-    @parser.enrichment_definitions[job.enrichment.to_sym]
+    @enrichment_options ||= @parser.enrichment_definitions[job.enrichment.to_sym]
   end
 
   def enrichment_class
