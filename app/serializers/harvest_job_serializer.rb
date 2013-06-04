@@ -6,4 +6,5 @@ class HarvestJobSerializer < ActiveModel::Serializer
 
   has_many :failed_records
   has_many :invalid_records
+  has_one :harvest_failure
 end
