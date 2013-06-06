@@ -32,7 +32,7 @@ class HarvestSchedule
   scope :recurrent, -> { where(recurrent: true) }
 
   def self.one_offs_to_be_run
-    self.one_off.lte(start_time: Time.now).gte(start_time: Time.now - 16.minutes)
+    self.one_off.lte(start_time: Time.now).gte(start_time: Time.now - 6.minutes)
   end
 
   def self.create_one_off_jobs

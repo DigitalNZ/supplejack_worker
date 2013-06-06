@@ -8,31 +8,31 @@ describe HarvestSchedule do
   describe ".one_offs_to_be_run" do
     it "should only return non recurrent schedules" do
       Timecop.freeze(time) do
-        s1 = HarvestSchedule.create(start_time: time - 10.minutes, recurrent: false, parser_id: "222")
-        s2 = HarvestSchedule.create(start_time: time - 10.minutes, recurrent: true, parser_id: "111")
+        s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "222")
+        s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: "111")
         HarvestSchedule.one_offs_to_be_run.should eq [s1]
       end
     end
 
-    it "should return schedules that have start_time in the last 15 minutes" do
+    it "should return schedules that have start_time in the last 5 minutes" do
       Timecop.freeze(time) do
-        s1 = HarvestSchedule.create(start_time: time - 14.minutes, recurrent: false, parser_id: "222")
-        s2 = HarvestSchedule.create(start_time: time - 17.minutes, recurrent: false, parser_id: "111")
+        s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "222")
+        s2 = HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: "111")
         HarvestSchedule.one_offs_to_be_run.should eq [s1]
       end
     end
 
     it "should not return schedules that have already been run" do
       Timecop.freeze(time) do
-        s1 = HarvestSchedule.create(start_time: time - 14.minutes, recurrent: false, parser_id: "222")
-        s2 = HarvestSchedule.create(start_time: time - 15.minutes, recurrent: false, parser_id: "111", last_run_at: time - 15.minutes)
+        s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "222")
+        s2 = HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: "111", last_run_at: time - 15.minutes)
         HarvestSchedule.one_offs_to_be_run.should eq [s1]
       end
     end
 
     it "should not return schedules that have a start_time in the future" do
       Timecop.freeze(time) do
-        s1 = HarvestSchedule.create(start_time: time - 14.minutes, recurrent: false, parser_id: "222")
+        s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "222")
         s2 = HarvestSchedule.create(start_time: time + 2.minutes, recurrent: false, parser_id: "111")
         HarvestSchedule.one_offs_to_be_run.should eq [s1]
       end
