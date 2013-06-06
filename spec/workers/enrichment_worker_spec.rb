@@ -79,6 +79,17 @@ describe EnrichmentWorker do
       worker.records
     end
 
+    context "enrichment job has a relationship to a harvest job" do
+      before do
+        job.stub(:harvest_job) {mock(:harvest_job, id: 'abc123')}
+      end
+
+      it "only returns records with a source containing harvest job's id" do
+        Repository::Record.should_receive(:where).with("sources.job_id" => "abc123") { query }
+        worker.records
+      end
+    end
+
     context "record_id is set" do
       before { job.stub(:record_id) {"abc123"} }
 
@@ -227,10 +238,10 @@ describe EnrichmentWorker do
     let(:record) { mock(:record, id: 123) }
     let(:enrichment) { mock(:enrichment, record: record, record_attributes: {'1' => {title: 'foo'}, '2' => {category: 'books'}} ) }
 
-    it "enqueues an ApiUpdate job with record_id, attributes and enrichment_job_id for each enriched record" do
+    it "enqueues an ApiUpdate job with record_id, attributes (including job_id) and enrichment_job_id for each enriched record" do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/sources.json", {source: {category: 'books'}, required_sources: []}, job.id)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo'}, required_sources: []}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/sources.json", {source: {category: 'books', job_id: job.id}, required_sources: []}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo', job_id: job.id}, required_sources: []}, job.id)
     end
 
     it "should increment the records count on the job" do
@@ -242,7 +253,7 @@ describe EnrichmentWorker do
       it "should send the required enricments to the api" do
         job.stub(:required_enrichments) { [:ndha_rights] }
         worker.send(:post_to_api, enrichment)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo'}, required_sources: [:ndha_rights]}, job.id)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {source: {title: 'foo', job_id: job.id}, required_sources: [:ndha_rights]}, job.id)
       end
     end
   end

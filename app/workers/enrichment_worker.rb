@@ -28,7 +28,11 @@ class EnrichmentWorker < AbstractWorker
 
   def records
     if job.record_id.nil?
-      Repository::Record.where("sources.source_id" => @parser_class.get_source_id).no_timeout
+      if job.harvest_job.present?
+        Repository::Record.where("sources.job_id" => job.harvest_job.id.to_s).no_timeout
+      else
+        Repository::Record.where("sources.source_id" => @parser_class.get_source_id).no_timeout
+      end
     else
       klass = job.preview? ? Repository::PreviewRecord : Repository::Record
       klass.where(record_id: job.record_id, "sources.source_id" => @parser_class.get_source_id).no_timeout
@@ -80,7 +84,8 @@ class EnrichmentWorker < AbstractWorker
 
   def post_to_api(enrichment)
     enrichment.record_attributes.each do |record_id, attributes|
-      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/sources.json", {source: attributes, required_sources: job.required_enrichments}, job.id)
+      attrs = attributes.merge(job_id: job.id)
+      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/sources.json", {source: attrs, required_sources: job.required_enrichments}, job.id)
       job.increment_records_count!
     end
   end

@@ -80,7 +80,7 @@ class AbstractJob
   end
 
   def required_enrichments
-    self.parser.enrichment_definitions.keep_if {|name, options| options[:required_for_active_record] }.keys
+    self.parser.enrichment_definitions.dup.keep_if {|name, options| options[:required_for_active_record] }.keys
   end
 
   def start!

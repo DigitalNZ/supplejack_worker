@@ -37,7 +37,7 @@ class HarvestWorker < AbstractWorker
         break if stop_harvest?
         sleep(2)
       end
-
+      
       job.enqueue_enrichment_jobs
       
     rescue StandardError, ScriptError => e
@@ -50,7 +50,8 @@ class HarvestWorker < AbstractWorker
   def process_record(record, job)
     begin
       if record.valid?
-        self.post_to_api(record) unless job.test?
+        attributes = record.attributes.merge(job_id: job.id)
+        self.post_to_api(attributes) unless job.test?
         job.records_count += 1
       else
         job.invalid_records.build(created_at: Time.now, raw_data: record.raw_data, error_messages: record.errors.full_messages)
@@ -63,8 +64,8 @@ class HarvestWorker < AbstractWorker
     job.save
   end
 
-  def post_to_api(record)
-    ApiUpdateWorker.perform_async("/harvester/records.json", {record: record.attributes, required_sources: job.required_enrichments}, job.id)
+  def post_to_api(attributes)
+    ApiUpdateWorker.perform_async("/harvester/records.json", {record: attributes, required_sources: job.required_enrichments}, job.id)
   end
 
 end

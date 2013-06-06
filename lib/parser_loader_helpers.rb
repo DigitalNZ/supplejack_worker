@@ -8,8 +8,10 @@ module ParserLoaderHelpers
   end
 
   def enrichment_definitions
+    return @enrichment_definitions if @enrichment_definitions
+
     if loader.loaded?
-      loader.parser_class.enrichment_definitions
+      @enrichment_definitions = loader.parser_class.enrichment_definitions.freeze
     end
   end
 end

@@ -20,6 +20,7 @@ describe HarvestWorker do
       NatlibPages.stub(:records) { [record] }
       worker.stub(:stop_harvest?) { false }
       worker.stub(:api_update_finished?) { true }
+      worker.stub(:post_to_api)
     end
 
     context "index is defined" do
@@ -74,8 +75,8 @@ describe HarvestWorker do
     let(:errors) { mock(:errors, full_messages: []) }
     let(:record) { mock(:record, attributes: {title: "Hi"}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
 
-    it "posts the record to the api" do
-      worker.should_receive(:post_to_api).with(record)
+    it "posts the record to the api with job_id" do
+      worker.should_receive(:post_to_api).with({title: "Hi", job_id: job.id})
       worker.process_record(record, job)
     end
 
@@ -112,19 +113,19 @@ describe HarvestWorker do
   end
 
   describe "#post_to_api" do
-    let(:record) { mock(:record, attributes: {title: "Hi"}).as_null_object }
+    let(:attributes) { {title: "Hi"} }
 
     it "should post to the API" do
       job.stub(:required_enrichments) { }
-      worker.post_to_api(record)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: {title: 'Hi'}, required_sources: nil}, job.id)
+      worker.post_to_api(attributes)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: attributes, required_sources: nil}, job.id)
     end
 
     context "required sources" do
       it "should send the required enricments to the api" do
         job.stub(:required_enrichments) { [:ndha_rights] }
-        worker.post_to_api(record)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: {title: 'Hi'}, required_sources: [:ndha_rights]}, job.id)
+        worker.post_to_api(attributes)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: attributes, required_sources: [:ndha_rights]}, job.id)
       end
     end
   end
