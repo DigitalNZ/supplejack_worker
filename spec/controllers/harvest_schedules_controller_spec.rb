@@ -14,6 +14,14 @@ describe HarvestSchedulesController do
       get :index
       assigns(:harvest_schedules).should eq [schedule]
     end
+
+    context "params[:harvest_schedule] is present" do
+      it "should use a where query " do
+        HarvestSchedule.should_receive(:where).with({ "parser_id" => "abc123" }) {[schedule]}
+        get :index, harvest_schedule: { parser_id: "abc123" }
+        assigns(:harvest_schedules).should eq [schedule]
+      end
+    end
   end
 
   describe "GET show" do

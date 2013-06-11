@@ -5,7 +5,11 @@ class HarvestSchedulesController < ApplicationController
   respond_to :json
 
   def index
-    @harvest_schedules = HarvestSchedule.all
+    if params[:harvest_schedule]
+      @harvest_schedules = HarvestSchedule.where(params[:harvest_schedule])
+    else
+      @harvest_schedules = HarvestSchedule.all
+    end
     respond_with @harvest_schedules, serializer: ActiveModel::ArraySerializer
   end
 
