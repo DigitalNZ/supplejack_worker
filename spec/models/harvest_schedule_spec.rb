@@ -169,11 +169,11 @@ describe HarvestSchedule do
     end
 
     it "should create a new harvest job with the incremental flag" do
-      schedule.incremental = true
+      schedule.mode = 'incremental'
       schedule.create_job
       schedule.reload
       job = schedule.harvest_jobs.last
-      job.incremental.should be_true
+      job.incremental?.should be_true
     end
 
     it "should create a new harvest job with enrichments" do

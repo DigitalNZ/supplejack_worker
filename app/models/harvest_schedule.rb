@@ -21,8 +21,8 @@ class HarvestSchedule
   field :last_run_at,     type: DateTime, default: nil
   field :next_run_at,     type: DateTime
   field :status,          type: String,   default: "active"
-  field :incremental,     type: Boolean,  default: false
   field :enrichments,     type: Array
+  field :mode,            type: String
 
   before_save :generate_cron
   before_save :generate_next_run_at
@@ -69,7 +69,7 @@ class HarvestSchedule
   end
 
   def create_job
-    self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, incremental: self.incremental, enrichments: self.enrichments)
+    self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, mode: self.mode, enrichments: self.enrichments)
     self.last_run_at = Time.now
     self.status = "inactive" unless self.recurrent
     self.save

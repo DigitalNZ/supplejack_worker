@@ -15,7 +15,7 @@ class HarvestWorker < AbstractWorker
 
       options = {}
       options[:limit] = job.limit.to_i if job.limit.to_i > 0
-      options[:from] = parser.last_harvested_at if job.incremental && parser.last_harvested_at
+      options[:from] = parser.last_harvested_at if job.incremental? && parser.last_harvested_at
 
       job.start!
 

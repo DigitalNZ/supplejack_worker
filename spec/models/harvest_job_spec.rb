@@ -20,6 +20,18 @@ describe HarvestJob do
       enrichment = FactoryGirl.build(:enrichment_job, parser_id: "333", environment: "staging", status: "active")
       enrichment.should be_valid
     end
+
+    it "should not be possible to have a mode other then 'normal', 'full_and_flush' or 'incremental'" do
+      job1 = FactoryGirl.build(:harvest_job, parser_id: "333", mode: 'ya')
+      job1.should_not be_valid
+    end
+
+    ['normal', 'full_and_flush', 'incremental'].each do |mode|
+      it "should be valid with mode of '#{mode}'" do
+        job1 = FactoryGirl.build(:harvest_job, parser_id: "333", mode: mode)
+        job1.should be_valid
+      end
+    end
   end
   
   it "enqueues a job after_create" do
@@ -56,4 +68,32 @@ describe HarvestJob do
     end
   end
 
+  describe "#flush_old_records" do
+    it "should post to the apis /harvester/records/flush action with source_id and the harvest_job_id" do
+      job.stub(:source_id) {'tapuhi'}
+      RestClient.should_receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: 'tapuhi', job_id: job.id})
+      job.flush_old_records
+    end
+  end
+
+  describe "#finish!" do 
+    it "flushes old records if full_and_flush is true" do
+      job.mode = 'full_and_flush'
+      job.should_receive(:flush_old_records)
+      job.finish!
+    end
+
+    it "does not flush record if full_and_flush is false" do
+      job.mode = 'normal'
+      job.should_not_receive(:flush_old_records)
+      job.finish!
+    end
+
+    it "does not flush record if limit is set" do
+      job.mode = 'full_and_flush'
+      job.limit = 100
+      job.should_not_receive(:flush_old_records)
+      job.finish!
+    end
+  end
 end
