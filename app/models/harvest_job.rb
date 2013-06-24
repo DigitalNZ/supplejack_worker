@@ -21,7 +21,11 @@ class HarvestJob < AbstractJob
   end
 
   def flush_old_records
-    RestClient.post("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: self.source_id, job_id: self.id})
+    begin
+      RestClient.post("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: self.source_id, job_id: self.id})
+    rescue RestClient::Exception => e
+      job.build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
+    end
   end
 
   def source_id
