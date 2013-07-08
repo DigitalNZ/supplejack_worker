@@ -30,6 +30,7 @@ gem 'activeresource', require: 'active_resource'
 
 gem 'whenever', :require => false
 gem 'parse-cron'
+gem 'strong_parameters'
 
 # Gems used only for assets and not required
 # in production environments by default.

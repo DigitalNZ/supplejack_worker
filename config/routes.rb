@@ -7,6 +7,7 @@ HarvesterWorker::Application.routes.draw do
   resources :enrichment_jobs, only: [:create, :update, :show]
   resources :harvest_schedules, only: [:index, :create, :update, :show, :destroy]
   resources :previews, only: [:create]
+  resources :link_check_jobs, only: [:create, :show]
   
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
