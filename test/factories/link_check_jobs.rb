@@ -4,5 +4,6 @@ FactoryGirl.define do
   factory :link_check_job do
     url "http://google.co.nz"
     record_id 123
+    primary_collection 'TAPUHI'
   end
 end

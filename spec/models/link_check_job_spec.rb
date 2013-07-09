@@ -13,6 +13,11 @@ describe LinkCheckJob do
       link_check_job.record_id = nil
       link_check_job.should_not be_valid
     end
+
+    it "should validate the presence of primary_collection" do
+      link_check_job.primary_collection = nil
+      link_check_job.should_not be_valid
+    end
   end
 
   describe "after:create" do

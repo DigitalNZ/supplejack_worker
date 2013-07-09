@@ -2,12 +2,13 @@ class LinkCheckJob
   include ActiveModel::ForbiddenAttributesProtection
   include Mongoid::Document
   
-  field :url,       type: String
-  field :record_id, type: Integer
+  field :url,                 type: String
+  field :record_id,           type: Integer
+  field :primary_collection,  type: String
 
   after_create :enqueue
 
-  validates :url, :record_id, presence: true
+  validates :url, :record_id, :primary_collection, presence: true
 
   private
 
