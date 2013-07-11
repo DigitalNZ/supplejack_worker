@@ -17,14 +17,14 @@ describe HarvestWorker do
 
     before(:each) do
       job.stub(:parser) { parser }
-      NatlibPages.stub(:records) { [record] }
+      LoadedParser::NatlibPages.stub(:records) { [record] }
       worker.stub(:stop_harvest?) { false }
       worker.stub(:api_update_finished?) { true }
       worker.stub(:post_to_api)
     end
 
     context "index is defined" do
-      before { NatlibPages.stub(:records) { [mock(:record), mock(:record),mock(:record), record] } }
+      before { LoadedParser::NatlibPages.stub(:records) { [mock(:record), mock(:record),mock(:record), record] } }
       
       it "only processes the record at position == index" do
         job.index = 3
@@ -39,13 +39,13 @@ describe HarvestWorker do
     end
 
     it "gets records from parser class" do
-      NatlibPages.should_receive(:records)
+      LoadedParser::NatlibPages.should_receive(:records)
       worker.perform(1)
     end
 
     it "sets the proper environment from the harvest job" do
       job.stub(:environment) { "staging" }
-      NatlibPages.should_receive("environment=").with("staging")
+      LoadedParser::NatlibPages.should_receive("environment=").with("staging")
       worker.perform(1)
     end
 
@@ -60,7 +60,7 @@ describe HarvestWorker do
     end
 
     it "rescues exceptions from the whole harvest and stores it" do
-      NatlibPages.stub(:records).and_raise "Everything broke"
+      LoadedParser::NatlibPages.stub(:records).and_raise "Everything broke"
       worker.perform(1)
       job.harvest_failure.message.should eq "Everything broke"
     end
