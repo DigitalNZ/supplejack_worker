@@ -8,6 +8,7 @@ describe HarvestWorker do
   before(:each) do
     HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
     RestClient.stub(:post)
+
     worker.stub(:job) { job }
     parser.load_file
   end
@@ -18,6 +19,7 @@ describe HarvestWorker do
     before(:each) do
       job.stub(:parser) { parser }
       LoadedParser::NatlibPages.stub(:records) { [record] }
+      record.stub(:deletable?) { false }
       worker.stub(:stop_harvest?) { false }
       worker.stub(:api_update_finished?) { true }
       worker.stub(:post_to_api)
@@ -73,10 +75,12 @@ describe HarvestWorker do
 
   describe "#process_record" do
     let(:errors) { mock(:errors, full_messages: []) }
-    let(:record) { mock(:record, attributes: {title: "Hi"}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
+    let(:record) { mock(:record, attributes: {title: "Hi", internal_identifier: ["record123"]}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
+
+    before { record.stub(:deletable?) { false } }
 
     it "posts the record to the api with job_id" do
-      worker.should_receive(:post_to_api).with({title: "Hi", job_id: job.id})
+      worker.should_receive(:post_to_api).with({title: "Hi", internal_identifier: ["record123"], job_id: job.id})
       worker.process_record(record, job)
     end
 
@@ -110,6 +114,21 @@ describe HarvestWorker do
       worker.process_record(record, job)
       job.failed_records.first.message.should eq "Post failed"
     end
+
+    context "deleteable record " do
+
+      before { record.stub(:deletable?) { true } }
+
+      it "deletes_from_api if the record is deletable?" do
+        worker.should_receive(:delete_from_api).with(["record123"])
+        worker.process_record(record, job)
+      end
+
+      it "does not post to api" do
+        worker.should_not_receive(:post_to_api)
+        worker.process_record(record, job)
+      end
+    end
   end
 
   describe "#post_to_api" do
@@ -127,6 +146,13 @@ describe HarvestWorker do
         worker.post_to_api(attributes)
         expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: attributes, required_sources: [:ndha_rights]}, job.id)
       end
+    end
+  end
+
+  describe "#delete_from_api" do
+    it "should send a delete to the api" do
+      worker.delete_from_api(["abc123"])
+      expect(ApiDeleteWorker).to have_enqueued_job("abc123")
     end
   end
 end

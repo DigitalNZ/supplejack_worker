@@ -49,7 +49,9 @@ class HarvestWorker < AbstractWorker
 
   def process_record(record, job)
     begin
-      if record.valid?
+      if record.deletable? and record.attributes[:internal_identifier].present?
+        self.delete_from_api(record.attributes[:internal_identifier])
+      elsif record.valid?
         attributes = record.attributes.merge(job_id: job.id)
         self.post_to_api(attributes) unless job.test?
         job.records_count += 1
@@ -66,6 +68,10 @@ class HarvestWorker < AbstractWorker
 
   def post_to_api(attributes)
     ApiUpdateWorker.perform_async("/harvester/records.json", {record: attributes, required_sources: job.required_enrichments}, job.id)
+  end
+
+  def delete_from_api(identifier)
+    ApiDeleteWorker.perform_async(identifier.first) if identifier.any?
   end
 
 end
