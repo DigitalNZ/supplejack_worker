@@ -152,7 +152,7 @@ describe HarvestWorker do
   describe "#delete_from_api" do
     it "should send a delete to the api" do
       worker.delete_from_api(["abc123"])
-      expect(ApiDeleteWorker).to have_enqueued_job("abc123")
+      expect(ApiDeleteWorker).to have_enqueued_job("abc123", job.id)
     end
   end
 end

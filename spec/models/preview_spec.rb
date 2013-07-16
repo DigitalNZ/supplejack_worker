@@ -48,6 +48,7 @@ describe Preview do
 			preview.instance_variable_set(:@harvest_job, harvest_job)
 			preview.stub(:validation_errors) {}
 			preview.stub(:field_errors) {}
+			harvest_record.stub(:deletable?) { "false" }
 			harvest_job.stub(:harvest_failure) {}
 			preview.stub(:process_record) {}
 		end
@@ -67,6 +68,10 @@ describe Preview do
 
 		it "should return a hash with the harvest job id" do
 		  preview.as_json.should include(harvest_job_id: 123)
+		end
+
+		it "should return a hash with the harvest job id" do
+		  preview.as_json.should include(deletable: "false")
 		end
 
 		it "should return a hash with the validation_errors" do

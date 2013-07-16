@@ -14,10 +14,12 @@ class Preview
 
 
 	def as_json
+
 		process_record
 		{
 			record: strip_ids(@record.try(:attributes)),
 			raw_data: @last_processed_record.try(:raw_data),
+			deletable: @last_processed_record.try(:deletable?),
 			harvested_attributes: @last_processed_record.try(:attributes),
 			harvest_job_id: @harvest_job.id,
 			errors: {
