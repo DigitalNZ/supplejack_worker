@@ -63,5 +63,5 @@ group :test do
   gem "database_cleaner",   ">= 0.9.1"
   gem "cucumber-rails",     ">= 1.3.0", :require => false
   gem 'timecop'
-  gem "rspec-sidekiq"
+  gem "rspec-sidekiq", path: "~/dev/rspec-sidekiq"
 end

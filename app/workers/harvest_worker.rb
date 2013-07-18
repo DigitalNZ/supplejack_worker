@@ -68,11 +68,11 @@ class HarvestWorker < AbstractWorker
   end
 
   def post_to_api(attributes)
-    ApiUpdateWorker.perform_async("/harvester/records.json", {record: attributes, required_sources: job.required_enrichments}, job.id)
+    ApiUpdateWorker.perform_async("/harvester/records.json", {record: attributes, required_sources: job.required_enrichments}, job.id.to_s)
   end
 
   def delete_from_api(identifier)
-    ApiDeleteWorker.perform_async(identifier.first, job.id) if identifier.any?
+    ApiDeleteWorker.perform_async(identifier.first, job.id.to_s) if identifier.any?
   end
 
 end

@@ -132,19 +132,19 @@ describe HarvestWorker do
   end
 
   describe "#post_to_api" do
-    let(:attributes) { {title: "Hi"} }
+    let(:attributes) { {"title" => "Hi"} }
 
     it "should post to the API" do
       job.stub(:required_enrichments) { }
       worker.post_to_api(attributes)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: attributes, required_sources: nil}, job.id)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_sources" => nil}, job.id.to_s)
     end
 
     context "required sources" do
       it "should send the required enricments to the api" do
         job.stub(:required_enrichments) { [:ndha_rights] }
         worker.post_to_api(attributes)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {record: attributes, required_sources: [:ndha_rights]}, job.id)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_sources" => ["ndha_rights"]}, job.id.to_s)
       end
     end
   end
@@ -152,7 +152,7 @@ describe HarvestWorker do
   describe "#delete_from_api" do
     it "should send a delete to the api" do
       worker.delete_from_api(["abc123"])
-      expect(ApiDeleteWorker).to have_enqueued_job("abc123", job.id)
+      expect(ApiDeleteWorker).to have_enqueued_job("abc123", job.id.to_s)
     end
   end
 end

@@ -1,25 +1,56 @@
 class LinkCheckWorker
   include Sidekiq::Worker
 
-  def perform(link_check_job_id)
+  sidekiq_options :retry => 100
+
+  sidekiq_retry_in { |count| 2 * Random.rand(1..5) }
+
+  def perform(link_check_job_id, strike=0)
     link_check_job = LinkCheckJob.find(link_check_job_id) rescue nil
  
     begin
       if link_check_job.present?
-        sleep(2.seconds)
-        response = RestClient.get(link_check_job.url)
-        supress_record(link_check_job.record_id) unless validate_collection_rules(response, link_check_job.primary_collection) 
+        response = link_check(link_check_job.url, link_check_job.primary_collection)
+        if validate_collection_rules(response, link_check_job.primary_collection)
+          set_record_status(link_check_job.record_id, "active")
+        else
+          suppress_record(link_check_job.record_id, strike)
+        end
       end
     rescue RestClient::ResourceNotFound => e
-      supress_record(link_check_job.record_id)
+      suppress_record(link_check_job.record_id, strike)
     rescue Exception => e
       Rails.logger.warn("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/link_checker/records/#{link_check_job.record_id} to update status to supressed")
       Rails.logger.warn("Exception: #{e.inspect}")
     end
   end
 
-  def supress_record(record_id)
-    RestClient.put("#{ENV['API_HOST']}/link_checker/records/#{record_id}", {record: {status: 'supressed'}})
+  private
+
+  def link_check(url, collection)
+    Sidekiq.redis do |conn| 
+      if conn.setnx(collection, 0)
+        conn.expire(collection, 2)
+        RestClient.get(url)
+      else
+        raise Exception.new("Could not aquire redis lock")
+      end
+    end
+  end
+
+  def suppress_record(record_id, strike)
+    timings = {0 => 1.hours, 1 => 5.hours, 2 => 72.hours}
+    
+    if strike >= 3
+      set_record_status(record_id, "deleted")
+    else
+      set_record_status(record_id, "suppressed")
+      LinkCheckWorker.perform_in(timings[strike], record_id, strike + 1)
+    end
+  end
+
+  def set_record_status(record_id, status)
+    RestClient.put("#{ENV['API_HOST']}/link_checker/records/#{record_id}", {record: {status: status}})
   end
 
   def validate_collection_rules(response, collection)
