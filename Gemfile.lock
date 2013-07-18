@@ -32,13 +32,6 @@ GIT
     active_model_serializers (0.5.2)
       activemodel (>= 3.0)
 
-PATH
-  remote: ~/dev/rspec-sidekiq
-  specs:
-    rspec-sidekiq (0.4.0)
-      rspec (~> 2.0)
-      sidekiq (>= 2.4.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -242,6 +235,9 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
+    rspec-sidekiq (0.4.0)
+      rspec (~> 2.0)
+      sidekiq (>= 2.4.0)
     rubyzip (0.9.9)
     sass (3.2.5)
     sass-rails (3.2.6)
@@ -331,7 +327,7 @@ DEPENDENCIES
   rails (= 3.2.12)
   rb-fsevent (~> 0.9.1)
   rspec-rails (>= 2.12.2)
-  rspec-sidekiq!
+  rspec-sidekiq
   sass-rails (~> 3.2.3)
   sidekiq
   sinatra
