@@ -30,7 +30,7 @@ describe LinkCheckJob do
 
   describe "#enqueue" do
     it "enqueues a job" do
-      LinkCheckWorker.should_receive(:perform_async).with(link_check_job.id)
+      LinkCheckWorker.should_receive(:perform_async).with(link_check_job.id.to_s)
       link_check_job.send(:enqueue)
     end
   end

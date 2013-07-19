@@ -17,20 +17,20 @@ describe LinkCheckWorker do
     end
 
     it "should find the link_check_job" do
-      LinkCheckJob.should_receive(:find).with(link_check_job.id) { nil }
-      worker.perform(link_check_job.id)
+      LinkCheckJob.should_receive(:find).with(link_check_job.id.to_s) { nil }
+      worker.perform(link_check_job.id.to_s)
     end
 
     it "should perform a link_check" do
       worker.should_receive(:link_check).with(link_check_job.url, link_check_job.primary_collection)
-      worker.perform(link_check_job.id)
+      worker.perform(link_check_job.id.to_s)
     end
 
     context "validate_collection_rules returns false" do
       it "should supress the record" do
         worker.stub(:validate_collection_rules) { false }
-        worker.should_receive(:suppress_record).with(link_check_job.record_id, 0)
-        worker.perform(link_check_job.id)
+        worker.should_receive(:suppress_record).with(link_check_job.id.to_s, link_check_job.record_id, 0)
+        worker.perform(link_check_job.id.to_s)
       end
     end
 
@@ -38,7 +38,7 @@ describe LinkCheckWorker do
       it "should activate the record" do
         worker.stub(:validate_collection_rules) { true }
         worker.should_receive(:set_record_status).with(link_check_job.record_id, "active")
-        worker.perform(link_check_job.id)
+        worker.perform(link_check_job.id.to_s)
       end
     end
 
@@ -53,13 +53,13 @@ describe LinkCheckWorker do
     context "exceptions" do
       it "should sends a request to the DNZ API updating the status of the record to 'supressed' on a 404 error" do
         worker.stub(:link_check).and_raise(RestClient::ResourceNotFound.new("url not work bro")) 
-        worker.should_receive(:suppress_record).with(link_check_job.record_id, 0)
-        worker.perform(link_check_job.id)
+        worker.should_receive(:suppress_record).with(link_check_job.id.to_s, link_check_job.record_id, 0)
+        worker.perform(link_check_job.id.to_s)
       end
 
       it "should handle networking errors" do
         worker.stub(:link_check).and_raise(Exception.new('RestClient Exception'))
-        expect {worker.perform(link_check_job.id)}.to_not raise_exception
+        expect {worker.perform(link_check_job.id.to_s)}.to_not raise_exception
       end
     end
   end
@@ -107,45 +107,45 @@ describe LinkCheckWorker do
 
     it "should make a post to the api to change the status to supressed for the record" do
       RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/records/abc123", {record: { status: 'suppressed' }})
-      worker.send(:suppress_record, "abc123", 0)
+      worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 0)
     end
 
     it "should trigger a new link_check_job with a strike of 1" do
-      LinkCheckWorker.should_receive(:perform_in).with(1.hours, "abc123", 1)
-      worker.send(:suppress_record, "abc123", 0)
+      LinkCheckWorker.should_receive(:perform_in).with(1.hours, link_check_job.id.to_s, 1)
+      worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 0)
     end
 
     it "should not trigger a job after the third strike" do
       LinkCheckWorker.should_not_receive(:perform_in)
-      worker.send(:suppress_record, "abc123", 100)
+      worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 100)
     end
 
     it "should not trigger a job on the third strike" do
       LinkCheckWorker.should_not_receive(:perform_in)
-      worker.send(:suppress_record, "abc123", 3)
+      worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 3)
     end
 
     context "strike timings" do
       it "should perform the job in 1 hours on the 0th strike" do
-        LinkCheckWorker.should_receive(:perform_in).with(1.hours, "abc123", 1)
-        worker.send(:suppress_record, "abc123", 0)
+        LinkCheckWorker.should_receive(:perform_in).with(1.hours, link_check_job.id.to_s, 1)
+        worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 0)
       end
 
       it "should perform the job in 5 hours on the 1th strike" do
-        LinkCheckWorker.should_receive(:perform_in).with(5.hours, "abc123", 2)
-        worker.send(:suppress_record, "abc123", 1)
+        LinkCheckWorker.should_receive(:perform_in).with(5.hours, link_check_job.id.to_s, 2)
+        worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 1)
       end
 
       it "should perform the job in 72 hours on the 2nd strike" do
-        LinkCheckWorker.should_receive(:perform_in).with(72.hours, "abc123", 3)
-        worker.send(:suppress_record, "abc123", 2)
+        LinkCheckWorker.should_receive(:perform_in).with(72.hours, link_check_job.id.to_s, 3)
+        worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 2)
       end
     end
 
     context "strike three your out!" do
       it "should set the status of the record to deleted" do
         worker.should_receive(:set_record_status).with("abc123", "deleted")
-        worker.send(:suppress_record, "abc123", 3)
+        worker.send(:suppress_record, link_check_job.id.to_s.to_s, "abc123", 3)
       end
     end
   end

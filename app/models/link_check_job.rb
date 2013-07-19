@@ -13,6 +13,6 @@ class LinkCheckJob
   private
 
   def enqueue
-    LinkCheckWorker.perform_async(self.id)
+    LinkCheckWorker.perform_async(self.id.to_s)
   end
 end
