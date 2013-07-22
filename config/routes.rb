@@ -10,6 +10,7 @@ HarvesterWorker::Application.routes.draw do
   
   resources :link_check_jobs, only: [:create, :show]
   resources :collection_rules, only: [:show]
+  resources :collection_statistics, only: [:index]
   
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'

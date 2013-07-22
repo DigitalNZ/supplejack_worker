@@ -21,6 +21,7 @@ staging:
   MANAGER_API_KEY: "n3V1GLzp5nz4mgyQrGB3"
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
+  LINKCHECKER_EMAIL: "linkchecker@uat.digitalnz.org"
 
 production:
   API_HOST: "http://api.dnz03.digitalnz.org"
@@ -28,6 +29,7 @@ production:
   MANAGER_API_KEY: "n3V1GLzp5nz4mgyQrGB3"
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
+  LINKCHECKER_EMAIL: "linkchecker@digitalnz.org"
 
 test:
   API_HOST: "http://localhost:3000"

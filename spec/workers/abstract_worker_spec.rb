@@ -68,5 +68,11 @@ describe AbstractWorker do
       AbstractJob.should_receive(:find).with(123) { job }
       worker.job.should eq job
     end
+
+    it "memoizes the result" do
+      AbstractJob.should_receive(:find).once
+      worker.job
+      worker.job
+    end
   end
 end
