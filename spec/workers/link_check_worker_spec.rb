@@ -64,6 +64,65 @@ describe LinkCheckWorker do
     end
   end
 
+  describe "add_record_stats" do
+
+    let(:collection_statistics) { mock(:collection_statistics) }
+
+    before do
+      worker.stub(:link_check_job) { link_check_job }
+      worker.stub(:collection_stats) { collection_statistics }
+    end
+
+    it "should add record stats for 'deleted'" do
+      collection_statistics.should_receive(:add_record!).with(12345, 'deleted', "http://google.co.nz")
+      worker.send(:add_record_stats,12345, 'deleted')
+    end
+
+    it "should add record stats for 'suppressed'" do
+      collection_statistics.should_receive(:add_record!).with(12345, 'suppressed', "http://google.co.nz")
+      worker.send(:add_record_stats,12345, 'suppressed')
+    end
+
+    it "should add record stats for 'active'" do
+      collection_statistics.should_receive(:add_record!).with(12345, 'activated', "http://google.co.nz")
+      worker.send(:add_record_stats,12345, 'active')
+    end
+  end
+
+  describe "#collection_statistics" do
+
+    let(:collection_statistics) { mock(:collection_statistics).as_null_object }
+    let(:relation) { mock(:relation) }
+
+    before do
+      worker.stub(:link_check_job) { link_check_job }
+      worker.instance_variable_set(:@link_check_job_id, link_check_job.id)
+    end
+
+    it "should find or create a collection statistics model with the collection_title" do
+      CollectionStatistics.should_receive(:where).with(collection_title: link_check_job.primary_collection) { relation }
+      relation.should_receive(:find_or_create_by).with(day: Date.today) { collection_statistics }
+      worker.send(:collection_stats).should eq collection_statistics
+    end
+
+    it "memoizes the result" do
+      CollectionStatistics.should_receive(:where).once { collection_statistics }
+      worker.send(:collection_stats)
+      worker.send(:collection_stats)
+    end
+  end
+
+  describe "link_check_job" do
+
+    before { worker.instance_variable_set(:@link_check_job_id, link_check_job.id) }
+    
+    it "memoizes the result" do
+      LinkCheckJob.should_receive(:find).once { link_check_job }
+      worker.send(:link_check_job)
+      worker.send(:link_check_job)
+    end
+  end
+
   describe "#link_check" do
 
     let(:response) { mock(:response) }
@@ -125,6 +184,11 @@ describe LinkCheckWorker do
       worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 3)
     end
 
+    it "should not send a request to set the record to 'suppressed' if the strike is over 0 " do
+      worker.should_not_receive(:set_record_status).with("abc123", "suppressed")
+      worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 1)
+    end
+
     context "strike timings" do
       it "should perform the job in 1 hours on the 0th strike" do
         LinkCheckWorker.should_receive(:perform_in).with(1.hours, link_check_job.id.to_s, 1)
@@ -151,9 +215,17 @@ describe LinkCheckWorker do
   end
 
   describe "set_record_status" do
+
+    before { RestClient.stub(:put) }
+
     it "should make a post to the api to change the status to active for the record" do
       RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/records/abc123", {record: { status: 'active' }})
       worker.send(:set_record_status, "abc123", "active")
+    end
+
+    it "should add_record_stats" do
+      worker.should_receive(:add_record_stats).with(12345, "active")
+      worker.send(:set_record_status, 12345, "active")
     end
   end
 
