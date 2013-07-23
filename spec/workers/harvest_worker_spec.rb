@@ -80,7 +80,7 @@ describe HarvestWorker do
     before { record.stub(:deletable?) { false } }
 
     it "posts the record to the api with job_id" do
-      worker.should_receive(:post_to_api).with({title: "Hi", internal_identifier: ["record123"], job_id: job.id})
+      worker.should_receive(:post_to_api).with({title: "Hi", internal_identifier: ["record123"], job_id: job.id.to_s })
       worker.process_record(record, job)
     end
 

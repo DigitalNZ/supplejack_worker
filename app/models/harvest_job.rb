@@ -35,7 +35,7 @@ class HarvestJob < AbstractJob
   end
 
   def finish!
-    flush_old_records if full_and_flush? and limit.to_i == 0
+    flush_old_records if full_and_flush? and limit.to_i == 0 and not harvest_failure?
     super
   end
 

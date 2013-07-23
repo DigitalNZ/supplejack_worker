@@ -74,6 +74,7 @@ describe HarvestJob do
       RestClient.should_receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: 'tapuhi', job_id: job.id})
       job.flush_old_records
     end
+
   end
 
   describe "#finish!" do 
@@ -92,6 +93,13 @@ describe HarvestJob do
     it "does not flush record if limit is set" do
       job.mode = 'full_and_flush'
       job.limit = 100
+      job.should_not_receive(:flush_old_records)
+      job.finish!
+    end
+
+    it "does not flush records if a harvest failure occured" do
+      job.mode = 'full_and_flush'
+      job.build_harvest_failure()
       job.should_not_receive(:flush_old_records)
       job.finish!
     end

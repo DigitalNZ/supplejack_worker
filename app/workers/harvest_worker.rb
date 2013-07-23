@@ -53,7 +53,7 @@ class HarvestWorker < AbstractWorker
         self.delete_from_api(record.attributes[:internal_identifier]) unless job.test?
         job.records_count += 1
       elsif record.valid?
-        attributes = record.attributes.merge(job_id: job.id)
+        attributes = record.attributes.merge(job_id: job.id.to_s)
         self.post_to_api(attributes) unless job.test?
         job.records_count += 1
       else
