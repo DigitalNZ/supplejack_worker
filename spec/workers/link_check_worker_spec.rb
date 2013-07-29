@@ -18,7 +18,7 @@ describe LinkCheckWorker do
 
     it "should find the link_check_job" do
       LinkCheckJob.should_receive(:find).with(link_check_job.id.to_s) { nil }
-      worker.perform(link_check_job.id.to_s)
+      worker.perform(link_check_job.id.to_s, 1)
     end
 
     it "should perform a link_check" do
@@ -35,10 +35,16 @@ describe LinkCheckWorker do
     end
 
     context "validate_collection_rules returns true" do
-      it "should activate the record" do
+      it "should not set the record status if on the 0th strike" do
+        worker.should_not_receive(:set_record_status).with(link_check_job.record_id, "active")
+        worker.stub(:validate_collection_rules) { true }
+        worker.perform(link_check_job.id.to_s)
+      end
+
+      it "should reactivate the record if strike is greater than 0" do
         worker.stub(:validate_collection_rules) { true }
         worker.should_receive(:set_record_status).with(link_check_job.record_id, "active")
-        worker.perform(link_check_job.id.to_s)
+        worker.perform(link_check_job.id.to_s, 1)
       end
     end
 
