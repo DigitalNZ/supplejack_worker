@@ -106,13 +106,12 @@ describe LinkCheckWorker do
     end
 
     it "should find or create a collection statistics model with the collection_title" do
-      CollectionStatistics.should_receive(:where).with(collection_title: link_check_job.primary_collection) { relation }
-      relation.should_receive(:find_or_create_by).with(day: Date.today) { collection_statistics }
+      CollectionStatistics.should_receive(:find_or_create_by).with({day: Date.today, collection_title: link_check_job.primary_collection}) { collection_statistics }
       worker.send(:collection_stats).should eq collection_statistics
     end
 
     it "memoizes the result" do
-      CollectionStatistics.should_receive(:where).once { collection_statistics }
+      CollectionStatistics.should_receive(:find_or_create_by).once { collection_statistics }
       worker.send(:collection_stats)
       worker.send(:collection_stats)
     end

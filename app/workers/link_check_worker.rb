@@ -32,7 +32,7 @@ class LinkCheckWorker
   end
 
   def collection_stats
-    @collection_stats ||= CollectionStatistics.where(collection_title: link_check_job.primary_collection).find_or_create_by(day: Date.today)
+    @collection_stats ||= CollectionStatistics.find_or_create_by({day: Date.today, collection_title: link_check_job.primary_collection})
   end
 
   def link_check_job
