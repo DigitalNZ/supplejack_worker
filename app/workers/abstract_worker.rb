@@ -14,7 +14,7 @@ class AbstractWorker
   end
 
   def job
-    @job ||= AbstractJob.find(self.job_id)
+    @job ||= AbstractJob.find(self.job_id.to_s)
   end
 
   protected
