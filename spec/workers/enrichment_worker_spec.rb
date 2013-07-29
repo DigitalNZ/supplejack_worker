@@ -19,9 +19,9 @@ describe EnrichmentWorker do
 
   describe "#perform" do
 
-    it "should set the @job_id" do
+    it "should set the @job_id as a string" do
       worker.perform(1234)
-      worker.instance_variable_get("@job_id").should eq 1234
+      worker.instance_variable_get("@job_id").should eq "1234"
     end
 
     it "should mark the job as started" do
