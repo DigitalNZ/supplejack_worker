@@ -14,7 +14,7 @@ describe CollectionStatistics do
 
     it "should validate the uniqueness of day" do
       collection_statistics.save
-      collection_stats = FactoryGirl.build(:collection_statistics, collection_title: "Tap",day: Date.today)
+      collection_stats = FactoryGirl.build(:collection_statistics, collection_title: "TAPUHI", day: Date.today)
       collection_stats.should_not be_valid
     end
 
