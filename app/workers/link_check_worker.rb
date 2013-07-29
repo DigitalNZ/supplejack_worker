@@ -11,7 +11,7 @@ class LinkCheckWorker
       if link_check_job.present?
         response = link_check(link_check_job.url, link_check_job.primary_collection)
         if validate_collection_rules(response, link_check_job.primary_collection)
-          set_record_status(link_check_job.record_id, "active")
+          set_record_status(link_check_job.record_id, "active") if strike > 0
         else
           suppress_record(link_check_job_id, link_check_job.record_id, strike)
         end
