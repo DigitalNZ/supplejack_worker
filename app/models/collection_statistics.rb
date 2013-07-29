@@ -15,7 +15,7 @@ class CollectionStatistics
   field :deleted_records,          type: Array
   field :activated_records,        type: Array
 
-  validates :collection_title, uniqueness: true, scope: :day
+  validates :collection_title, uniqueness: {scope: :day} 
   validates :collection_title, :day, presence: true
 
   validates :activated_records, :deleted_records, :suppressed_records, length: { maximum: 20 }
