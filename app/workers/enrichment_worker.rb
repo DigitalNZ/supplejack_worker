@@ -4,7 +4,7 @@ class EnrichmentWorker < AbstractWorker
   attr_reader :parser, :parser_class
     
   def perform(enrichment_job_id)
-    @job_id = enrichment_job_id
+    @job_id = enrichment_job_id.to_s
 
     job.start!
     setup_parser
