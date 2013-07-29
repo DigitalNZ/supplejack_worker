@@ -65,7 +65,7 @@ describe AbstractWorker do
   describe "#job" do
     it "should find the job" do
     	worker.instance_variable_set(:@job_id, 123)
-      AbstractJob.should_receive(:find).with(123) { job }
+      AbstractJob.should_receive(:find).with("123") { job }
       worker.job.should eq job
     end
 
