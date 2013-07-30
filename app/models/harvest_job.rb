@@ -11,7 +11,7 @@ class HarvestJob < AbstractJob
   validates :mode, inclusion: ['normal', 'full_and_flush', 'incremental']
 
   def enqueue
-    HarvestWorker.perform_async(self.id)
+    HarvestWorker.perform_async(self.id.to_s)
   end
 
   def enqueue_enrichment_jobs

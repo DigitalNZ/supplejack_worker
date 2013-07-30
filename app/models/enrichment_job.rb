@@ -20,6 +20,6 @@ class EnrichmentJob < AbstractJob
   end
 
   def enqueue
-    EnrichmentWorker.perform_async(self.id)
+    EnrichmentWorker.perform_async(self.id.to_s)
   end
 end
