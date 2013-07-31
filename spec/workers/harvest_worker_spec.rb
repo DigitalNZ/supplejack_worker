@@ -14,7 +14,7 @@ describe HarvestWorker do
   end
   
   describe "#perform" do
-    let(:record) { mock(:record, attributes: {}, valid?: true) }
+    let(:record) { double(:record, attributes: {}, valid?: true) }
 
     before(:each) do
       job.stub(:parser) { parser }
@@ -26,7 +26,7 @@ describe HarvestWorker do
     end
 
     context "index is defined" do
-      before { LoadedParser::NatlibPages.stub(:records) { [mock(:record), mock(:record),mock(:record), record] } }
+      before { LoadedParser::NatlibPages.stub(:records) { [double(:record), double(:record),double(:record), record] } }
       
       it "only processes the record at position == index" do
         job.index = 3
@@ -74,8 +74,8 @@ describe HarvestWorker do
   end
 
   describe "#process_record" do
-    let(:errors) { mock(:errors, full_messages: []) }
-    let(:record) { mock(:record, attributes: {title: "Hi", internal_identifier: ["record123"]}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
+    let(:errors) { double(:errors, full_messages: []) }
+    let(:record) { double(:record, attributes: {title: "Hi", internal_identifier: ["record123"]}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
 
     before { record.stub(:deletable?) { false } }
 

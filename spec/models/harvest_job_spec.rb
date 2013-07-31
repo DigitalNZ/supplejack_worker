@@ -49,7 +49,7 @@ describe HarvestJob do
   let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345", version_id: "666") }
 
   describe "#enqueue_enrichment_jobs" do
-    let(:parser) { mock(:parser, enrichment_definitions: {ndha_rights: Proc.new{} }).as_null_object }
+    let(:parser) { double(:parser, enrichment_definitions: {ndha_rights: Proc.new{} }).as_null_object }
 
     before do
       job.stub(:parser) { parser }

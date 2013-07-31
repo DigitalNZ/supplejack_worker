@@ -9,7 +9,7 @@ describe EnrichmentWorker do
 
   let(:worker) { EnrichmentWorker.new }
   let(:job) { FactoryGirl.create(:enrichment_job, environment: "production", enrichment: "ndha_rights") }
-  let(:parser) { mock(:parser, enrichment_definitions: {ndha_rights: {type: "TapuhiRecords"}}, loader: mock(:loader, parser_class: TestClass)).as_null_object }
+  let(:parser) { double(:parser, enrichment_definitions: {ndha_rights: {type: "TapuhiRecords"}}, loader: double(:loader, parser_class: TestClass)).as_null_object }
 
   before(:each) do
     job.stub(:parser) { parser }
@@ -36,7 +36,7 @@ describe EnrichmentWorker do
     end
 
     it "should process every record" do
-      record = mock(:record)
+      record = double(:record)
       worker.stub(:records) { [record] }
       worker.should_receive(:process_record).with(record)
       worker.perform(1234)
@@ -67,7 +67,7 @@ describe EnrichmentWorker do
 
   describe "#records" do
 
-    let(:query) { mock(:query).as_null_object }
+    let(:query) { double(:query).as_null_object }
 
     before(:each) do
       worker.send(:setup_parser)
@@ -81,7 +81,7 @@ describe EnrichmentWorker do
 
     context "enrichment job has a relationship to a harvest job" do
       before do
-        job.stub(:harvest_job) {mock(:harvest_job, id: 'abc123')}
+        job.stub(:harvest_job) {double(:harvest_job, id: 'abc123')}
       end
 
       it "only returns records with a source containing harvest job's id" do
@@ -111,8 +111,8 @@ describe EnrichmentWorker do
   end
 
   describe "#process_record" do
-    let(:record) { mock(:record).as_null_object }
-    let(:enrichment) { mock(:enrichment, errors: []).as_null_object }
+    let(:record) { double(:record).as_null_object }
+    let(:enrichment) { double(:enrichment, errors: []).as_null_object }
 
     before do
       worker.send(:setup_parser)
@@ -235,8 +235,8 @@ describe EnrichmentWorker do
   end
 
   describe "#post_to_api" do
-    let(:record) { mock(:record, id: 123) }
-    let(:enrichment) { mock(:enrichment, record: record, record_attributes: {'1' => {title: 'foo'}, '2' => {category: 'books'}} ) }
+    let(:record) { double(:record, id: 123) }
+    let(:enrichment) { double(:enrichment, record: record, record_attributes: {'1' => {title: 'foo'}, '2' => {category: 'books'}} ) }
 
     it "enqueues an ApiUpdate job with record_id, attributes (including job_id) and enrichment_job_id for each enriched record" do
       worker.send(:post_to_api, enrichment)

@@ -38,9 +38,9 @@ describe Preview do
 	end
 
 	describe "#as_json" do
-		let(:record) { mock(:record, attributes: {}) }
-		let(:harvest_record) {mock(:record, attributes: {}, raw_data: "raw_data")}
-		let(:harvest_job) {mock(:harvest_job, id: 123)}
+		let(:record) { double(:record, attributes: {}) }
+		let(:harvest_record) {double(:record, attributes: {}, raw_data: "raw_data")}
+		let(:harvest_job) {double(:harvest_job, id: 123)}
 
 		before do
 			preview.instance_variable_set(:@record, record)
@@ -86,7 +86,7 @@ describe Preview do
 	end
 
 	describe "#validation_errors" do
-		let(:record) { mock(:record) }
+		let(:record) { double(:record) }
 
 		it "returns the validation errors" do
 			preview.instance_variable_set(:@last_processed_record, record)
@@ -100,7 +100,7 @@ describe Preview do
 	end
 
 	describe "#field_errors" do
-		let(:record) { mock(:record) }
+		let(:record) { double(:record) }
 
 		it "returns the validation errors" do
 			preview.instance_variable_set(:@last_processed_record, record)
@@ -134,12 +134,12 @@ describe Preview do
 	end
 
 	describe "#process_record" do
-		let(:record) { mock(:record) }
+		let(:record) { double(:record) }
 		let(:preview) { klass.new(user_id: 20, environment: "preview", index: 150, parser_id: "abc123", parser_code: "code") }
 		let(:harvest_job) { FactoryGirl.create(:harvest_job) }
-		let(:harvest_worker) { mock(:harvest_worker, last_processed_record: record ).as_null_object }
+		let(:harvest_worker) { double(:harvest_worker, last_processed_record: record ).as_null_object }
 		let(:enrichment_job) { FactoryGirl.create(:enrichment_job) }
-		let(:enrichment_worker) { mock(:enrichment_worker) }
+		let(:enrichment_worker) { double(:enrichment_worker) }
 
 		before do
 			HarvestJob.stub(:create) { harvest_job }
@@ -176,7 +176,7 @@ describe Preview do
 
 		context "failures" do
 
-			let(:record) { mock(:record) }
+			let(:record) { double(:record) }
 
 			after do
 				EnrichmentJob.should_not_receive(:create_from_harvest_job)
