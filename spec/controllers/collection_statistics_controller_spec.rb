@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe CollectionStatisticsController do
 
-	let(:collection_statistic) { mock(:collection_statistics) }
+	let(:collection_statistic) { double(:collection_statistics) }
 	let(:user) { mock_model(User).as_null_object }
 
   before(:each) do

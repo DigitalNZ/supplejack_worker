@@ -30,7 +30,7 @@ describe CollectionStatistics do
   end
 
   describe ".email_daily_stats" do
-    let(:mailer) { mock(:mailer) }
+    let(:mailer) { double(:mailer) }
 
     it "sends daily collection stats" do
       CollectionMailer.should_receive(:daily_collection_stats).with([]) { mailer }

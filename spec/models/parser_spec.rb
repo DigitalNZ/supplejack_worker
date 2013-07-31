@@ -12,7 +12,7 @@ describe Parser do
   end
 
   describe "#load" do
-    let!(:loader) { mock(:loader).as_null_object }
+    let!(:loader) { double(:loader).as_null_object }
 
     before(:each) do
       parser.stub(:loader) { loader }

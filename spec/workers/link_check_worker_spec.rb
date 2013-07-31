@@ -4,22 +4,16 @@ describe LinkCheckWorker do
 
   let(:worker) { LinkCheckWorker.new }
   let(:link_check_job) { FactoryGirl.create(:link_check_job)  }
-  let(:response) { mock(:response) }
+  let(:response) { double(:response) }
+  let(:collection_rule) { double(:collection_rule, status_codes: "200, 3..", xpath: '//p', throttle: 3, active: true) }
+  let(:conn) { double(:conn) }
+
+  before do
+    worker.stub(:collection_rule) { collection_rule }
+    Sidekiq.stub(:redis).and_yield(conn)
+  end
 
   describe "#perform" do
-    before do 
-      LinkCheckJob.stub(:find) { link_check_job }
-      RestClient.stub(:get)
-      CollectionRules.stub(:find) { [] }
-      worker.stub(:suppress_record)
-      worker.stub(:sleep)
-      worker.stub(:link_check) { response }
-    end
-
-    it "should find the link_check_job" do
-      LinkCheckJob.should_receive(:find).with(link_check_job.id.to_s) { nil }
-      worker.perform(link_check_job.id.to_s, 1)
-    end
 
     it "should perform a link_check" do
       worker.should_receive(:link_check).with(link_check_job.url, link_check_job.primary_collection)
@@ -27,6 +21,7 @@ describe LinkCheckWorker do
     end
 
     context "validate_collection_rules returns false" do
+      before { worker.stub(:link_check) { response } }
       it "should supress the record" do
         worker.stub(:validate_collection_rules) { false }
         worker.should_receive(:suppress_record).with(link_check_job.id.to_s, link_check_job.record_id, 0)
@@ -35,6 +30,8 @@ describe LinkCheckWorker do
     end
 
     context "validate_collection_rules returns true" do
+      before { worker.stub(:link_check) { response } }
+
       it "should not set the record status if on the 0th strike" do
         worker.should_not_receive(:set_record_status).with(link_check_job.record_id, "active")
         worker.stub(:validate_collection_rules) { true }
@@ -47,11 +44,22 @@ describe LinkCheckWorker do
         worker.perform(link_check_job.id.to_s, 1)
       end
     end
+    
+    context "link checking not active for collection" do
+      before do
+        worker.stub(:link_check_job) { link_check_job }
+        collection_rule.stub(:active) { false }
+      end
+
+      it "should not check the link" do
+        worker.should_not_receive(:link_check)
+        worker.perform("anc123")
+      end
+    end
 
     context "link check job not found" do
       it "should not check the link" do
-        LinkCheckJob.unstub(:find)
-        RestClient.should_not_receive(:get)
+        worker.should_not_receive(:link_check)
         worker.perform("anc123")
       end
     end
@@ -72,7 +80,7 @@ describe LinkCheckWorker do
 
   describe "add_record_stats" do
 
-    let(:collection_statistics) { mock(:collection_statistics) }
+    let(:collection_statistics) { double(:collection_statistics) }
 
     before do
       worker.stub(:link_check_job) { link_check_job }
@@ -97,8 +105,8 @@ describe LinkCheckWorker do
 
   describe "#collection_statistics" do
 
-    let(:collection_statistics) { mock(:collection_statistics).as_null_object }
-    let(:relation) { mock(:relation) }
+    let(:collection_statistics) { double(:collection_statistics).as_null_object }
+    let(:relation) { double(:relation) }
 
     before do
       worker.stub(:link_check_job) { link_check_job }
@@ -128,16 +136,34 @@ describe LinkCheckWorker do
     end
   end
 
+  describe "#collection_rule" do
+
+    before do
+      worker.unstub(:collection_rule)
+      worker.stub(:link_check_job) { link_check_job }
+    end
+
+    it "should should find the collection rule" do
+      CollectionRules.should_receive(:find).with(:all, params: { collection_rules: { collection_title: link_check_job.primary_collection}}) { [] }
+      worker.send(:collection_rule)
+    end
+
+    it "should memozie the collection rule" do
+      CollectionRules.should_receive(:find).once { [double(:collection_rule)] }
+      worker.send(:collection_rule)
+      worker.send(:collection_rule)
+    end
+  end
+
   describe "#link_check" do
 
-    let(:response) { mock(:response) }
-    let(:conn) { double }
+    let(:response) { double(:response) }
 
     before do 
       RestClient.stub(:get) { response }
       conn.stub(:setnx) { true }
       conn.stub(:expire)
-      Sidekiq.stub(:redis).and_yield(conn)
+      worker.stub(:collection_rule) { collection_rule }
     end
 
     it "should return the response" do
@@ -147,9 +173,28 @@ describe LinkCheckWorker do
     context "has the lock " do
 
       it "it sets the expire on the key & performs a rest client get" do
-        conn.should_receive(:expire)
+        conn.should_receive(:expire).with("TAPUHI", 3)
         RestClient.should_receive(:get).with("http://hehehe.com")
-        worker.send(:link_check, "http://hehehe.com", "tapuhi")
+        worker.send(:link_check, "http://hehehe.com", "TAPUHI")
+      end
+
+      context "no collection rule for collection" do
+        before { worker.stub(:collection_rule) { nil } }
+
+        it "throttle should be 2 seconds" do
+          conn.should_receive(:expire).with("TAPUHI", 2)
+          worker.send(:link_check, "http://hehehe.com", "TAPUHI")
+        end
+      end
+
+      context "throttle is nil" do
+        let(:collection_rule) { double(:collection_rule, status_codes: "200, 3..", xpath: '//p', throttle: nil) }
+
+        it "throttle should default to 2 seconds if throttle is nil" do
+          worker.stub(:collection_rule) { collection_rule }
+          conn.should_receive(:expire).with("TAPUHI", 2)
+          worker.send(:link_check, "http://hehehe.com", "TAPUHI")
+        end
       end
     end
 
@@ -235,30 +280,36 @@ describe LinkCheckWorker do
   end
 
   describe "#validate_collection_rules" do
-    let(:collection_rule) { mock(:collection_rule, status_codes: "200, 3..", xpath: '//p') }
+    let(:response) { double(:response, code: 200, body: "<p></p>") }
 
-    before { CollectionRules.stub(:find) { [collection_rule] } }
-
-    it "should should find the collection rule" do
-      CollectionRules.should_receive(:find).with(:all, params: { collection_rules: { collection_title: link_check_job.primary_collection}}) { [] }
-      worker.send(:validate_collection_rules, mock(:response, code: 200), link_check_job.primary_collection)
+    before do
+      CollectionRules.stub(:find) { [collection_rule] }
+      worker.stub(:link_check_job) { link_check_job }
     end
 
     it "should validate the response codes" do
       worker.should_receive(:validate_response_codes).with(305, "200, 3..")
-      worker.send(:validate_collection_rules, mock(:response, code: 305, body: "<p></p>"), 'TAPUHI')
+      worker.send(:validate_collection_rules, double(:response, code: 305, body: "<p></p>"), 'TAPUHI')
     end
 
     it "should validate the response body via xpath" do
       worker.should_receive(:validate_xpath).with("//p", "<p></p>")
-      worker.send(:validate_collection_rules, mock(:response, code: 200, body: "<p></p>"), 'TAPUHI')
+      worker.send(:validate_collection_rules, response, 'TAPUHI')
+    end
+
+    context "response code and xpath is valid" do
+      it "should return true" do
+        worker.stub(:validate_response_codes) { true }
+        worker.stub(:validate_xpath) { true }
+        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_true
+      end
     end
 
     context "only response code is invalid" do
       it "should return false" do
         worker.stub(:validate_response_codes) { false }
         worker.stub(:validate_xpath) { true }
-        worker.send(:validate_collection_rules, mock(:response, code: 200, body: "<p></p>"), 'TAPUHI').should be_false
+        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_false
       end
     end
 
@@ -266,11 +317,18 @@ describe LinkCheckWorker do
       it "should return false" do
         worker.stub(:validate_response_codes) { true }
         worker.stub(:validate_xpath) { false }
-        worker.send(:validate_collection_rules, mock(:response, code: 200, body: "<p></p>"), 'TAPUHI').should be_false
+        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_false
+      end
+    end
+
+    context "response code and xpath are invalid" do
+      it "should return true" do
+        worker.stub(:validate_response_codes) { false }
+        worker.stub(:validate_xpath) { false }
+        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_false
       end
     end
   end
-    
 
   describe "validate_response_codes" do
     it "should return false when the response code matches the string" do

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe LinkCheckJobsController do
 
   describe "POST create" do
-    let(:link_check) { mock(:link_check) }
+    let(:link_check) { double(:link_check) }
 
     it "should create a link_check_job" do
       LinkCheckJob.should_receive(:create).with({'url' => 'http://google.co.nz', 'primary_collection' => 'TAPUHI'}) { link_check }

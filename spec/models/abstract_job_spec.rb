@@ -82,7 +82,7 @@ describe AbstractJob do
       end
 
       context "the environment is preview and parser_code is present" do
-        let(:parser) {mock(:parser).as_null_object}
+        let(:parser) {double(:parser).as_null_object}
         before(:each) do
           job.environment = "preview"
           job.parser_code = "new code"
@@ -151,7 +151,7 @@ describe AbstractJob do
   end
 
   describe "#finish!" do
-    let(:parser) { mock(:parser, enrichment_definitions: {}).as_null_object }
+    let(:parser) { double(:parser, enrichment_definitions: {}).as_null_object }
 
     before do
       job.stub(:parser) { parser }
@@ -292,8 +292,8 @@ describe AbstractJob do
 
   describe "total_errors_count" do
     it "should return a sum of failed and invalid records" do
-      job.stub(:invalid_records) { mock(:array, count: 10) }
-      job.stub(:failed_records) { mock(:array, count: 20) }
+      job.stub(:invalid_records) { double(:array, count: 10) }
+      job.stub(:failed_records) { double(:array, count: 20) }
       job.total_errors_count.should eq 30
     end
   end

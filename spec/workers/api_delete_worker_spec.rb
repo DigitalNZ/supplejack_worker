@@ -6,7 +6,7 @@ describe ApiDeleteWorker do
 
 	before do
 	 RestClient.stub(:delete)
-	 AbstractJob.stub(:find) { mock(:job).as_null_object }
+	 AbstractJob.stub(:find) { double(:job).as_null_object }
 	end
 
 	describe "#perform" do
