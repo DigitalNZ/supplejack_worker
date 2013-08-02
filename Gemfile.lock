@@ -1,6 +1,6 @@
 GIT
   remote: git@scm.digitalnz.org:harvester/core
-  revision: dd955341603c9223b08eb35d39861db3a0c1549e
+  revision: 44026e105ce9312a0310c61b09cd5f007f019c3d
   specs:
     harvester_core (0.0.1)
       actionpack (~> 3.2)
@@ -162,7 +162,7 @@ GEM
       treetop (~> 1.4.8)
     method_source (0.8.1)
     mime-types (1.23)
-    mimemagic (0.2.0)
+    mimemagic (0.2.1)
     mini_portile (0.5.1)
     mongoid (3.1.4)
       activemodel (~> 3.2)
