@@ -3,4 +3,12 @@ class HarvestScheduleSerializer < ActiveModel::Serializer
   attributes :id, :parser_id, :start_time, :cron, :frequency, :at_hour, :at_minutes, :offset, :environment
   attributes :next_run_at, :last_run_at, :recurrent, :mode, :enrichments
 
+  def at_hour
+  	object.at_hour.to_s.rjust(2, "0")
+  end
+
+  def at_minutes
+  	object.at_minutes.to_s.rjust(2, "0")
+  end
+
 end
