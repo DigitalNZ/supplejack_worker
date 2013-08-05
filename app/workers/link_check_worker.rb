@@ -1,5 +1,6 @@
 class LinkCheckWorker
   include Sidekiq::Worker
+  include ValidatesResource
 
   sidekiq_options :retry => 100
 
@@ -8,7 +9,7 @@ class LinkCheckWorker
   def perform(link_check_job_id, strike=0)
     @link_check_job_id = link_check_job_id
     begin
-      if link_check_job.present? and collection_rule.active
+      if link_check_job.present? and rules.active
         response = link_check(link_check_job.url, link_check_job.primary_collection)
         if validate_collection_rules(response, link_check_job.primary_collection)
           set_record_status(link_check_job.record_id, "active") if strike > 0
@@ -39,14 +40,14 @@ class LinkCheckWorker
     @link_check_job ||= LinkCheckJob.find(@link_check_job_id) rescue nil
   end
 
-  def collection_rule
-    @collection_rule ||= CollectionRules.find(:all, params: { collection_rules: { collection_title: link_check_job.primary_collection} }).first
+  def rules
+    collection_rule(link_check_job.primary_collection)
   end
 
   def link_check(url, collection)
     Sidekiq.redis do |conn| 
       if conn.setnx(collection, 0)
-        conn.expire(collection, collection_rule.try(:throttle) || 2)
+        conn.expire(collection, rules.try(:throttle) || 2)
         RestClient.get(url)
       else
         raise Exception.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
@@ -72,33 +73,5 @@ class LinkCheckWorker
     rescue Exception => e
       Rails.logger.warn("Record not found. Ignoring.")
     end
-  end
-
-  def validate_collection_rules(response, collection)
-    valid_status_code = valid_xpath = false
-
-    if collection_rule.present?
-      valid_status_code = validate_response_codes(response.code, collection_rule.status_codes)
-      valid_xpath = validate_xpath(collection_rule.xpath, response.body)
-    end
-
-    valid_status_code and valid_xpath
-  end
-
-  def validate_response_codes(response_code, response_code_blacklist)
-    if response_code_blacklist.present?
-      response_code_blacklist.split(",").each do |code|
-        match = response_code.to_s.match(code.strip)
-
-        return false if match.present?
-      end
-    end
-    true
-  end
-
-  def validate_xpath(xpath, response_body)
-    return true if xpath.blank?
-    doc = Nokogiri::HTML.parse(response_body)
-    doc.xpath(xpath).empty?
   end
 end
