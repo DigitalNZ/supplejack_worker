@@ -14,3 +14,7 @@ end
 every 5.minutes do
   runner "NetworkChecker.check"
 end
+
+every 2.hours do
+  runner "EnqueueCollectionChecksWorker.perform_async"
+end
