@@ -13,6 +13,6 @@ class LinkCheckJob
   private
 
   def enqueue
-    LinkCheckWorker.perform_async(self.id.to_s)
+    LinkCheckWorker.perform_async(self.id.to_s) if ENV['LINK_CHECKING_ENABLED'].present?
   end
 end
