@@ -10,3 +10,7 @@ end
 every 1.day, :at => '6:00 am' do
   runner "CollectionStatistics.email_daily_stats"
 end
+
+every 2.hours do
+  runner "NetworkChecker.check"
+end

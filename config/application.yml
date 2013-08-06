@@ -14,6 +14,7 @@ development:
   MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
+  LINK_CHECKING_ENABLED: "true"
 
 staging:
   API_HOST: "http://api.uat.digitalnz.org"
@@ -22,6 +23,7 @@ staging:
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
   LINKCHECKER_EMAIL: "linkchecker@uat.digitalnz.org"
+  LINK_CHECKING_ENABLED: "true"
 
 production:
   API_HOST: "http://api.dnz03.digitalnz.org"
@@ -30,6 +32,7 @@ production:
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "e2a36ad9"
   LINKCHECKER_EMAIL: "linkchecker@digitalnz.org"
+  LINK_CHECKING_ENABLED: "true"
 
 test:
   API_HOST: "http://localhost:3000"
@@ -37,3 +40,4 @@ test:
   MANAGER_API_KEY: "12345"
   HARVESTER_CACHING_ENABLED: false
   HONEYBADGER_API_KEY: "e2a36ad9"
+  LINK_CHECKING_ENABLED: "true"

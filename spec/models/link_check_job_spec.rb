@@ -33,5 +33,11 @@ describe LinkCheckJob do
       LinkCheckWorker.should_receive(:perform_async).with(link_check_job.id.to_s)
       link_check_job.send(:enqueue)
     end
+
+    it "should not enqueue a job if link checking is disabled" do
+      ENV["LINK_CHECKING_ENABLED"] = nil
+      LinkCheckWorker.should_not_receive(:perform_async).with(link_check_job.id.to_s)
+      link_check_job.send(:enqueue)
+    end
   end
 end
