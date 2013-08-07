@@ -62,6 +62,16 @@ describe AbstractWorker do
 	  end
 	end
 
+	describe "#sanitize_id" do
+		it "accepts strings and returns the string" do
+		  worker.send(:sanitize_id, "abc").should eq "abc"
+		end
+
+		it "it accepts serialized object_ids and returns the id string" do
+		  worker.send(:sanitize_id, {"$oid" => "preview123"}).should eq "preview123"
+		end
+	end
+
   describe "#job" do
     it "should find the job" do
     	worker.instance_variable_set(:@job_id, 123)

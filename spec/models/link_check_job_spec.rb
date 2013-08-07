@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe LinkCheckJob do
   let(:link_check_job) { FactoryGirl.build(:link_check_job, url: "http://google.co.nz") }
+
+  before { ENV['LINK_CHECKING_ENABLED'] = "true" }
   
   describe "validations" do
     it "should validates the presence of url" do

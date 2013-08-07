@@ -74,7 +74,51 @@ describe HarvestJob do
       RestClient.should_receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: 'tapuhi', job_id: job.id})
       job.flush_old_records
     end
+  end
 
+  describe "records" do
+
+    let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < HarvesterCore::Xml::Base; end", file_name: "natlib_pages.rb") }
+    let(:record1) { double(:record) }
+    let(:record2) { double(:record) }
+
+    before do
+      HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
+      parser.load_file
+
+      job.stub(:environment) { "staging" }
+      job.stub(:parser) { parser }
+      job.stub(:finish!)
+      job.stub(:start!)
+
+      LoadedParser::NatlibPages.stub(:environment=).with("staging")
+      LoadedParser::NatlibPages.stub(:records) { [record1, record2] }
+    end
+
+    it "should start the job" do
+      job.records {|r| r }
+      expect(job).to have_received(:start!)
+    end
+
+    it "gets records from parser class" do
+      job.records {|r| r }
+      expect(LoadedParser::NatlibPages).to have_received(:records)
+    end
+
+    it "finishes the job" do
+      job.records {|r| r }
+      expect(job).to have_received(:finish!)
+    end
+
+    it "rescues exceptions from the whole harvest and stores it" do
+      LoadedParser::NatlibPages.stub(:records).and_raise "Everything broke"
+      job.records {|r| r }
+      job.harvest_failure.message.should eq "Everything broke"
+    end
+
+    it "yields each record with index" do
+      expect { |b| job.records(&b) }.to yield_successive_args([record1,0], [record2,1])
+    end
   end
 
   describe "#finish!" do 

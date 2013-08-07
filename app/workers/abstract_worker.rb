@@ -19,6 +19,10 @@ class AbstractWorker
 
   protected
 
+  def sanitize_id(id)
+    id.is_a?(Hash) ? id["$oid"] : id
+  end
+
   def api_update_finished?
     job.reload
     job.posted_records_count == job.records_count

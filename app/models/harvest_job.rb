@@ -28,6 +28,28 @@ class HarvestJob < AbstractJob
     end
   end
 
+  def records(&block)
+    start!
+    
+    begin
+      options = {}
+      options[:limit] = limit.to_i if limit.to_i > 0
+      options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
+
+      parser.load_file
+      parser_klass = parser.loader.parser_class
+      parser_klass.environment = environment if environment.present?
+
+      parser_klass.records(options).each_with_index do |record, index|
+        yield record, index
+      end
+    rescue StandardError, ScriptError => e
+      build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
+    end
+
+    finish!
+  end
+
   def source_id
     if self.parser.loader.loaded?
       self.parser.loader.parser_class.get_source_id
