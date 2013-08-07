@@ -14,41 +14,13 @@ describe HarvestWorker do
   end
   
   describe "#perform" do
-    let(:record) { double(:record, attributes: {}, valid?: true) }
+    let!(:record) { double(:record, attributes: {}, valid?: true) }
 
     before(:each) do
       job.stub(:parser) { parser }
       LoadedParser::NatlibPages.stub(:records) { [record] }
-      record.stub(:deletable?) { false }
-      worker.stub(:stop_harvest?) { false }
       worker.stub(:api_update_finished?) { true }
-      worker.stub(:post_to_api)
-    end
-
-    context "index is defined" do
-      before { LoadedParser::NatlibPages.stub(:records) { [double(:record), double(:record),double(:record), record] } }
-      
-      it "only processes the record at position == index" do
-        job.index = 3
-        worker.should_receive(:process_record).once.with(record, job)
-        worker.perform(1)
-      end
-    end
-
-    it "starts the harvest job" do
-      job.should_receive(:start!)
-      worker.perform(1)
-    end
-
-    it "gets records from parser class" do
-      LoadedParser::NatlibPages.should_receive(:records)
-      worker.perform(1)
-    end
-
-    it "sets the proper environment from the harvest job" do
-      job.stub(:environment) { "staging" }
-      LoadedParser::NatlibPages.should_receive("environment=").with("staging")
-      worker.perform(1)
+      worker.stub(:process_record)
     end
 
     it "processes each record" do
@@ -56,21 +28,31 @@ describe HarvestWorker do
       worker.perform(1)
     end
 
-    it "records the end time" do
-      worker.perform(1)
-      job.end_time.should_not be_nil
-    end
-
-    it "rescues exceptions from the whole harvest and stores it" do
-      LoadedParser::NatlibPages.stub(:records).and_raise "Everything broke"
-      worker.perform(1)
-      job.harvest_failure.message.should eq "Everything broke"
-    end
-
     it "enqueues enrichment jobs" do
       job.should_receive(:enqueue_enrichment_jobs)
       worker.perform(1)
     end
+
+    it "sets @job_id to the harvest_job_id" do
+      worker.perform("abc123")
+      worker.job_id.should eq "abc123"
+    end
+
+    it "handles ids as objects" do
+      worker.perform({"$oid" => "abc123"})
+      worker.job_id.should eq "abc123"
+    end
+
+    ## specific tests to preview worker
+    # context "index is defined" do
+    #   before { LoadedParser::NatlibPages.stub(:records) { [double(:record), double(:record),double(:record), record] } }
+      
+    #   it "only processes the record at position == index" do
+    #     job.index = 3
+    #     worker.should_receive(:process_record).once.with(record, job)
+    #     worker.perform(1)
+    #   end
+    # end
   end
 
   describe "#process_record" do
@@ -138,6 +120,18 @@ describe HarvestWorker do
       job.stub(:required_enrichments) { }
       worker.post_to_api(attributes)
       expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_sources" => nil}, job.id.to_s)
+    end
+
+    context "async false" do
+
+      let(:api_update_worker) { double(:api_update_worker) }
+
+      it "should create a new instance of ApiUpdateWorker" do
+        job.stub(:required_enrichments)
+        ApiUpdateWorker.should_receive(:new) { api_update_worker }
+        api_update_worker.should_receive(:perform)
+        worker.post_to_api(attributes, false)
+      end
     end
 
     context "required sources" do

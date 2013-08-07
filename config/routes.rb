@@ -6,7 +6,7 @@ HarvesterWorker::Application.routes.draw do
   resources :harvest_jobs, only: [:create, :update, :show, :index]
   resources :enrichment_jobs, only: [:create, :update, :show]
   resources :harvest_schedules, only: [:index, :create, :update, :show, :destroy]
-  resources :previews, only: [:create]
+  resources :previews, only: [:create, :show]
   
   resources :link_check_jobs, only: [:create, :show]
   resources :collection_rules, only: [:show]
