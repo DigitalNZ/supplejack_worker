@@ -3,9 +3,11 @@ class CollectionCheckWorker
   include ValidatesResource
 
   attr_reader :primary_collection
+  attr_reader :escaped_primary_collection
 
   def perform(primary_collection)
     @primary_collection = primary_collection
+    @escaped_primary_collection = ERB::Util.url_encode(primary_collection)
     
     collection_up = collection_records.any? {|r| up?(r) }
 
@@ -16,11 +18,11 @@ class CollectionCheckWorker
   private
 
   def collection_records
-    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records/#{self.primary_collection}"))
+    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records/#{self.escaped_primary_collection}"))
   end
 
   def collection_active?
-    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collections/#{primary_collection}"))
+    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collections/#{self.escaped_primary_collection}"))
     collection['status'] == "active"
   end
 
@@ -35,12 +37,12 @@ class CollectionCheckWorker
   end
 
   def suppress_collection
-    RestClient.put("#{ENV['API_HOST']}/link_checker/collections/#{primary_collection}", {status: 'suppressed'})
+    RestClient.put("#{ENV['API_HOST']}/link_checker/collections/#{self.escaped_primary_collection}", {status: 'suppressed'})
     CollectionMailer.collection_status(primary_collection, "down")
   end
 
   def activate_collection
-    RestClient.put("#{ENV['API_HOST']}/link_checker/collections/#{primary_collection}", {status: 'active'})
+    RestClient.put("#{ENV['API_HOST']}/link_checker/collections/#{self.escaped_primary_collection}", {status: 'active'})
     CollectionMailer.collection_status(primary_collection, "up")
   end
 end
