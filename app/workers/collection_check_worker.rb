@@ -16,11 +16,11 @@ class CollectionCheckWorker
   private
 
   def collection_records
-    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records/#{self.primary_collection}"))
+    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records", {collection: self.primary_collection}))
   end
 
   def collection_active?
-    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collections/#{primary_collection}"))
+    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection", {collection: self.primary_collection}))
     collection['status'] == "active"
   end
 
@@ -30,17 +30,17 @@ class CollectionCheckWorker
 
   def up?(landing_url)
     if response = get(landing_url)
-      validate_collection_rules(response, primary_collection)
+      validate_collection_rules(response, self.primary_collection)
     end
   end
 
   def suppress_collection
-    RestClient.put("#{ENV['API_HOST']}/link_checker/collections/#{primary_collection}", {status: 'suppressed'})
-    CollectionMailer.collection_status(primary_collection, "down")
+    RestClient.put("#{ENV['API_HOST']}/link_checker/collection", {collection: self.primary_collection, status: 'suppressed'})
+    CollectionMailer.collection_status(self.primary_collection, "down")
   end
 
   def activate_collection
-    RestClient.put("#{ENV['API_HOST']}/link_checker/collections/#{primary_collection}", {status: 'active'})
-    CollectionMailer.collection_status(primary_collection, "up")
+    RestClient.put("#{ENV['API_HOST']}/link_checker/collection", {collection: self.primary_collection, status: 'active'})
+    CollectionMailer.collection_status(self.primary_collection, "up")
   end
 end
