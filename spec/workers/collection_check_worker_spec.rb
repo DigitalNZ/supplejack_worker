@@ -63,11 +63,11 @@ describe CollectionCheckWorker do
 
     before do
       JSON.stub(:parse) { [] }
-      RestClient.stub(:get).with("#{ENV['API_HOST']}/link_checker/collection_records/TAPUHI") { response }
+      RestClient.stub(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {collection: 'TAPUHI'}) { response }
     end
 
     it "should retrieve landing urls from the API to check" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection_records/TAPUHI") { response }
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {collection: 'TAPUHI'}) { response }
       worker.send(:collection_records)
     end
 
@@ -83,7 +83,7 @@ describe CollectionCheckWorker do
     end
 
     it "should retrieve the collections status" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collections/TAPUHI")
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection", {collection: 'TAPUHI'})
       worker.send(:collection_active?)
     end
 
@@ -135,7 +135,7 @@ describe CollectionCheckWorker do
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collections/TAPUHI", {status: 'suppressed'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collection", {collection: 'TAPUHI', status: 'suppressed'})
       worker.send(:suppress_collection)
     end
 
@@ -153,7 +153,7 @@ describe CollectionCheckWorker do
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collections/TAPUHI", {status: 'active'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collection", {collection: 'TAPUHI', status: 'active'})
       worker.send(:activate_collection)
     end
 
