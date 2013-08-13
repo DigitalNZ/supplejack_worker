@@ -63,11 +63,11 @@ describe CollectionCheckWorker do
 
     before do
       JSON.stub(:parse) { [] }
-      RestClient.stub(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {collection: 'TAPUHI'}) { response }
+      RestClient.stub(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {collection: 'TAPUHI'}}) { response }
     end
 
     it "should retrieve landing urls from the API to check" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {collection: 'TAPUHI'}) { response }
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {collection: 'TAPUHI'}}) { response }
       worker.send(:collection_records)
     end
 
@@ -83,7 +83,7 @@ describe CollectionCheckWorker do
     end
 
     it "should retrieve the collections status" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection", {collection: 'TAPUHI'})
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection", {params: {collection: 'TAPUHI'}})
       worker.send(:collection_active?)
     end
 

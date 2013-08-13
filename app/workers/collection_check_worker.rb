@@ -16,11 +16,11 @@ class CollectionCheckWorker
   private
 
   def collection_records
-    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records", {collection: self.primary_collection}))
+    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records", {params: {collection: self.primary_collection}}))
   end
 
   def collection_active?
-    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection", {collection: self.primary_collection}))
+    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection", {params: {collection: self.primary_collection}}))
     collection['status'] == "active"
   end
 
