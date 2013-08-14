@@ -41,11 +41,18 @@ describe Preview do
 				job.stub(:harvest_failure) { {} }
 				Preview.stub(:find) { preview }
 				preview.stub(:update_attribute)
+				HarvestJob.stub(:where) { [running_job] }
+				job.stub(:save!)
 			end
 
 			it "should stop the currently active job" do
 				HarvestJob.should_receive(:where).with(status: "active", parser_id: job.parser_id, environment: "preview") { [running_job] }
 			  running_job.should_receive(:update_attribute).with(:status, "stopped")
+			  Preview.spawn_preview_worker(preview_attributes)
+			end
+
+			it "should resave the current running job" do
+			  job.should_receive(:save!)
 			  Preview.spawn_preview_worker(preview_attributes)
 			end
 		end

@@ -42,17 +42,6 @@ describe HarvestWorker do
       worker.perform({"$oid" => "abc123"})
       worker.job_id.should eq "abc123"
     end
-
-    ## specific tests to preview worker
-    # context "index is defined" do
-    #   before { LoadedParser::NatlibPages.stub(:records) { [double(:record), double(:record),double(:record), record] } }
-      
-    #   it "only processes the record at position == index" do
-    #     job.index = 3
-    #     worker.should_receive(:process_record).once.with(record, job)
-    #     worker.perform(1)
-    #   end
-    # end
   end
 
   describe "#process_record" do
