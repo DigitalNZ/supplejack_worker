@@ -15,7 +15,7 @@ class Preview
 
   def self.spawn_preview_worker(attributes)
   	job = HarvestJob.create(attributes[:harvest_job])
-  	preview = Preview.create(format: attributes[:format], status: "Starting preview process")
+  	preview = Preview.create(format: attributes[:format], status: "New preview record initialised. Waiting in queue...")
 
   	unless job.valid?
   		harvest_job = HarvestJob.where(status: "active", parser_id: job.parser_id, environment: "preview").first
