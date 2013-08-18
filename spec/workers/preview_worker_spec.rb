@@ -118,7 +118,7 @@ describe PreviewWorker do
 		end
 
 		it "should update the attribute status to: 'harvesting record'" do
-		  preview.should_receive(:update_attribute).with(:status, 'harvesting record')
+		  preview.should_receive(:update_attribute).with(:status, 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
 		  worker.send(:process_record, record1)
 		end
 
