@@ -22,6 +22,7 @@ class LinkCheckWorker
     rescue Exception => e
       Rails.logger.warn("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/link_checker/records/#{link_check_job.record_id} to update status to supressed")
       Rails.logger.warn("Exception: #{e.inspect}")
+      Rails.logger.warn("Exception: #{e.backtrace.inspect}")
     end
   end
 

@@ -2,7 +2,7 @@ module ValidatesResource
   extend ActiveSupport::Concern
 
   def collection_rule(primary_collection)
-    @collection_rule ||= CollectionRules.find(:all, params: { collection_rules: { collection_title: primary_collection} }).first
+    @collection_rule ||= CollectionRules.find_by(collection_title: primary_collection)
   end
 
   def validate_collection_rules(response, primary_collection)
