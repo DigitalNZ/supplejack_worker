@@ -13,7 +13,7 @@ describe ValidatesResource do
     let(:response) { double(:response, code: 200, body: "<p></p>") }
 
     before do
-      CollectionRules.stub(:find) { [collection_rule] }
+      CollectionRules.stub(:find_by) { collection_rule }
       worker.stub(:link_check_job) { link_check_job }
     end
 
@@ -96,12 +96,12 @@ describe ValidatesResource do
   describe "#collection_rule" do
 
     it "should should find the collection rule" do
-      CollectionRules.should_receive(:find).with(:all, params: { collection_rules: { collection_title: 'TAPUHI'}}) { [] }
+      CollectionRules.should_receive(:find_by).with(collection_title: 'TAPUHI') { }
       worker.send(:collection_rule, 'TAPUHI')
     end
 
     it "should memozie the collection rule" do
-      CollectionRules.should_receive(:find).once { [double(:collection_rule)] }
+      CollectionRules.should_receive(:find_by).once { [double(:collection_rule)] }
       worker.send(:collection_rule, 'TAPUHI')
       worker.send(:collection_rule, 'TAPUHI')
     end
