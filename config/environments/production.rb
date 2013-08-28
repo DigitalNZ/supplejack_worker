@@ -54,16 +54,14 @@ HarvesterWorker::Application.configure do
   ActionMailer::Base.delivery_method = :smtp
   # Include your app's configuration here:
   ActionMailer::Base.smtp_settings = {
-    :address  => "mailhostprivate.natlib.govt.nz",
+    :address  => ENV['SMTP_ADDRESS'],
     :port  => 25
   }
 
-  config.action_mailer.default_url_options = { :host => 'natlib.govt.nz' }
-
+  config.action_mailer.default_url_options = { :host => ENV['HOST'] }
 
   # Enable threaded mode
   # config.threadsafe!
-  LINKCHECKER_EMAIL = "linkchecker@digitalnz.org"
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found)

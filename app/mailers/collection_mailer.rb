@@ -1,6 +1,6 @@
 class CollectionMailer < ActionMailer::Base
   default from: ENV['LINKCHECKER_EMAIL']
-  default to: "Chris.McDowall@dia.govt.nz, Ting.Sun@dia.govt.nz, dan.charles@dia.govt.nz, treach@boost.co.nz, andy@boost.co.nz"
+  default to: ENV['LINKCHECKER_RECIPIENTS']
 
   def daily_collection_stats(statistics_collections)
   	@statistics_collections = statistics_collections
