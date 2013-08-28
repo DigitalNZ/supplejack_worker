@@ -49,11 +49,11 @@ HarvesterWorker::Application.configure do
   # Include your app's configuration here:
   ActionMailer::Base.smtp_settings = {
     :address  => 'localhost',
-    :domain  => 'worker.uat.digitalnz.org',
+    :domain  => ENV['HOST'],
     :port  => 25
   }
 
-  config.action_mailer.default_url_options = { :host => 'worker.uat.digitalnz.org' }
+  config.action_mailer.default_url_options = { :host => ENV['HOST'] }
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
