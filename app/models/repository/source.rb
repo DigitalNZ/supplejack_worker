@@ -1,5 +1,5 @@
 module Repository
-  class Source
+  class Fragment
     include Mongoid::Document
 
     embedded_in :record, class_name: "Repository::Record"
