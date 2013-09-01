@@ -25,30 +25,3 @@ test:
   HONEYBADGER_API_KEY: "e2a36ad9"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
-
-staging:
-  API_HOST: "http://api.uat.digitalnz.org"
-  MANAGER_HOST: "http://harvester.uat.digitalnz.org"
-  MANAGER_API_KEY: "n3V1GLzp5nz4mgyQrGB3"
-  HARVESTER_CACHING_ENABLED: true
-  HONEYBADGER_API_KEY: "e2a36ad9"
-  LINKCHECKER_EMAIL: "linkchecker@uat.digitalnz.org"
-  LINK_CHECKING_ENABLED: "true"
-  HOST: 'worker.uat.digitalnz.org'
-  SECRET_TOKEN: '8aa775f035ce21b60f9f322d0d185fab861d1fe797f8e0d3a6627ed51ba57b2f49c8010b308a9d9ece3a0d1fedb463e7238644da2a8448535006cbee37238f6a'
-  DEVISE_MAILER: "info@worker.uat.digitalnz.org"
-  LINKCHECKER_RECIPIENTS: "Chris.McDowall@dia.govt.nz, Ting.Sun@dia.govt.nz, dan.charles@dia.govt.nz, treach@boost.co.nz, andy@boost.co.nz"
-
-production:
-  API_HOST: "http://api.dnz03.digitalnz.org"
-  MANAGER_HOST: "http://harvester.uat.digitalnz.org"
-  MANAGER_API_KEY: "n3V1GLzp5nz4mgyQrGB3"
-  HARVESTER_CACHING_ENABLED: true
-  HONEYBADGER_API_KEY: "e2a36ad9"
-  LINKCHECKER_EMAIL: "linkchecker@digitalnz.org"
-  LINK_CHECKING_ENABLED: "true"
-  SMTP_ADDRESS: "mailhostprivate.natlib.govt.nz"
-  HOST: "worker.dnz03.digitalnz.org"
-  SECRET_TOKEN: '8aa775f035ce21b60f9f322d0d185fab861d1fe797f8e0d3a6627ed51ba57b2f49c8010b308a9d9ece3a0d1fedb463e7238644da2a8448535006cbee37238f6a'
-  DEVISE_MAILER: "info@worker.uat.digitalnz.org"
-  LINKCHECKER_RECIPIENTS: "Chris.McDowall@dia.govt.nz, Ting.Sun@dia.govt.nz, dan.charles@dia.govt.nz, treach@boost.co.nz, andy@boost.co.nz"
