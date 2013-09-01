@@ -14,6 +14,7 @@
 /log/*.log
 /tmp
 
+/config/application.yml
 .DS_Store
 /worker.sublime-project
 /worker.sublime-workspace
