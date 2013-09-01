@@ -7,12 +7,12 @@ module Repository
 
       store_in session: "api"
 
-      embeds_many :sources, cascade_callbacks: true, class_name: "Repository::Source"
+      embeds_many :fragments, cascade_callbacks: true, class_name: "Repository::Fragment"
       delegate :title, :shelf_location, :relation, to: :primary
     end
 
     def primary
-      self.sources.where(priority: 0).first
+      self.fragments.where(priority: 0).first
     end
 
     def parent_tap_id
@@ -29,8 +29,8 @@ module Repository
 
     def authorities
       authorities = {}
-      sorted_sources.each do |source|
-        source.authorities.each do |authority|
+      sorted_fragments.each do |fragment|
+        fragment.authorities.each do |authority|
           authorities["#{authority.authority_id}-#{authority.name}"] ||= authority
         end
       end
@@ -38,13 +38,13 @@ module Repository
     end
 
     def locations
-      sources.map(&:locations).flatten
+      fragments.map(&:locations).flatten
     end
 
     private
 
-    def sorted_sources
-      self.sources.sort_by {|s| s.priority || Integer::INT32_MAX }
+    def sorted_fragments
+      self.fragments.sort_by {|s| s.priority || Integer::INT32_MAX }
     end
 
     def extract_tap_id(field)

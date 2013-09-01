@@ -41,10 +41,10 @@ class HarvestWorker < AbstractWorker
 
   def post_to_api(attributes, async=true)
     if async
-      ApiUpdateWorker.perform_async("/harvester/records.json", {record: attributes, required_sources: job.required_enrichments}, job.id.to_s)
+      ApiUpdateWorker.perform_async("/harvester/records.json", {record: attributes, required_fragments: job.required_enrichments}, job.id.to_s)
     else
       api_update_worker = ApiUpdateWorker.new
-      api_update_worker.perform("/harvester/records.json", {record: attributes, required_sources: job.required_enrichments}, job.id.to_s)
+      api_update_worker.perform("/harvester/records.json", {record: attributes, required_fragments: job.required_enrichments}, job.id.to_s)
     end
   end
 

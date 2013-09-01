@@ -108,7 +108,7 @@ describe HarvestWorker do
     it "should post to the API" do
       job.stub(:required_enrichments) { }
       worker.post_to_api(attributes)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_sources" => nil}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_fragments" => nil}, job.id.to_s)
     end
 
     context "async false" do
@@ -123,11 +123,11 @@ describe HarvestWorker do
       end
     end
 
-    context "required sources" do
+    context "required fragments" do
       it "should send the required enricments to the api" do
         job.stub(:required_enrichments) { [:ndha_rights] }
         worker.post_to_api(attributes)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_sources" => ["ndha_rights"]}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
       end
     end
   end

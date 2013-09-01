@@ -74,13 +74,13 @@ describe PreviewWorker do
       result = worker.send(:strip_ids, {
         '_id' => '123', 
         'blah' => 'blah', 
-        'sources' => {
+        'fragments' => {
             '_id' => '12',
             'authorities' => [{'_id' => 'ab12'}, 'blah'],
         }})
       result.should_not include('_id' => '123')
-      result['sources'].should_not include('_id' => '12')
-      result['sources']['authorities'][0].should_not include('_id' => 'ab12')
+      result['fragments'].should_not include('_id' => '12')
+      result['fragments']['authorities'][0].should_not include('_id' => 'ab12')
       result.should include('blah' => 'blah')
     end
 

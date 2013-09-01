@@ -75,7 +75,7 @@ describe EnrichmentWorker do
     end
 
     it "should fetch records based on the source_id" do
-      Repository::Record.should_receive(:where).with("sources.source_id" => "nlnzcat") { query }
+      Repository::Record.should_receive(:where).with("fragments.source_id" => "nlnzcat") { query }
       worker.records
     end
 
@@ -84,8 +84,8 @@ describe EnrichmentWorker do
         job.stub(:harvest_job) {double(:harvest_job, id: 'abc123')}
       end
 
-      it "only returns records with a source containing harvest job's id" do
-        Repository::Record.should_receive(:where).with("sources.job_id" => "abc123") { query }
+      it "only returns records with a fragment containing harvest job's id" do
+        Repository::Record.should_receive(:where).with("fragments.job_id" => "abc123") { query }
         worker.records
       end
     end
@@ -94,7 +94,7 @@ describe EnrichmentWorker do
       before { job.stub(:record_id) {"abc123"} }
 
       it "should fetch a specific record" do
-        Repository::Record.should_receive(:where).with(record_id: job.record_id, "sources.source_id" => "nlnzcat") { query }
+        Repository::Record.should_receive(:where).with(record_id: job.record_id, "fragments.source_id" => "nlnzcat") { query }
         worker.records
       end
 
@@ -240,8 +240,8 @@ describe EnrichmentWorker do
 
     it "enqueues an ApiUpdate job with record_id, attributes (including job_id) and enrichment_job_id for each enriched record" do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/sources.json", {"source" => {"category" => 'books', "job_id" => job.id.to_s}, "required_sources" => []}, job.id.to_s)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {"source" => {"title" => 'foo', "job_id" => job.id.to_s}, "required_sources" => []}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/fragments.json", {"fragment" => {"category" => 'books', "job_id" => job.id.to_s}, "required_fragments" => []}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/fragments.json", {"fragment" => {"title" => 'foo', "job_id" => job.id.to_s}, "required_fragments" => []}, job.id.to_s)
     end
 
     it "should increment the records count on the job" do
@@ -249,11 +249,11 @@ describe EnrichmentWorker do
       worker.send(:post_to_api, enrichment)
     end
 
-    context "required sources" do
+    context "required fragments" do
       it "should send the required enricments to the api" do
         job.stub(:required_enrichments) { ["ndha_rights"] }
         worker.send(:post_to_api, enrichment)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/sources.json", {"source" => {"title" => 'foo', "job_id" => job.id.to_s}, "required_sources" => ["ndha_rights"]}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/fragments.json", {"fragment" => {"title" => 'foo', "job_id" => job.id.to_s}, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
       end
     end
   end

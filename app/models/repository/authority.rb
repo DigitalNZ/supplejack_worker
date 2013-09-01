@@ -2,7 +2,7 @@ module Repository
   class Authority
     include Mongoid::Document
 
-    embedded_in :source, class_name: "Repository::Source"
+    embedded_in :fragment, class_name: "Repository::Fragment"
 
     field :text, type: String
   end
