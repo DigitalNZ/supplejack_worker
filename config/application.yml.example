@@ -29,7 +29,7 @@ test:
 staging:
   API_HOST: "http://api.harvester.org"
   MANAGER_HOST: "http://harvester.org"
-  MANAGER_API_KEY: "abc123"
+  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
   HONEYBADGER_API_KEY: "anc123"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
