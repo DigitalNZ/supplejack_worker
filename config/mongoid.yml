@@ -1,4 +1,4 @@
-  development:
+development:
   # Configure available database sessions. (required)
   sessions:
     # Defines the default session. (required)
@@ -31,8 +31,7 @@
     api:
       database: dnz_api_staging
       hosts:
-        - localhost:27017
-        # - 192.168.0.70:27017
+        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
         consistency: :strong
   # Configure Mongoid specific options. (optional)
@@ -90,7 +89,7 @@ test:
     api:
       database: dnz_api_test
       hosts:
-        - localhost:27017
+        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
         consistency: :strong
 
