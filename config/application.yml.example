@@ -38,6 +38,7 @@ staging:
   SECRET_TOKEN: 'some long hash value'
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
+  API_MONGOID_HOSTS: "localhost:27017"
 
 production:
   API_HOST: "http://api.harvester.org"
@@ -52,3 +53,4 @@ production:
   SECRET_TOKEN: 'some long hash value'
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
+  API_MONGOID_HOSTS: "localhost:27017"
