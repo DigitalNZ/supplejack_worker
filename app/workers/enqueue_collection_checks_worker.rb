@@ -8,7 +8,7 @@ class EnqueueCollectionChecksWorker
   end
 
   def self.collections_to_check
-    CollectionRules.all.to_a.keep_if{ |rules| rules.active }.map(&:collection_title)
+    CollectionRules.all.to_a.keep_if{ |rules| rules.active }.map(&:source_id)
   end
 
 

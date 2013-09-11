@@ -6,6 +6,7 @@ describe CollectionCheckWorker do
 
   before(:each) do
     worker.instance_variable_set(:@primary_collection,'TAPUHI')
+    worker.instance_variable_set(:@source_id,'tapuhi')
   end
 
   describe "#perform" do
@@ -52,7 +53,7 @@ describe CollectionCheckWorker do
 
       it "should remove the collection from the blacklist" do
         worker.should_receive(:activate_collection)
-        worker.perform('TAPUHI')
+        worker.perform('TAPUHI',)
       end
     end
   end
@@ -63,11 +64,11 @@ describe CollectionCheckWorker do
 
     before do
       JSON.stub(:parse) { [] }
-      RestClient.stub(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {collection: 'TAPUHI'}}) { response }
+      RestClient.stub(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {source_id: 'tapuhi'}}) { response }
     end
 
     it "should retrieve landing urls from the API to check" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {collection: 'TAPUHI'}}) { response }
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {source_id: 'tapuhi'}}) { response }
       worker.send(:collection_records)
     end
 
@@ -83,7 +84,7 @@ describe CollectionCheckWorker do
     end
 
     it "should retrieve the collections status" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection", {params: {collection: 'TAPUHI'}})
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection", {params: {source_id: 'tapuhi'}})
       worker.send(:collection_active?)
     end
 
@@ -122,7 +123,7 @@ describe CollectionCheckWorker do
     
     it "gets the url and validates it" do
       worker.should_receive(:get).with('http://blah.com') { response }
-      worker.should_receive(:validate_collection_rules).with(response, 'TAPUHI') { true }
+      worker.should_receive(:validate_collection_rules).with(response, 'tapuhi') { true }
       worker.send(:up?,'http://blah.com').should be_true
     end
   end
@@ -131,17 +132,17 @@ describe CollectionCheckWorker do
 
     before do
       RestClient.stub(:put)
-      CollectionMailer.stub(:collection_status).with("TAPUHI", "down")
+      CollectionMailer.stub(:collection_status).with("tapuhi", "down")
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collection", {collection: 'TAPUHI', status: 'suppressed'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collection", {source_id: 'tapuhi', status: 'suppressed'})
       worker.send(:suppress_collection)
     end
 
     it "should send an email that the collection is down" do
       worker.send(:suppress_collection)
-      expect(CollectionMailer).to have_received(:collection_status).with("TAPUHI", "down")
+      expect(CollectionMailer).to have_received(:collection_status).with("tapuhi", "down")
     end
   end
 
@@ -149,17 +150,17 @@ describe CollectionCheckWorker do
 
     before do
       RestClient.stub(:put)
-      CollectionMailer.stub(:collection_status).with("TAPUHI", "up")
+      CollectionMailer.stub(:collection_status).with("tapuhi", "up")
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collection", {collection: 'TAPUHI', status: 'active'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/collection", {source_id: 'tapuhi', status: 'active'})
       worker.send(:activate_collection)
     end
 
     it "should send an email that the collection is down" do
       worker.send(:activate_collection)
-      expect(CollectionMailer).to have_received(:collection_status).with("TAPUHI", "up")
+      expect(CollectionMailer).to have_received(:collection_status).with("tapuhi", "up")
     end
   end
 end

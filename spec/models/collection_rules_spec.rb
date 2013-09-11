@@ -4,8 +4,8 @@ describe CollectionRules do
   let(:rule) { FactoryGirl.build(:collection_rule) }
 
   describe "validations" do
-    it "should not be valid without a collection title" do
-      rule.collection_title = nil
+    it "should not be valid without a source_id" do
+      rule.source_id = nil
       rule.should_not be_valid
     end
 

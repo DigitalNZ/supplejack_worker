@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :collection_rule, :class => 'CollectionRules' do
-    collection_title "TAPHUI"
+    source_id "tapuhi"
     xpath "/xpath"
     status_codes "404"
   end

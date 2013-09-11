@@ -96,14 +96,14 @@ describe ValidatesResource do
   describe "#collection_rule" do
 
     it "should should find the collection rule" do
-      CollectionRules.should_receive(:find_by).with(collection_title: 'TAPUHI') { }
-      worker.send(:collection_rule, 'TAPUHI')
+      CollectionRules.should_receive(:find_by).with(source_id: 'tapuhi') { }
+      worker.send(:collection_rule, 'tapuhi')
     end
 
     it "should memozie the collection rule" do
       CollectionRules.should_receive(:find_by).once { [double(:collection_rule)] }
-      worker.send(:collection_rule, 'TAPUHI')
-      worker.send(:collection_rule, 'TAPUHI')
+      worker.send(:collection_rule, 'tapuhi')
+      worker.send(:collection_rule, 'tapuhi')
     end
   end
 end

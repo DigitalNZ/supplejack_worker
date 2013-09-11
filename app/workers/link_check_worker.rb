@@ -10,8 +10,8 @@ class LinkCheckWorker
     @link_check_job_id = link_check_job_id
     begin
       if link_check_job.present? and rules.active
-        response = link_check(link_check_job.url, link_check_job.primary_collection)
-        if validate_collection_rules(response, link_check_job.primary_collection)
+        response = link_check(link_check_job.url, link_check_job.source_id)
+        if validate_collection_rules(response, link_check_job.source_id)
           set_record_status(link_check_job.record_id, "active") if strike > 0
         else
           suppress_record(link_check_job_id, link_check_job.record_id, strike)
@@ -33,7 +33,7 @@ class LinkCheckWorker
   end
 
   def collection_stats
-    @collection_stats ||= CollectionStatistics.find_or_create_by({day: Date.today, collection_title: link_check_job.primary_collection})
+    @collection_stats ||= CollectionStatistics.find_or_create_by({day: Date.today, source_id: link_check_job.source_id})
   end
 
   def link_check_job
@@ -41,7 +41,7 @@ class LinkCheckWorker
   end
 
   def rules
-    collection_rule(link_check_job.primary_collection)
+    collection_rule(link_check_job.source_id)
   end
 
   def link_check(url, collection)

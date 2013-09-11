@@ -4,11 +4,11 @@ class LinkCheckJob
   
   field :url,                 type: String
   field :record_id,           type: Integer
-  field :primary_collection,  type: String
+  field :source_id,  type: String
 
   after_create :enqueue
 
-  validates :url, :record_id, :primary_collection, presence: true
+  validates :url, :record_id, :source_id, presence: true
 
   private
 

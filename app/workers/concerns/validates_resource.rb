@@ -1,13 +1,13 @@
 module ValidatesResource
   extend ActiveSupport::Concern
 
-  def collection_rule(primary_collection)
-    @collection_rule ||= CollectionRules.find_by(collection_title: primary_collection)
+  def collection_rule(source_id)
+    @collection_rule ||= CollectionRules.find_by(source_id: source_id)
   end
 
-  def validate_collection_rules(response, primary_collection)
+  def validate_collection_rules(response, source_id)
     valid_status_code = valid_xpath = false
-    rule = collection_rule(primary_collection)
+    rule = collection_rule(source_id)
 
     if rule.present?
       valid_status_code = validate_response_codes(response.code, rule.status_codes)
