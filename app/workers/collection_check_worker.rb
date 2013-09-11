@@ -2,10 +2,10 @@ class CollectionCheckWorker
   include Sidekiq::Worker
   include ValidatesResource
 
-  attr_reader :primary_collection
+  attr_reader :source_id
 
-  def perform(primary_collection)
-    @primary_collection = primary_collection
+  def perform(source_id)
+    @source_id = source_id
     
     collection_up = collection_records.any? {|r| up?(r) }
 
@@ -16,11 +16,11 @@ class CollectionCheckWorker
   private
 
   def collection_records
-    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records", {params: {collection: self.primary_collection}}))
+    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records", {params: {source_id: self.source_id}}))
   end
 
   def collection_active?
-    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection", {params: {collection: self.primary_collection}}))
+    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection", {params: {source_id: self.source_id}}))
     collection['status'] == "active"
   end
 
@@ -30,17 +30,17 @@ class CollectionCheckWorker
 
   def up?(landing_url)
     if response = get(landing_url)
-      validate_collection_rules(response, self.primary_collection)
+      validate_collection_rules(response, self.source_id)
     end
   end
 
   def suppress_collection
-    RestClient.put("#{ENV['API_HOST']}/link_checker/collection", {collection: self.primary_collection, status: 'suppressed'})
-    CollectionMailer.collection_status(self.primary_collection, "down")
+    RestClient.put("#{ENV['API_HOST']}/link_checker/collection", {source_id: self.source_id, status: 'suppressed'})
+    CollectionMailer.collection_status(self.source_id, "down")
   end
 
   def activate_collection
-    RestClient.put("#{ENV['API_HOST']}/link_checker/collection", {collection: self.primary_collection, status: 'active'})
-    CollectionMailer.collection_status(self.primary_collection, "up")
+    RestClient.put("#{ENV['API_HOST']}/link_checker/collection", {source_id: self.source_id, status: 'active'})
+    CollectionMailer.collection_status(self.source_id, "up")
   end
 end

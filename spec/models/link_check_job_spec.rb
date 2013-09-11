@@ -16,8 +16,8 @@ describe LinkCheckJob do
       link_check_job.should_not be_valid
     end
 
-    it "should validate the presence of primary_collection" do
-      link_check_job.primary_collection = nil
+    it "should validate the presence of source_id" do
+      link_check_job.source_id = nil
       link_check_job.should_not be_valid
     end
   end

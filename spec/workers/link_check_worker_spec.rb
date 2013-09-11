@@ -16,7 +16,7 @@ describe LinkCheckWorker do
   describe "#perform" do
 
     it "should perform a link_check" do
-      worker.should_receive(:link_check).with(link_check_job.url, link_check_job.primary_collection)
+      worker.should_receive(:link_check).with(link_check_job.url, link_check_job.source_id)
       worker.perform(link_check_job.id.to_s)
     end
 
@@ -114,7 +114,7 @@ describe LinkCheckWorker do
     end
 
     it "should find or create a collection statistics model with the collection_title" do
-      CollectionStatistics.should_receive(:find_or_create_by).with({day: Date.today, collection_title: link_check_job.primary_collection}) { collection_statistics }
+      CollectionStatistics.should_receive(:find_or_create_by).with({day: Date.today, source_id: link_check_job.source_id}) { collection_statistics }
       worker.send(:collection_stats).should eq collection_statistics
     end
 
@@ -261,9 +261,9 @@ describe LinkCheckWorker do
   end
 
   describe "#rules" do
-    it "should call collection_rule with the primary_collection" do
+    it "should call collection_rule with the source_id" do
       worker.unstub(:rules)
-      worker.should_receive(:link_check_job) { double(:link_check_job, primary_collection: 'TAPUHI') }
+      worker.should_receive(:link_check_job) { double(:link_check_job, source_id: 'TAPUHI') }
       worker.should_receive(:collection_rule).with('TAPUHI') { collection_rule }
       worker.send(:rules).should eq collection_rule
     end

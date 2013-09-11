@@ -2,9 +2,9 @@ class CollectionStatistics
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  index({collection_title: 1, day: 1}, {unique: true})
+  index({source_id: 1, day: 1}, {unique: true})
 
-  field :collection_title,	          type: String
+  field :source_id,	          type: String
   field :day,                         type: Date
 
   field :suppressed_count,            type: Integer, default: 0
@@ -15,8 +15,8 @@ class CollectionStatistics
   field :deleted_records,          type: Array
   field :activated_records,        type: Array
 
-  validates :collection_title, uniqueness: {scope: :day} 
-  validates :collection_title, :day, presence: true
+  validates :source_id, uniqueness: {scope: :day} 
+  validates :source_id, :day, presence: true
 
   validates :activated_records, :deleted_records, :suppressed_records, length: { maximum: 20 }
 

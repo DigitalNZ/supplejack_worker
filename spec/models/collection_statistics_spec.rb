@@ -2,19 +2,19 @@ require 'spec_helper'
 
 describe CollectionStatistics do
 
-	let(:collection_statistics) { FactoryGirl.build(:collection_statistics, collection_title: "TAPUHI", day: Date.today) }
+	let(:collection_statistics) { FactoryGirl.build(:collection_statistics, source_id: "tapuhi", day: Date.today) }
   
   context "validations" do
 
   	it "should validate uniqueness of collection name" do
   		collection_statistics.save
-  		collection_stats = FactoryGirl.build(:collection_statistics, collection_title: "TAPUHI")
+  		collection_stats = FactoryGirl.build(:collection_statistics, source_id: "tapuhi")
   		collection_stats.should_not be_valid
   	end
 
     it "should validate the uniqueness of day" do
       collection_statistics.save
-      collection_stats = FactoryGirl.build(:collection_statistics, collection_title: "TAPUHI", day: Date.today)
+      collection_stats = FactoryGirl.build(:collection_statistics, source_id: "tapuhi", day: Date.today)
       collection_stats.should_not be_valid
     end
 
@@ -24,7 +24,7 @@ describe CollectionStatistics do
   	end
 
     it "should validate the presence of day" do
-      collection_stats = FactoryGirl.build(:collection_statistics, collection_title: "TAPUHI")
+      collection_stats = FactoryGirl.build(:collection_statistics, source_id: "tapuhi")
       collection_stats.should_not be_valid
     end
   end
