@@ -26,6 +26,7 @@ describe PreviewWorker do
 			worker.stub(:preview) { preview }
 			worker.stub(:process_record)
 			worker.stub(:enrich_record)
+			job.stub(:finish!)
 		end
 
 		it "sets @job_id to the harvest_job_id" do
@@ -55,6 +56,11 @@ describe PreviewWorker do
 
 		it "should enrich the record" do
 			worker.should_receive(:enrich_record).once
+		  worker.perform("abc123", "preview123")
+		end
+
+		it "calls finish!" do
+		  job.should_receive(:finish!)
 		  worker.perform("abc123", "preview123")
 		end
 
