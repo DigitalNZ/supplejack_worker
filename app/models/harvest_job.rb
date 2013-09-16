@@ -46,8 +46,6 @@ class HarvestJob < AbstractJob
     rescue StandardError, ScriptError => e
       build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
     end
-
-    finish!
   end
 
   def source_id

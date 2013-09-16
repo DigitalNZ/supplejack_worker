@@ -17,4 +17,8 @@ class ParserVersion < ActiveResource::Base
   def parser_id
     @attributes[:parser_id] || @prefix_options[:parser_id]
   end
+
+  def source
+    Parser.find(parser_id).source
+  end
 end

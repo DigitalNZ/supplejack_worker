@@ -16,6 +16,8 @@ class PreviewWorker < HarvestWorker
 			enrich_record(record)
 		end
 
+		job.finish!
+
 		preview.update_attribute(:harvest_failure, job.harvest_failure.to_json) if job.harvest_failure.present?
 	end
 
@@ -51,6 +53,8 @@ class PreviewWorker < HarvestWorker
 
 	def process_record(record)
 		preview.update_attribute(:status, "Parser loaded and data fetched. Parsing raw data and checking harvest validations...")
+
+		record.attributes.merge! source_id: job.parser.source.source_id
 
 		preview.raw_data = record.raw_data
 		preview.harvested_attributes = record.attributes.to_json

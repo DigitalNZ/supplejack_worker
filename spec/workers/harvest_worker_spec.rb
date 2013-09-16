@@ -42,16 +42,30 @@ describe HarvestWorker do
       worker.perform({"$oid" => "abc123"})
       worker.job_id.should eq "abc123"
     end
+
+    it "calls finish!" do
+      job.should_receive(:finish!)
+      worker.perform("abc123")
+    end
   end
 
   describe "#process_record" do
     let(:errors) { double(:errors, full_messages: []) }
     let(:record) { double(:record, attributes: {title: "Hi", internal_identifier: ["record123"]}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
 
-    before { record.stub(:deletable?) { false } }
+    before do 
+      record.stub(:deletable?) { false } 
+      job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
+      worker.stub(:post_to_api) 
+    end
 
     it "posts the record to the api with job_id" do
-      worker.should_receive(:post_to_api).with({title: "Hi", internal_identifier: ["record123"], job_id: job.id.to_s })
+      worker.should_receive(:post_to_api).with(hash_including({title: "Hi", internal_identifier: ["record123"], job_id: job.id.to_s }))
+      worker.process_record(record, job)
+    end
+
+    it "posts the record to the api with source_id" do
+      worker.should_receive(:post_to_api).with(hash_including({source_id: 'tapuhi' }))
       worker.process_record(record, job)
     end
 
@@ -62,7 +76,6 @@ describe HarvestWorker do
     end
     
     it "increments records_count" do
-      worker.stub(:post_to_api) 
       worker.process_record(record, job)
       job.records_count.should eq 1
     end

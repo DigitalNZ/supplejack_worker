@@ -105,11 +105,6 @@ describe HarvestJob do
       expect(LoadedParser::NatlibPages).to have_received(:records)
     end
 
-    it "finishes the job" do
-      job.records {|r| r }
-      expect(job).to have_received(:finish!)
-    end
-
     it "rescues exceptions from the whole harvest and stores it" do
       LoadedParser::NatlibPages.stub(:records).and_raise "Everything broke"
       job.records {|r| r }
