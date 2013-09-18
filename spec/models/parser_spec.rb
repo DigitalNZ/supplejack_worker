@@ -32,7 +32,7 @@ describe Parser do
     it "should return the last date a harvest job was run" do
       Timecop.freeze(time) do
         parser = Parser.new(id: "12", name: "Europeana")
-        parser.last_harvested_at.to_i.should eq (time - 1.day).to_i
+        parser.last_harvested_at.to_i.should eq (time - 2.day).to_i
       end
     end
 
