@@ -6,7 +6,7 @@ class ParserVersion < ActiveResource::Base
   self.element_name = "version"
 
   def last_harvested_at
-    job = self.harvest_jobs.first
+    job = self.harvest_jobs[1]
     job ? job.start_time : nil
   end
 
