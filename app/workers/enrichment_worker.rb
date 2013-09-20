@@ -31,11 +31,11 @@ class EnrichmentWorker < AbstractWorker
       if job.harvest_job.present?
         Repository::Record.where("fragments.job_id" => job.harvest_job.id.to_s).no_timeout
       else
-        Repository::Record.where("fragments.source_id" => @parser_class.get_source_id).no_timeout
+        Repository::Record.where("fragments.source_id" => job.parser.source.source_id).no_timeout
       end
     else
       klass = job.preview? ? Repository::PreviewRecord : Repository::Record
-      klass.where(record_id: job.record_id, "fragments.source_id" => @parser_class.get_source_id).no_timeout
+      klass.where(record_id: job.record_id, "fragments.source_id" => job.parser.source.source_id).no_timeout
     end
   end
 

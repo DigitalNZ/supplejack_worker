@@ -71,7 +71,7 @@ describe EnrichmentWorker do
 
     before(:each) do
       worker.send(:setup_parser)
-      TestClass.stub(:get_source_id) { "nlnzcat" }
+      job.stub_chain(:parser, :source, :source_id) { "nlnzcat" }
     end
 
     it "should fetch records based on the source_id" do
