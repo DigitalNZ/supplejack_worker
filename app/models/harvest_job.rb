@@ -49,9 +49,7 @@ class HarvestJob < AbstractJob
   end
 
   def source_id
-    if self.parser.loader.loaded?
-      self.parser.loader.parser_class.get_source_id
-    end
+    self.parser.source.source_id
   end
 
   def finish!
