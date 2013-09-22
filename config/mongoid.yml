@@ -113,7 +113,7 @@ production:
     default:
       database: worker_production
       hosts:
-        - localhost:27017
+        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
         consistency: :strong
     api:
