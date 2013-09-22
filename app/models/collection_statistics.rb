@@ -3,6 +3,8 @@ class CollectionStatistics
   include Mongoid::Timestamps
 
   index({source_id: 1, day: 1}, {unique: true})
+  index({collection_title: 1, day: 1}, {unique: true})
+  #db.collection_statistics.ensureIndex( { "day": 1 }, { expireAfterSeconds: 2592000 } )
 
   field :source_id,	          type: String
   field :day,                         type: Date
