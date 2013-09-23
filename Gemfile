@@ -7,8 +7,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.12'
 
-gem "harvester_core", path: "~/Projects/dnz/squirrel/core"
-#gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
+#gem "harvester_core", path: "~/Projects/dnz/squirrel/core"
+gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
 
 gem "oai", git: "https://github.com/code4lib/ruby-oai.git"
 
