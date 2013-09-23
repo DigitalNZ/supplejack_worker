@@ -1,21 +1,6 @@
 GIT
-  remote: https://github.com/code4lib/ruby-oai.git
-  revision: d57a23250774751b8bb3484012c9e11162462cb2
-  specs:
-    oai (0.3.0)
-      builder (>= 2.0.0)
-      faraday
-      faraday_middleware
-
-GIT
-  remote: https://github.com/rails-api/active_model_serializers.git
-  revision: 8ac4bf90067eef442a6208848f86e55892d724f1
-  specs:
-    active_model_serializers (0.8.1)
-      activemodel (>= 3.2)
-
-PATH
-  remote: ~/Projects/dnz/squirrel/core
+  remote: git@scm.digitalnz.org:harvester/core
+  revision: abd54cb720382f20fde5461db7b94f757d531b08
   specs:
     harvester_core (0.0.1)
       actionpack (~> 3.2)
@@ -30,6 +15,22 @@ PATH
       redis (~> 3)
       rest-client (~> 1.6.7)
       tzinfo
+
+GIT
+  remote: https://github.com/code4lib/ruby-oai.git
+  revision: d57a23250774751b8bb3484012c9e11162462cb2
+  specs:
+    oai (0.3.0)
+      builder (>= 2.0.0)
+      faraday
+      faraday_middleware
+
+GIT
+  remote: https://github.com/rails-api/active_model_serializers.git
+  revision: 8ac4bf90067eef442a6208848f86e55892d724f1
+  specs:
+    active_model_serializers (0.8.1)
+      activemodel (>= 3.2)
 
 GEM
   remote: https://rubygems.org/
