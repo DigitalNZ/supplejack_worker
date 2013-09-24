@@ -20,7 +20,7 @@ class LinkCheckWorker
     rescue RestClient::ResourceNotFound => e
       suppress_record(link_check_job_id, link_check_job.record_id, strike)
     rescue Exception => e
-      Rails.logger.warn("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/link_checker/records/#{link_check_job.record_id} to update status to supressed")
+      Rails.logger.warn("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
       Rails.logger.warn("Exception: #{e.inspect}")
     end
   end
@@ -68,7 +68,7 @@ class LinkCheckWorker
 
   def set_record_status(record_id, status)
     begin
-      RestClient.put("#{ENV['API_HOST']}/link_checker/records/#{record_id}", {record: {status: status}})
+      RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", {record: {status: status}})
       add_record_stats(record_id, status)
     rescue Exception => e
       Rails.logger.warn("Record not found. Ignoring.")

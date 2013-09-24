@@ -196,7 +196,7 @@ describe LinkCheckWorker do
     before { RestClient.stub(:put) }
 
     it "should make a post to the api to change the status to supressed for the record" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/records/abc123", {record: { status: 'suppressed' }})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", {record: { status: 'suppressed' }})
       worker.send(:suppress_record, link_check_job.id.to_s, "abc123", 0)
     end
 
@@ -250,7 +250,7 @@ describe LinkCheckWorker do
     before { RestClient.stub(:put) }
 
     it "should make a post to the api to change the status to active for the record" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/link_checker/records/abc123", {record: { status: 'active' }})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", {record: { status: 'active' }})
       worker.send(:set_record_status, "abc123", "active")
     end
 
