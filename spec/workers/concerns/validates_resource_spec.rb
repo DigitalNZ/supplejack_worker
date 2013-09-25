@@ -7,31 +7,31 @@ describe ValidatesResource do
   end
 
   let(:worker) { TestWorker.new }
-  let(:collection_rule) { double(:collection_rule, status_codes: "200, 3..", xpath: '//p', throttle: 3, active: true) }
+  let(:link_check_rule) { double(:link_check_rule, status_codes: "200, 3..", xpath: '//p', throttle: 3, active: true) }
 
-  describe "#validate_collection_rules" do
+  describe "#validate_link_check_rule" do
     let(:response) { double(:response, code: 200, body: "<p></p>") }
 
     before do
-      CollectionRules.stub(:find_by) { collection_rule }
+      LinkCheckRule.stub(:find_by) { link_check_rule }
       worker.stub(:link_check_job) { link_check_job }
     end
 
     it "should validate the response codes" do
       worker.should_receive(:validate_response_codes).with(305, "200, 3..")
-      worker.send(:validate_collection_rules, double(:response, code: 305, body: "<p></p>"), 'TAPUHI')
+      worker.send(:validate_link_check_rule, double(:response, code: 305, body: "<p></p>"), 'TAPUHI')
     end
 
     it "should validate the response body via xpath" do
       worker.should_receive(:validate_xpath).with("//p", "<p></p>")
-      worker.send(:validate_collection_rules, response, 'TAPUHI')
+      worker.send(:validate_link_check_rule, response, 'TAPUHI')
     end
 
     context "response code and xpath is valid" do
       it "should return true" do
         worker.stub(:validate_response_codes) { true }
         worker.stub(:validate_xpath) { true }
-        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_true
+        worker.send(:validate_link_check_rule, response, 'TAPUHI').should be_true
       end
     end
 
@@ -39,7 +39,7 @@ describe ValidatesResource do
       it "should return false" do
         worker.stub(:validate_response_codes) { false }
         worker.stub(:validate_xpath) { true }
-        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_false
+        worker.send(:validate_link_check_rule, response, 'TAPUHI').should be_false
       end
     end
 
@@ -47,7 +47,7 @@ describe ValidatesResource do
       it "should return false" do
         worker.stub(:validate_response_codes) { true }
         worker.stub(:validate_xpath) { false }
-        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_false
+        worker.send(:validate_link_check_rule, response, 'TAPUHI').should be_false
       end
     end
 
@@ -55,7 +55,7 @@ describe ValidatesResource do
       it "should return true" do
         worker.stub(:validate_response_codes) { false }
         worker.stub(:validate_xpath) { false }
-        worker.send(:validate_collection_rules, response, 'TAPUHI').should be_false
+        worker.send(:validate_link_check_rule, response, 'TAPUHI').should be_false
       end
     end
   end
@@ -93,17 +93,17 @@ describe ValidatesResource do
     end
   end
 
-  describe "#collection_rule" do
+  describe "#link_check_rule" do
 
     it "should should find the collection rule" do
-      CollectionRules.should_receive(:find_by).with(source_id: 'tapuhi') { }
-      worker.send(:collection_rule, 'tapuhi')
+      LinkCheckRule.should_receive(:find_by).with(source_id: 'tapuhi') { }
+      worker.send(:link_check_rule, 'tapuhi')
     end
 
     it "should memozie the collection rule" do
-      CollectionRules.should_receive(:find_by).once { [double(:collection_rule)] }
-      worker.send(:collection_rule, 'tapuhi')
-      worker.send(:collection_rule, 'tapuhi')
+      LinkCheckRule.should_receive(:find_by).once { [double(:link_check_rule)] }
+      worker.send(:link_check_rule, 'tapuhi')
+      worker.send(:link_check_rule, 'tapuhi')
     end
   end
 end

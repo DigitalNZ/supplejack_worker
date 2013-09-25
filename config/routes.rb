@@ -9,7 +9,7 @@ HarvesterWorker::Application.routes.draw do
   resources :previews, only: [:create, :show]
   
   resources :link_check_jobs, only: [:create, :show]
-  resources :collection_rules
+  resources :link_check_rules
   resources :collection_statistics, only: [:index]
   
   require 'sidekiq/web'

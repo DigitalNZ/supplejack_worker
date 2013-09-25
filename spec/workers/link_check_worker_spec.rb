@@ -20,26 +20,26 @@ describe LinkCheckWorker do
       worker.perform(link_check_job.id.to_s)
     end
 
-    context "validate_collection_rules returns false" do
+    context "validate_link_check_rule returns false" do
       before { worker.stub(:link_check) { response } }
       it "should supress the record" do
-        worker.stub(:validate_collection_rules) { false }
+        worker.stub(:validate_link_check_rule) { false }
         worker.should_receive(:suppress_record).with(link_check_job.id.to_s, link_check_job.record_id, 0)
         worker.perform(link_check_job.id.to_s)
       end
     end
 
-    context "validate_collection_rules returns true" do
+    context "validate_link_check_rule returns true" do
       before { worker.stub(:link_check) { response } }
 
       it "should not set the record status if on the 0th strike" do
         worker.should_not_receive(:set_record_status).with(link_check_job.record_id, "active")
-        worker.stub(:validate_collection_rules) { true }
+        worker.stub(:validate_link_check_rule) { true }
         worker.perform(link_check_job.id.to_s)
       end
 
       it "should reactivate the record if strike is greater than 0" do
-        worker.stub(:validate_collection_rules) { true }
+        worker.stub(:validate_link_check_rule) { true }
         worker.should_receive(:set_record_status).with(link_check_job.record_id, "active")
         worker.perform(link_check_job.id.to_s, 1)
       end
