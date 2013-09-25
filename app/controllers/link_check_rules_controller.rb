@@ -1,30 +1,30 @@
-class CollectionRulesController < ApplicationController
+class LinkCheckRulesController < ApplicationController
 
   respond_to :json
 
   def index
-    @collection_rules = params[:collection_rules].present? ? CollectionRules.where(params[:collection_rules]) : CollectionRules.all
-    respond_with @collection_rules
+    @link_check_rules = params[:link_check_rule].present? ? LinkCheckRule.where(params[:link_check_rule]) : LinkCheckRule.all
+    respond_with @link_check_rules
   end
 
   def show
-    @collection_rule = CollectionRules.find(params[:id])
-    respond_with @collection_rule
+    @link_check_rule = LinkCheckRule.find(params[:id])
+    respond_with @link_check_rule
   end
 
   def destroy
-    @collection_rule = CollectionRules.find(params[:id])
-    respond_with @collection_rule.destroy
+    @link_check_rule = LinkCheckRule.find(params[:id])
+    respond_with @link_check_rule.destroy
   end
 
   def create
-    @collection_rule = CollectionRules.create(params[:collection_rules])
-    respond_with @collection_rule
+    @link_check_rule = LinkCheckRule.create(params[:link_check_rule])
+    respond_with @link_check_rule
   end
 
   def update
-    @collection_rule = CollectionRules.find(params[:id])
-    @collection_rule.update_attributes(params[:collection_rules])
-    respond_with @collection_rule
+    @link_check_rule = LinkCheckRule.find(params[:id])
+    @link_check_rule.update_attributes(params[:link_check_rule])
+    respond_with @link_check_rule
   end
 end
