@@ -1,14 +1,14 @@
-class EnqueueCollectionChecksWorker
+class EnqueueSourceChecksWorker
   include Sidekiq::Worker
 
   def perform
-    EnqueueCollectionChecksWorker.collections_to_check.each do |collection|
-      CollectionCheckWorker.perform_async(collection)
+    EnqueueSourceChecksWorker.sources_to_check.each do |collection|
+      SourceCheckWorker.perform_async(collection)
     end
   end
 
-  def self.collections_to_check
-    CollectionRules.all.to_a.keep_if{ |rules| rules.active }.map(&:source_id)
+  def self.sources_to_check
+    LinkCheckRule.all.to_a.keep_if{ |rules| rules.active }.map(&:source_id)
   end
 
 

@@ -1,4 +1,4 @@
-class CollectionRules
+class LinkCheckRule
   include Mongoid::Document
   include Mongoid::Timestamps
   

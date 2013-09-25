@@ -1,32 +1,32 @@
 require "spec_helper"
 
-describe EnqueueCollectionChecksWorker do
+describe EnqueueSourceChecksWorker do
 
-  let(:worker) { EnqueueCollectionChecksWorker.new }
+  let(:worker) { EnqueueSourceChecksWorker.new }
   
-  let(:collection_rules) { [double(:collection_rule, source_id: "tapuhi", active: true),
-                            double(:collection_rule, source_id: "nlnzcat", active: true),
-                            double(:collection_rule, source_id: "nz-on-screen", active: false)] }
+  let(:link_check_rules) { [double(:link_check_rule, source_id: "1", active: true),
+                            double(:link_check_rule, source_id: "2", active: true),
+                            double(:link_check_rule, source_id: "3", active: false)] }
 
-  before { CollectionRules.stub(:all) { collection_rules } }
+  before { LinkCheckRule.stub(:all) { link_check_rules } }
 
   describe "#perform" do
-    it "should enqueue a collection check worker for each collection to check" do
+    it "should enqueue a source check worker for each source to check" do
       worker.perform
-      ["tapuhi", "nlnzcat"].each do |collection|
-        expect(CollectionCheckWorker).to have_enqueued_job(collection)
+      ["1", "2"].each do |source|
+        expect(SourceCheckWorker).to have_enqueued_job(source)
       end
     end
   end
 
-  describe ".collections_to_check" do
+  describe ".sources_to_check" do
 
-    it "should get all the collections to check" do
-      EnqueueCollectionChecksWorker.collections_to_check.should include("tapuhi", "nlnzcat")
+    it "should get all the sources to check" do
+      EnqueueSourceChecksWorker.sources_to_check.should include("1", "2")
     end
 
-    it "should not include inactive collections" do
-      EnqueueCollectionChecksWorker.collections_to_check.should_not include("nz-on-screen")
+    it "should not include inactive sources" do
+      EnqueueSourceChecksWorker.sources_to_check.should_not include("3")
     end
   end
 end
