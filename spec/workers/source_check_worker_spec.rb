@@ -20,12 +20,12 @@ describe SourceCheckWorker do
 
     it "should retrieve landing urls from the API to check" do
       worker.stub(:up?) {true}
-      worker.should_receive(:collection_records) { @records }
+      worker.should_receive(:source_records) { @records }
       worker.perform('TAPUHI')
     end
 
     it "should check that the records are up" do
-      worker.stub(:collection_records) { @records }
+      worker.stub(:source_records) { @records }
       worker.should_receive(:up?).with('http://google.com/1')
       worker.should_receive(:up?).with('http://google.com/2')
       worker.perform('TAPUHI')
@@ -34,7 +34,7 @@ describe SourceCheckWorker do
     context "the collection is active and all links are down" do
       before do 
         worker.stub(:source_active?) {true}
-        worker.stub(:collection_records) { @records }
+        worker.stub(:source_records) { @records }
         worker.stub(:up?).with('http://google.com/1') {false}
         worker.stub(:up?).with('http://google.com/2') {false}
       end
@@ -48,7 +48,7 @@ describe SourceCheckWorker do
     context "the collection is not active and any of the links are up" do
       before do 
         worker.stub(:source_active?) {false}
-        worker.stub(:collection_records) { @records }
+        worker.stub(:source_records) { @records }
         worker.stub(:up?).with('http://google.com/1') {true}
         worker.stub(:up?).with('http://google.com/2') {false}
       end
@@ -60,22 +60,22 @@ describe SourceCheckWorker do
     end
   end
 
-  describe "collection_records" do
+  describe "source_records" do
 
     let(:response) { double(:response) }
 
     before do
       JSON.stub(:parse) { [] }
-      RestClient.stub(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {source_id: 'tapuhi'}}) { response }
+      RestClient.stub(:get).with("#{ENV['API_HOST']}/sources/#{source._id}/link_check_records") { response }
     end
 
     it "should retrieve landing urls from the API to check" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/link_checker/collection_records", {params: {source_id: 'tapuhi'}}) { response }
-      worker.send(:collection_records)
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/sources/#{source._id}/link_check_records") { response }
+      worker.send(:source_records)
     end
 
     it "should parse the response" do
-      worker.send(:collection_records)
+      worker.send(:source_records)
       expect(JSON).to have_received(:parse).with(response)
     end
   end
@@ -125,7 +125,7 @@ describe SourceCheckWorker do
     
     it "gets the url and validates it" do
       worker.should_receive(:get).with('http://blah.com') { response }
-      worker.should_receive(:validate_link_check_rule).with(response, 'tapuhi') { true }
+      worker.should_receive(:validate_link_check_rule).with(response, 'abc123') { true }
       worker.send(:up?,'http://blah.com').should be_true
     end
   end
@@ -138,7 +138,7 @@ describe SourceCheckWorker do
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/source/#{source._id}", {status: 'suppressed'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/sources/#{source._id}", source: {status: 'suppressed'})
       worker.send(:suppress_collection)
     end
 
@@ -156,7 +156,7 @@ describe SourceCheckWorker do
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/source/#{source._id}", {status: 'active'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/sources/#{source._id}", source: {status: 'active'})
       worker.send(:activate_collection)
     end
 

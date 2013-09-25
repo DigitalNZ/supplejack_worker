@@ -5,18 +5,22 @@ describe LinkCheckWorker do
   let(:worker) { LinkCheckWorker.new }
   let(:link_check_job) { FactoryGirl.create(:link_check_job)  }
   let(:response) { double(:response) }
-  let(:collection_rule) { double(:collection_rule, status_codes: "200, 3..", xpath: '//p', throttle: 3, active: true) }
+  let(:link_check_rule) { double(:link_check_rule, status_codes: "200, 3..", xpath: '//p', throttle: 3, active: true) }
   let(:conn) { double(:conn) }
 
   before do
-    worker.stub(:rules) { collection_rule }
+    worker.stub(:rules) { link_check_rule }
     Sidekiq.stub(:redis).and_yield(conn)
   end
 
   describe "#perform" do
+    before do
+      link_check_job.stub_chain(:source, :_id) { 'abc123' }
+      worker.stub(:link_check_job) { link_check_job }
+    end
 
     it "should perform a link_check" do
-      worker.should_receive(:link_check).with(link_check_job.url, link_check_job.source_id)
+      worker.should_receive(:link_check).with(link_check_job.url, link_check_job.source._id)
       worker.perform(link_check_job.id.to_s)
     end
 
@@ -39,8 +43,8 @@ describe LinkCheckWorker do
       end
 
       it "should reactivate the record if strike is greater than 0" do
-        worker.stub(:validate_link_check_rule) { true }
         worker.should_receive(:set_record_status).with(link_check_job.record_id, "active")
+        worker.stub(:validate_link_check_rule) { true }
         worker.perform(link_check_job.id.to_s, 1)
       end
     end
@@ -48,7 +52,7 @@ describe LinkCheckWorker do
     context "link checking not active for collection" do
       before do
         worker.stub(:link_check_job) { link_check_job }
-        collection_rule.stub(:active) { false }
+        link_check_rule.stub(:active) { false }
       end
 
       it "should not check the link" do
@@ -59,6 +63,7 @@ describe LinkCheckWorker do
 
     context "link check job not found" do
       it "should not check the link" do
+        worker.stub(:link_check_job) { nil }
         worker.should_not_receive(:link_check)
         worker.perform("anc123")
       end
@@ -72,7 +77,7 @@ describe LinkCheckWorker do
       end
 
       it "should handle networking errors" do
-        worker.stub(:link_check).and_raise(Exception.new('RestClient Exception'))
+        worker.stub(:link_check).and_raise(StandardError.new('RestClient Exception'))
         expect {worker.perform(link_check_job.id.to_s)}.to_not raise_exception
       end
     end
@@ -144,7 +149,7 @@ describe LinkCheckWorker do
       RestClient.stub(:get) { response }
       conn.stub(:setnx) { true }
       conn.stub(:expire)
-      worker.stub(:collection_rule) { collection_rule }
+      worker.stub(:link_check_rule) { link_check_rule }
     end
 
     it "should return the response" do
@@ -169,10 +174,10 @@ describe LinkCheckWorker do
       end
 
       context "throttle is nil" do
-        let(:collection_rule) { double(:collection_rule, status_codes: "200, 3..", xpath: '//p', throttle: nil) }
+        let(:link_check_rule) { double(:link_check_rule, status_codes: "200, 3..", xpath: '//p', throttle: nil) }
 
         it "throttle should default to 2 seconds if throttle is nil" do
-          worker.stub(:collection_rule) { collection_rule }
+          worker.stub(:link_check_rule) { link_check_rule }
           conn.should_receive(:expire).with("TAPUHI", 2)
           worker.send(:link_check, "http://hehehe.com", "TAPUHI")
         end
@@ -261,11 +266,15 @@ describe LinkCheckWorker do
   end
 
   describe "#rules" do
-    it "should call collection_rule with the source_id" do
+    before do
+      link_check_job.stub_chain(:source, :_id) { 'abc123' }
+    end
+
+    it "should call link_check_rule with the source_id" do
       worker.unstub(:rules)
-      worker.should_receive(:link_check_job) { double(:link_check_job, source_id: 'TAPUHI') }
-      worker.should_receive(:collection_rule).with('TAPUHI') { collection_rule }
-      worker.send(:rules).should eq collection_rule
+      worker.should_receive(:link_check_job) { link_check_job }
+      worker.should_receive(:link_check_rule).with('abc123') { link_check_rule }
+      worker.send(:rules).should eq link_check_rule
     end
   end
 
