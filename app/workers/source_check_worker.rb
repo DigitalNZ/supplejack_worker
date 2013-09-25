@@ -16,11 +16,11 @@ class SourceCheckWorker
   private
 
   def source_records
-    JSON.parse(RestClient.get("#{ENV['API_HOST']}/link_checker/collection_records", {params: {source_id: self.source.source_id}}))
+    JSON.parse(RestClient.get("#{ENV['API_HOST']}/sources/#{self.source._id}/link_check_records"))
   end
 
   def source_active?
-    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/sources/#{self.source._id}.json"))
+    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/sources/#{self.source._id}"))
     collection['status'] == "active"
   end
 
@@ -30,19 +30,17 @@ class SourceCheckWorker
 
   def up?(landing_url)
     if response = get(landing_url)
-      puts "up? response: #{response.code}"
       validate_link_check_rule(response, self.source._id)
     end
   end
 
   def suppress_collection
-    puts self.source.inspect
-    RestClient.put("#{ENV['API_HOST']}/sources/#{self.source._id}.json", source: {status: 'suppressed'})
+    RestClient.put("#{ENV['API_HOST']}/sources/#{self.source._id}", source: {status: 'suppressed'})
     CollectionMailer.collection_status(self.source.name, "down")
   end
 
   def activate_collection
-    RestClient.put("#{ENV['API_HOST']}/sources/#{self.source._id}.json", source: {status: 'active'})
+    RestClient.put("#{ENV['API_HOST']}/sources/#{self.source._id}", source: {status: 'active'})
     CollectionMailer.collection_status(self.source.name, "up")
   end
 end

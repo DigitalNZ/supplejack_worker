@@ -10,7 +10,7 @@ class LinkCheckWorker
     @link_check_job_id = link_check_job_id
     begin
       if link_check_job.present? and rules.active
-        response = link_check(link_check_job.url, link_check_job.source_id)
+        response = link_check(link_check_job.url, link_check_job.source._id)
         if validate_link_check_rule(response, link_check_job.source._id)
           set_record_status(link_check_job.record_id, "active") if strike > 0
         else
@@ -19,7 +19,7 @@ class LinkCheckWorker
       end
     rescue RestClient::ResourceNotFound => e
       suppress_record(link_check_job_id, link_check_job.record_id, strike)
-    rescue Exception => e
+    rescue StandardError => e
       Rails.logger.warn("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
       Rails.logger.warn("Exception: #{e.inspect}")
     end
