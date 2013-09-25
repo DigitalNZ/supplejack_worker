@@ -1,13 +1,13 @@
 module ValidatesResource
   extend ActiveSupport::Concern
 
-  def collection_rule(source_id)
-    @collection_rule ||= CollectionRules.find_by(source_id: source_id)
+  def link_check_rule(source_id)
+    @link_check_rule ||= LinkCheckRule.find_by(source_id: source_id) rescue nil
   end
 
-  def validate_collection_rules(response, source_id)
+  def validate_link_check_rule(response, source_id)
     valid_status_code = valid_xpath = false
-    rule = collection_rule(source_id)
+    rule = link_check_rule(source_id)
 
     if rule.present?
       valid_status_code = validate_response_codes(response.code, rule.status_codes)

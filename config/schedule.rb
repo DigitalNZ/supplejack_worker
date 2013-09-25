@@ -16,5 +16,5 @@ every 5.minutes do
 end
 
 every 2.hours do
-  runner "EnqueueCollectionChecksWorker.perform_async"
+  runner "EnqueueSourceChecksWorker.perform_async"
 end
