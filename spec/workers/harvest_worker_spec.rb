@@ -21,6 +21,7 @@ describe HarvestWorker do
       LoadedParser::NatlibPages.stub(:records) { [record] }
       worker.stub(:api_update_finished?) { true }
       worker.stub(:process_record)
+      job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
     end
 
     it "processes each record" do
@@ -55,7 +56,7 @@ describe HarvestWorker do
 
     before do 
       record.stub(:deletable?) { false } 
-      job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
+      worker.instance_variable_set(:@source_id, 'tapuhi')
       worker.stub(:post_to_api) 
     end
 
