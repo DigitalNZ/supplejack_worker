@@ -5,6 +5,7 @@ class HarvestWorker < AbstractWorker
 
   def perform(harvest_job_id)
     @job_id = harvest_job_id.is_a?(Hash) ? harvest_job_id["$oid"] : harvest_job_id
+    @source_id = job.parser.source.source_id
 
     job.records do |record, i|
       self.process_record(record, job)
@@ -27,7 +28,7 @@ class HarvestWorker < AbstractWorker
         self.delete_from_api(record.attributes[:internal_identifier]) unless job.test?
         job.records_count += 1
       elsif record.valid?
-        attributes = record.attributes.merge(job_id: job.id.to_s, source_id: job.parser.source.source_id)
+        attributes = record.attributes.merge(job_id: job.id.to_s, source_id: @source_id)
         self.post_to_api(attributes) unless job.test?
         job.records_count += 1
       else
