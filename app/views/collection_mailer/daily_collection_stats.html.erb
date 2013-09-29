@@ -4,7 +4,7 @@
 <% end %>
 
 <% @statistics_collections.each do |collection| %>
-<p><%= collection.collection_title %></p>
+<p><%= collection.source_id %></p>
   <% if collection.activated_records.present? %>
     <p>Activations:(<%= collection.activated_records.size %>): </p>
     <% collection.activated_records.each do |record| %>

@@ -1,7 +1,7 @@
 --- Daily Link Checker Collection Report For <%= (Date.today - 1.day) %> - <%= Rails.env.try(:capitalize) %> ---
 <%= "No activations, suppressions or deletions" unless @statistics_collections.any? %>
 <% @statistics_collections.each do |collection| %>
-<%= collection.collection_title %>
+<%= collection.source_id %>
   <% if collection.activated_records.present? %>
     Activations:(<%= collection.activated_records.size %>): 
     <% collection.activated_records.each do |record| %>
