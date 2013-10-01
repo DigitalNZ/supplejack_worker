@@ -78,8 +78,8 @@ describe PreviewWorker do
 	describe "#strip_ids" do
     it "strips the _id's from all documents in record" do
       result = worker.send(:strip_ids, {
-        '_id' => '123', 
-        'blah' => 'blah', 
+        '_id' => '123',
+        'blah' => 'blah',
         'fragments' => {
             '_id' => '12',
             'authorities' => [{'_id' => 'ab12'}, 'blah'],
@@ -121,6 +121,7 @@ describe PreviewWorker do
 		 record1.stub(:deletable?) { false }
 		 record1.stub(:errors) { {} }
 		 preview.stub(:save)
+		 job.stub_chain(:parser, :source, :source_id) { "tahpuhi" }
 		end
 
 		it "should update the attribute status to: 'harvesting record'" do
@@ -134,6 +135,7 @@ describe PreviewWorker do
 		end
 
 		it "should update the preview object with the harvested_attributes" do
+			record1.attributes.merge! source_id: "tahpuhi"
 			preview.should_receive(:harvested_attributes=).with(record1.attributes.to_json)
 		  worker.send(:process_record, record1)
 		end
@@ -250,7 +252,7 @@ describe PreviewWorker do
 
 		context "enrichments with type set" do
 			before { job.stub_chain(:parser, :enrichment_definitions).and_return({tapuhi_groups: { type: "tapuhi_groups"}}) }
- 
+
 			it "should not run enrichments that do have types" do
 			  EnrichmentJob.should_not_receive(:create_from_harvest_job).with(job, :tapuhi_groups) { enrichment_job }
 			  worker.send(:enrich_record, record1)

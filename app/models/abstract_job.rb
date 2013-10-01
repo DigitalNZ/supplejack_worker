@@ -20,7 +20,7 @@ class AbstractJob
   field :failed_records_count,  type: Integer,  default: 0
   field :posted_records_count,  type: Integer,  default: 0
   field :parser_code,           type: String
-  field :last_posted_record_id,  type: String  
+  field :last_posted_record_id,  type: String
 
   embeds_many :invalid_records
   embeds_many :failed_records
@@ -80,7 +80,7 @@ class AbstractJob
   end
 
   def required_enrichments
-    self.parser.enrichment_definitions.dup.keep_if {|name, options| options[:required_for_active_record] }.keys
+    self.parser.enrichment_definitions(environment).dup.keep_if {|name, options| options[:required_for_active_record] }.keys
   end
 
   def start!

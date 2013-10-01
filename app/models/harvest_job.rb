@@ -15,7 +15,7 @@ class HarvestJob < AbstractJob
   end
 
   def enqueue_enrichment_jobs
-    self.parser.enrichment_definitions.each do |name, options|
+    self.parser.enrichment_definitions(environment).each do |name, options|
       EnrichmentJob.create_from_harvest_job(self, name) if Array(self.enrichments).include?(name.to_s)
     end
   end
@@ -30,13 +30,13 @@ class HarvestJob < AbstractJob
 
   def records(&block)
     start!
-    
+
     begin
       options = {}
       options[:limit] = limit.to_i if limit.to_i > 0
       options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
 
-      parser.load_file
+      parser.load_file(environment)
       parser_klass = parser.loader.parser_class
       parser_klass.environment = environment if environment.present?
 
