@@ -1,26 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe Parser do
+describe ParserVersion do
 
-  let(:parser) { Parser.new(name: "Europeana") }
-
-  describe "#load_file" do
-    let!(:loader) { double(:loader).as_null_object }
-
-    before(:each) do
-      parser.stub(:loader) { loader }
-    end
-
-    it "should initialize a loader object" do
-      HarvesterCore::Loader.should_receive(:new).with(parser, :staging)
-      parser.load_file(:staging)
-    end
-
-    it "should load the parser file" do
-      loader.should_receive(:load_parser)
-      parser.load_file(:staging)
-    end
-  end
+  let(:parser) { Parser.new(name: "Europeana", id: "123") }
+  let(:parser_version) { ParserVersion.new(parser_id: "123") }
+  let(:job) { mock_model(HarvestJob).as_null_object }
+  let(:source) { Source.new }
 
   describe "#last_harvested_at" do
     let!(:time) { Time.now }
@@ -37,6 +22,24 @@ describe Parser do
     it "should return nil when no job has been run" do
       parser = Parser.new(id: "123", name: "Europeana")
       parser.last_harvested_at.should be_nil
+    end
+  end
+
+  describe "#harvest_jobs" do
+    it "finds all the harvest jobs using this parser" do
+      HarvestJob.should_receive(:where).with(parser_id: parser_version.parser_id) { job }
+      parser_version.harvest_jobs
+    end
+  end
+
+  describe "#source" do
+    before do
+      parser.stub(:source) { source }
+    end
+
+    it "finds the parser" do
+      Parser.should_receive(:find).with("123") { parser }
+      parser_version.source
     end
   end
 end

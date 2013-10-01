@@ -33,7 +33,7 @@ describe HarvestJob do
       end
     end
   end
-  
+
   it "enqueues a job after_create" do
     HarvestWorker.should_receive(:perform_async)
     FactoryGirl.create(:harvest_job)
@@ -84,15 +84,15 @@ describe HarvestJob do
 
     before do
       HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
-      parser.load_file
+      parser.load_file("staging")
 
       job.stub(:environment) { "staging" }
       job.stub(:parser) { parser }
       job.stub(:finish!)
       job.stub(:start!)
 
-      LoadedParser::NatlibPages.stub(:environment=).with("staging")
-      LoadedParser::NatlibPages.stub(:records) { [record1, record2] }
+      LoadedParser::Staging::NatlibPages.stub(:environment=).with("staging")
+      LoadedParser::Staging::NatlibPages.stub(:records) { [record1, record2] }
     end
 
     it "should start the job" do
@@ -102,11 +102,11 @@ describe HarvestJob do
 
     it "gets records from parser class" do
       job.records {|r| r }
-      expect(LoadedParser::NatlibPages).to have_received(:records)
+      expect(LoadedParser::Staging::NatlibPages).to have_received(:records)
     end
 
     it "rescues exceptions from the whole harvest and stores it" do
-      LoadedParser::NatlibPages.stub(:records).and_raise "Everything broke"
+      LoadedParser::Staging::NatlibPages.stub(:records).and_raise "Everything broke"
       job.records {|r| r }
       job.harvest_failure.message.should eq "Everything broke"
     end
@@ -116,7 +116,7 @@ describe HarvestJob do
     end
   end
 
-  describe "#finish!" do 
+  describe "#finish!" do
     it "flushes old records if full_and_flush is true" do
       job.mode = 'full_and_flush'
       job.should_receive(:flush_old_records)

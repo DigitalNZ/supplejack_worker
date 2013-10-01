@@ -9,7 +9,7 @@ class PreviewWorker < HarvestWorker
 		@preview_id = sanitize_id(preview_id)
 
 		preview.update_attribute(:status, "Worker starting. Loading parser and fetching data...")
-		
+
 		job.records do |record, i|
 			next if i < job.index
 			process_record(record)
@@ -74,7 +74,7 @@ class PreviewWorker < HarvestWorker
 
 		preview.update_attribute(:status, "Starting preview record enrichment...")
 
-		job.parser.enrichment_definitions.each do |name, options|
+		job.parser.enrichment_definitions(:preview).each do |name, options|
 			next if options.has_key?(:type)
 			preview.update_attribute(:status, "Running enrichment \"#{name}\"...")
 			enrichment_job = EnrichmentJob.create_from_harvest_job(job, name)
@@ -89,7 +89,7 @@ class PreviewWorker < HarvestWorker
 		preview_record = Repository::PreviewRecord.where(record_id: current_record_id.to_i).first
 
 		unless preview_record.nil?
-			preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json) 
+			preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json)
 			preview.update_attribute(:status, "Preview complete.")
 		end
 	end

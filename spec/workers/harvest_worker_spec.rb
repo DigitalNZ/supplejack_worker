@@ -10,15 +10,15 @@ describe HarvestWorker do
     RestClient.stub(:post)
 
     worker.stub(:job) { job }
-    parser.load_file
+    parser.load_file(:staging)
   end
-  
+
   describe "#perform" do
     let!(:record) { double(:record, attributes: {}, valid?: true) }
 
     before(:each) do
       job.stub(:parser) { parser }
-      LoadedParser::NatlibPages.stub(:records) { [record] }
+      LoadedParser::Staging::NatlibPages.stub(:records) { [record] }
       worker.stub(:api_update_finished?) { true }
       worker.stub(:process_record)
       job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
@@ -54,10 +54,11 @@ describe HarvestWorker do
     let(:errors) { double(:errors, full_messages: []) }
     let(:record) { double(:record, attributes: {title: "Hi", internal_identifier: ["record123"]}, valid?: true, raw_data: "</record>", errors: errors, full_raw_data: "</record>") }
 
-    before do 
-      record.stub(:deletable?) { false } 
+    before do
+      record.stub(:deletable?) { false }
+      job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
       worker.instance_variable_set(:@source_id, 'tapuhi')
-      worker.stub(:post_to_api) 
+      worker.stub(:post_to_api)
     end
 
     it "posts the record to the api with job_id" do
@@ -75,7 +76,7 @@ describe HarvestWorker do
       worker.should_not_receive(:post_to_api).with(record)
       worker.process_record(record, job)
     end
-    
+
     it "increments records_count" do
       worker.process_record(record, job)
       job.records_count.should eq 1

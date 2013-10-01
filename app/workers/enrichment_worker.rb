@@ -2,7 +2,7 @@ class EnrichmentWorker < AbstractWorker
   include Sidekiq::Worker
 
   attr_reader :parser, :parser_class
-    
+
   def perform(enrichment_job_id)
     @job_id = enrichment_job_id.to_s
 
@@ -41,12 +41,12 @@ class EnrichmentWorker < AbstractWorker
 
   def process_record(record)
     job.increment_processed_count!
-    
+
     measure = Benchmark.measure do
       begin
         enrichment = enrichment_class.new(job.enrichment, enrichment_options, record, @parser_class)
         return unless enrichment.enrichable?
-        
+
         enrichment.set_attribute_values
       unless enrichment.errors.any?
         post_to_api(enrichment) unless job.test?
@@ -68,13 +68,13 @@ class EnrichmentWorker < AbstractWorker
 
   def setup_parser
     @parser = job.parser
-    @parser.load_file
+    @parser.load_file(job.environment)
     @parser_class = @parser.loader.parser_class
     @parser_class.environment = job.environment
   end
 
   def enrichment_options
-    @enrichment_options ||= @parser.enrichment_definitions[job.enrichment.to_sym]
+    @enrichment_options ||= @parser.enrichment_definitions(job.environment)[job.enrichment.to_sym]
   end
 
   def enrichment_class
