@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe EnrichmentJob do
     
-  let(:job) { FactoryGirl.create(:enrichment_job, parser_id: "12345", version_id: "666", user_id: "1", environment: "staging") }
+  let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345", version_id: "666", user_id: "1", environment: "staging") }
 
   context "validations" do
     it "should not be possible to have 2 active jobs for the same enrichment/parser/environment" do

@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :enrichment_job do
     start_time    Time.now
-    status        "active"
     environment   "test"
     enrichment    "ndha_rights"
     records_count 100

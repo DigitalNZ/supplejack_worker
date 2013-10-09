@@ -11,7 +11,8 @@ class AbstractJob
   field :records_count,         type: Integer, default: 0
   field :processed_count,       type: Integer, default: 0
   field :throughput,            type: Float
-  field :status,                type: String, default: "active"
+  field :status,                type: String
+  field :status_message,        type: String
   field :user_id,               type: String
   field :parser_id,             type: String
   field :version_id,            type: String
@@ -83,32 +84,53 @@ class AbstractJob
     self.parser.enrichment_definitions(environment).dup.keep_if {|name, options| options[:required_for_active_record] }.keys
   end
 
-  def start!
-    self.status = "active"
-    self.start_time = Time.now
-    self.records_count = 0
-    self.processed_count = 0
-    self.save
+  state_machine :status, initial: :ready do
+    event :start do
+      transition [:ready] => :active
+    end
+
+    event :finish do
+      transition all => :finished
+    end
+
+    event :error do
+      transition all => :failed
+    end
+
+    event :stop do
+      transition :active => :stopped
+    end
+
+    state :ready
+    state :active
+    state :finished
+    state :failed
+    state :stopped
+
+    after_transition :ready => :active do |job|
+      job.start_time = Time.now
+      job.records_count = 0
+      job.processed_count = 0
+      job.save
+    end
+
+    after_transition [:ready, :active, :stopped] => :finished do |job|
+      job.end_time = Time.now
+      job.calculate_throughput
+      job.calculate_errors_count
+      job.save
+    end
+
+    after_transition :active => [:failed, :stopped] do |job|
+      job.end_time = Time.now
+      job.calculate_errors_count
+      job.save
+    end
   end
 
-  def finish!
-    self.status = "finished"
-    self.end_time = Time.now
-    self.calculate_throughput
-    self.calculate_errors_count
-    self.save
-  end
-
-  def active?
-    self.status == "active"
-  end
-
-  def finished?
-    self.status == "finished"
-  end
-
-  def stopped?
-    self.status == "stopped"
+  def fail_job(status_message=nil)
+    self.update_attribute(:status_message, status_message) if status_message.present?
+    self.error!
   end
 
   def test?

@@ -121,89 +121,128 @@ describe AbstractJob do
     end
   end
 
-  describe "#start!" do
-    it "sets the status to active" do
-      job.start!
-      job.reload
-      job.status.should eq "active"
+  describe "status" do
+    describe "initial" do
+      it "should set the initial status to active" do
+        job.ready?.should be_true
+      end
     end
 
-    it "sets the start_time" do
-      time = Time.now
-      Timecop.freeze(time) do
+    describe "start!" do
+      it "should set the status to active" do
         job.start!
-        job.reload
-        job.start_time.to_i.should eq time.to_i
+        job.active?.should be_true
+      end
+
+      it "should set the start time to now" do
+        time = Time.now
+        Timecop.freeze(time) do
+          job.start!
+          job.reload
+          job.start_time.to_i.should eq time.to_i
+        end
+      end
+
+      it "should set the records count to 0" do
+        job.start!
+        job.records_count.should eq 0
+      end
+
+      it "should set the processed count to 0" do
+        job.start!
+        job.processed_count.should eq 0
+      end
+
+      it "should save the job" do
+        job.should_receive(:save) { true }
+        job.start!
       end
     end
 
-    it "resets the record_count" do
-      job.records_count = 100
-      job.start!
-      job.reload.records_count.should eq 0
-    end
-
-    it "resets the processed_count" do
-      job.processed_count = 100
-      job.start!
-      job.reload.processed_count.should eq 0
-    end
-  end
-
-  describe "#finish!" do
-    let(:parser) { double(:parser, enrichment_definitions: {}).as_null_object }
-
-    before do
-      job.stub(:parser) { parser }
-    end
-
-    it "sets the status to finished" do
-      job.finish!
-      job.reload
-      job.status.should eq "finished"
-    end
-
-    it "sets the end_time" do
-      time = Time.now
-      Timecop.freeze(time) do
+    describe "finish!" do
+      it "should set the status to finished" do
         job.finish!
-        job.reload
-        job.end_time.to_i.should eq time.to_i
+        job.finished?.should be_true
+      end
+
+      it "should set the end time to now" do
+        time = Time.now
+        Timecop.freeze(time) do
+          job.finish!
+          job.reload
+          job.end_time.to_i.should eq time.to_i
+        end
+      end
+
+      it "should set the throughput" do
+        job.should_receive(:calculate_throughput)
+        job.finish!
+      end
+
+      it "should set the errors count" do
+        job.should_receive(:calculate_errors_count)
+        job.finish!
+      end
+
+      it "should save the job" do
+        job.should_receive(:save) { true }
+        job.finish!
       end
     end
 
-    it "calculates the throughput" do
-      job.should_receive(:calculate_throughput)
-      job.finish!
+    describe "error!" do
+      before(:each) do
+        job.start!
+      end
+
+      it "should set the status to failed" do
+        job.error!
+        job.failed?.should be_true
+      end
+
+      it "should set the end time to now" do
+        time = Time.now
+        Timecop.freeze(time) do
+          job.error!
+          job.reload
+          job.end_time.to_i.should eq time.to_i
+        end
+      end
+
+      it "should set the errors count" do
+        job.should_receive(:calculate_errors_count)
+        job.error!
+      end
+
+      it "should save the job" do
+        job.should_receive(:save) { true }
+        job.error!
+      end
     end
 
-    it "calculates the errors count" do
-      job.should_receive(:calculate_errors_count)
-      job.finish!
-    end
-  end
+    describe "stop!" do
+      before(:each) do
+        job.start!
+      end
 
-  describe "#finished?" do
-    it "returns true" do
-      job.status = "finished"
-      job.finished?.should be_true
-    end
+      it "should set the status to failed" do
+        job.stop!
+        job.stopped?.should be_true
+      end
 
-    it "returns false" do
-      job.status = "active"
-      job.finished?.should be_false
-    end
-  end
+      it "should set the end time to now" do
+        time = Time.now
+        Timecop.freeze(time) do
+          job.stop!
+          job.reload
+          job.end_time.to_i.should eq time.to_i
+        end
+      end
 
-  describe "#stopped?" do
-    it "returns true" do
-      job.status = "stopped"
-      job.stopped?.should be_true
-    end
-
-    it "returns false" do
-      job.status = "finished"
-      job.stopped?.should be_false
+      it "should save the job" do
+        job.should_receive(:save) { true }
+        job.stop!
+      end
     end
   end
 

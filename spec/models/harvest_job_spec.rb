@@ -117,8 +117,11 @@ describe HarvestJob do
   end
 
   describe "#finish!" do
-    it "flushes old records if full_and_flush is true" do
+    before do 
       job.mode = 'full_and_flush'
+    end
+
+    it "flushes old records if full_and_flush is true" do
       job.should_receive(:flush_old_records)
       job.finish!
     end
@@ -130,15 +133,19 @@ describe HarvestJob do
     end
 
     it "does not flush record if limit is set" do
-      job.mode = 'full_and_flush'
       job.limit = 100
       job.should_not_receive(:flush_old_records)
       job.finish!
     end
 
     it "does not flush records if a harvest failure occured" do
-      job.mode = 'full_and_flush'
       job.build_harvest_failure()
+      job.should_not_receive(:flush_old_records)
+      job.finish!
+    end
+
+    it "does not flush record if the job is manually stopped" do
+      job.status = 'stopped'
       job.should_not_receive(:flush_old_records)
       job.finish!
     end

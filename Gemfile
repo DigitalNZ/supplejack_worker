@@ -21,8 +21,9 @@ gem "devise",       ">= 2.1.2"
 gem "kaminari",     "~> 0.14.1"
 
 gem 'honeybadger'
-gem "sidekiq"
-gem 'slim'
+
+gem 'state_machine'
+gem 'sidekiq'
 # if you require 'sinatra' you get the DSL extended to Object
 gem 'sinatra', :require => nil
 

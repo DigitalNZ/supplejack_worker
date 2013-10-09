@@ -19,7 +19,7 @@ class Preview
 
   	unless job.valid?
   		harvest_job = HarvestJob.where(status: "active", parser_id: job.parser_id, environment: "preview").first
-  		harvest_job.update_attribute(:status, "stopped")
+  		harvest_job.stop!
       job.save!
   	end
 
