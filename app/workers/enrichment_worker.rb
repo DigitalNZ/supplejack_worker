@@ -1,5 +1,16 @@
 class EnrichmentWorker < AbstractWorker
   include Sidekiq::Worker
+  sidekiq_options retry: 1
+  sidekiq_retry_in { 1 }
+
+  sidekiq_retries_exhausted do |msg|
+    job_id = msg['args'].first
+    job = AbstractJob.find(job_id)
+    job.update_attribute(:status_message, "Failed with exception #{msg['error_message']}")
+    job.error!
+
+    Sidekiq.logger.warn "EnrichmentJob #{job_id} FAILED with exception #{msg['error_message']}"
+  end
 
   attr_reader :parser, :parser_class
 

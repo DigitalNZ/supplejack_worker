@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :abstract_job do
     start_time    Time.now
-    status        "active"
     environment   "test"
 
     sequence(:parser_id)  {|n| "abc#{n}" }

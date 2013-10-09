@@ -15,8 +15,14 @@ class HarvestJob < AbstractJob
   end
 
   def enqueue_enrichment_jobs
-    self.parser.enrichment_definitions(environment).each do |name, options|
-      EnrichmentJob.create_from_harvest_job(self, name) if Array(self.enrichments).include?(name.to_s)
+    begin
+      self.parser.enrichment_definitions(environment).each do |name, options|
+        EnrichmentJob.create_from_harvest_job(self, name) if Array(self.enrichments).include?(name.to_s)
+      end
+    rescue StandardError, ScriptError => e
+      self.create_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
+      self.fail_job(e.message)
+      Sidekiq.logger.error "Caught Exception. Message:#{e.message}, created harvest failure and failed job"
     end
   end
 
@@ -24,12 +30,13 @@ class HarvestJob < AbstractJob
     begin
       RestClient.post("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: self.source_id, job_id: self.id})
     rescue RestClient::Exception => e
-      self.build_harvest_failure(exception_class: e.class, message: "Flush old records failed with the following error mesage: #{e.message}", backtrace: e.backtrace[0..30])
+      self.create_harvest_failure(exception_class: e.class, message: "Flush old records failed with the following error mesage: #{e.message}", backtrace: e.backtrace[0..30])
+      self.fail_job(e.message)
     end
   end
 
   def records(&block)
-    start!
+    start! unless self.active?
 
     begin
       options = {}
@@ -44,7 +51,8 @@ class HarvestJob < AbstractJob
         yield record, index
       end
     rescue StandardError, ScriptError => e
-      build_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
+      self.create_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
+      self.fail_job(e.message)
     end
   end
 
@@ -53,7 +61,7 @@ class HarvestJob < AbstractJob
   end
 
   def finish!
-    flush_old_records if full_and_flush? and limit.to_i == 0 and not harvest_failure?
+    flush_old_records if full_and_flush? and limit.to_i == 0 and not harvest_failure? and not stopped?
     super
   end
 

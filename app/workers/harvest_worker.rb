@@ -2,6 +2,17 @@ require "snippet"
 
 class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
+  sidekiq_options retry: 1
+  sidekiq_retry_in { 1 }
+
+  sidekiq_retries_exhausted do |msg|
+    job_id = msg['args'].first
+    job = AbstractJob.find(job_id)
+    job.update_attribute(:status_message, "Failed with exception #{msg['error_message']}")
+    job.error!
+
+    Sidekiq.logger.warn "HarvestJob #{job_id} FAILED with exception #{msg['error_message']}"
+  end
 
   def perform(harvest_job_id)
     @job_id = harvest_job_id.is_a?(Hash) ? harvest_job_id["$oid"] : harvest_job_id
@@ -16,7 +27,7 @@ class HarvestWorker < AbstractWorker
       break if stop_harvest?
       sleep(2)
     end
-    
+  
     job.finish!
 
     job.enqueue_enrichment_jobs

@@ -34,7 +34,7 @@ describe Preview do
 
 		context "harvest_failure" do
 
-			let(:running_job) { HarvestJob.new(environment: "preview", index: 1, harvest_failure: {}) }
+			let(:running_job) { HarvestJob.new(environment: "preview", index: 1, harvest_failure: {}, status: "active", parser_id: "abc123") }
 
 			before do
 				job.stub(:valid?) { false }
@@ -47,7 +47,7 @@ describe Preview do
 
 			it "should stop the currently active job" do
 				HarvestJob.should_receive(:where).with(status: "active", parser_id: job.parser_id, environment: "preview") { [running_job] }
-			  running_job.should_receive(:update_attribute).with(:status, "stopped")
+			  running_job.should_receive(:stop!)
 			  Preview.spawn_preview_worker(preview_attributes)
 			end
 

@@ -1,8 +1,24 @@
 require "snippet"
 
 class PreviewWorker < HarvestWorker
+	sidekiq_options retry: 1
+	sidekiq_retry_in { 1 }
 
 	attr_reader :preview_id
+
+	sidekiq_retries_exhausted do |msg|
+    job_id = msg['args'].first
+    preview_id = msg['args'].last
+
+    job = AbstractJob.find(job_id)
+    job.update_attribute(:status_message, "Failed with exception #{msg['error_message']}")
+    job.error!
+
+    preview = Preview.find(preview_id)
+    preview.update_attribute(:status, "Preview failed. Harvest Job id:#{job_id}, Preview id:#{preview_id}. Exception: #{msg['error_message']}")
+
+    Sidekiq.logger.warn "Preview #{preview_id} FAILED with exception #{msg['error_message']}"
+  end
 
 	def perform(harvest_job_id, preview_id)
 		@job_id = sanitize_id(harvest_job_id)
@@ -21,6 +37,7 @@ class PreviewWorker < HarvestWorker
 		preview.update_attribute(:harvest_failure, job.harvest_failure.to_json) if job.harvest_failure.present?
 	end
 
+
 	protected
 
 	def strip_ids(hash)
@@ -38,7 +55,7 @@ class PreviewWorker < HarvestWorker
 		end
 		hash
 	end
-
+	
 	def preview
 		@preview ||= Preview.find(self.preview_id)
 	end
