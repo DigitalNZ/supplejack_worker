@@ -86,7 +86,7 @@ class AbstractJob
 
   state_machine :status, initial: :ready do
     event :start do
-      transition [:ready] => :active
+      transition :ready => :active
     end
 
     event :finish do
@@ -114,14 +114,15 @@ class AbstractJob
       job.save
     end
 
-    after_transition [:ready, :active, :stopped] => :finished do |job|
+    after_transition all => :finished do |job|
       job.end_time = Time.now
       job.calculate_throughput
       job.calculate_errors_count
       job.save
     end
 
-    after_transition :active => [:failed, :stopped] do |job|
+    after_transition all => [:failed, :stopped] do |job|
+      job.start_time = Time.now if job.start_time.blank?
       job.end_time = Time.now
       job.calculate_errors_count
       job.save

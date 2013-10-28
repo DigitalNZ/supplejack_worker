@@ -191,21 +191,41 @@ describe AbstractJob do
     end
 
     describe "error!" do
-      before(:each) do
-        job.start!
-      end
-
       it "should set the status to failed" do
         job.error!
         job.failed?.should be_true
       end
 
+      context "start time" do
+        it "should set the start time to now if not set" do
+          time = Time.now
+          Timecop.freeze(time) do
+            job.error!
+            job.reload.end_time.to_i.should eq time.to_i
+          end
+        end
+
+        it "should not set the start time to now if set" do
+          Timecop.freeze(Time.now - 1.hour) do
+            job.start!
+          end
+
+          time = Time.now
+          Timecop.freeze(time) do
+            job.error!
+            job.reload.start_time.to_i.should_not eq time.to_i
+          end
+        end
+        
+      end
+
       it "should set the end time to now" do
+        job.start!
+
         time = Time.now
         Timecop.freeze(time) do
           job.error!
-          job.reload
-          job.end_time.to_i.should eq time.to_i
+          job.reload.end_time.to_i.should eq time.to_i
         end
       end
 
@@ -234,8 +254,7 @@ describe AbstractJob do
         time = Time.now
         Timecop.freeze(time) do
           job.stop!
-          job.reload
-          job.end_time.to_i.should eq time.to_i
+          job.reload.end_time.to_i.should eq time.to_i
         end
       end
 

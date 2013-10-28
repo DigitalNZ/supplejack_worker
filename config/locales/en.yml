@@ -3,3 +3,6 @@
 
 en:
   hello: "Hello world"
+
+  job:
+    already_running: "TRANSLATION FOR HUMANS: Another %{type} job is already running somewhere on the system. You can't start another one until that %{type} job completes. Please try again soon."
