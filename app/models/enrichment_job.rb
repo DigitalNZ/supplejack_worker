@@ -7,7 +7,7 @@ class EnrichmentJob < AbstractJob
   field :enrichment,  type: String
   field :record_id,   type: Integer
 
-  validates_uniqueness_of :enrichment, scope: [:environment, :status, :_type, :parser_id], if: :active?
+  validates_uniqueness_of :enrichment, scope: [:environment, :status, :_type, :parser_id], message: I18n.t('job.already_running', type: 'Enrichment'), if: :active?
 
   def self.create_from_harvest_job(job, enrichment)
     self.create(parser_id:      job.parser_id,

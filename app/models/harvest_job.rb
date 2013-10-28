@@ -7,7 +7,7 @@ class HarvestJob < AbstractJob
 
   after_create :enqueue, unless: :preview?
 
-  validates_uniqueness_of :parser_id, scope: [:environment, :status, :_type], if: :active?
+  validates_uniqueness_of :parser_id, scope: [:environment, :status, :_type], message: I18n.t('job.already_running', type: 'Harvest'), if: :active?
   validates :mode, inclusion: ['normal', 'full_and_flush', 'incremental']
 
   def enqueue
@@ -36,9 +36,9 @@ class HarvestJob < AbstractJob
   end
 
   def records(&block)
-    start! unless self.active?
-
     begin
+      start! unless self.active?
+
       options = {}
       options[:limit] = limit.to_i if limit.to_i > 0
       options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
