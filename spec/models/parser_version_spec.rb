@@ -30,6 +30,11 @@ describe ParserVersion do
       HarvestJob.should_receive(:where).with(parser_id: parser_version.parser_id) { job }
       parser_version.harvest_jobs
     end
+
+    it 'finds all the harvest jobs with specified status' do
+      HarvestJob.should_receive(:where).with(parser_id: parser_version.parser_id, status: 'finished') { job }
+      parser_version.harvest_jobs('finished')
+    end
   end
 
   describe "#source" do
