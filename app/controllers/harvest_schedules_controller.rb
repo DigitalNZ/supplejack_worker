@@ -13,6 +13,10 @@ class HarvestSchedulesController < ApplicationController
     respond_with @harvest_schedules, serializer: ActiveModel::ArraySerializer
   end
 
+  def next
+    respond_with HarvestSchedule.next
+  end
+
   def show
     @harvest_schedule = HarvestSchedule.find(params[:id])
     respond_with @harvest_schedule

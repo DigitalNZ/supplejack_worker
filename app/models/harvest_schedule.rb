@@ -48,6 +48,10 @@ class HarvestSchedule
     self.recurrents_to_be_run.each(&:create_job)
   end
 
+  def self.next
+    HarvestSchedule.desc(:next_run_at).limit(10)
+  end
+
   def active?
     self.status == "active"
   end
@@ -74,5 +78,4 @@ class HarvestSchedule
     self.status = "inactive" unless self.recurrent
     self.save
   end
-
 end
