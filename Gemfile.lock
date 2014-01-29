@@ -149,6 +149,9 @@ GEM
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
+    kiqstand (1.1.0)
+      mongoid (~> 3.1)
+      moped (~> 1.4)
     libv8 (3.11.8.17)
     listen (1.2.3)
       rb-fsevent (>= 0.9.3)
@@ -312,6 +315,7 @@ DEPENDENCIES
   honeybadger
   jquery-rails
   kaminari (~> 0.14.1)
+  kiqstand
   mongoid (~> 3.1.3)
   oai!
   parse-cron

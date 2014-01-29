@@ -24,6 +24,8 @@ gem 'honeybadger'
 
 gem 'state_machine'
 gem 'sidekiq'
+gem 'kiqstand'
+
 # if you require 'sinatra' you get the DSL extended to Object
 gem 'sinatra', :require => nil
 
