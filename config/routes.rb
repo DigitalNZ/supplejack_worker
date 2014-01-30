@@ -2,7 +2,9 @@ HarvesterWorker::Application.routes.draw do
 
   devise_for :users, skip: :sessions
 
-  resources :abstract_jobs, only: [:index]
+  resources :abstract_jobs, only: [:index] do
+    get :jobs_since, on: :collection
+  end
   resources :harvest_jobs, only: [:create, :update, :show, :index]
   resources :enrichment_jobs, only: [:create, :update, :show]
   resources :harvest_schedules, only: [:index, :create, :update, :show, :destroy] do
