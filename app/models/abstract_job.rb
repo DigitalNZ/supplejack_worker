@@ -148,6 +148,11 @@ class AbstractJob
     end
   end
 
+  def self.jobs_since(params)
+      datetime = DateTime.parse( params['datetime'] )
+      AbstractJob.where(:start_time.gte => datetime.getutc, environment: params["environment"], status: params["status"] )
+  end
+
   def duration
     return nil unless self.start_time && self.end_time
     self.end_time.to_i - self.start_time.to_i

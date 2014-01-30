@@ -11,4 +11,8 @@ class AbstractJobsController < ApplicationController
     response.headers["X-limit"] = @abstract_jobs.limit_value.to_s
     respond_with @abstract_jobs, serializer: ActiveModel::ArraySerializer
   end
+
+  def jobs_since
+    respond_with AbstractJob.jobs_since(params)
+  end
 end

@@ -49,7 +49,7 @@ class HarvestSchedule
   end
 
   def self.next
-    HarvestSchedule.desc(:next_run_at).limit(10)
+    HarvestSchedule.asc(:next_run_at).limit(10)
   end
 
   def active?
