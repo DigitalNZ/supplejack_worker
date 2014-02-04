@@ -11,7 +11,7 @@ module ParserLoaderHelpers
     @loader ||= HarvesterCore::Loader.new(self, environment)
 
     if loader.loaded?
-      @enrichment_definitions = loader.parser_class.enrichment_definitions.freeze
+      @enrichment_definitions = loader.parser_class.enrichment_definitions
     end
   end
 end
