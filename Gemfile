@@ -10,7 +10,7 @@ gem 'rails', '3.2.12'
 #gem "harvester_core", path: "~/Projects/dnz/squirrel/core"
 gem "harvester_core", git: "git@scm.digitalnz.org:harvester/core"
 
-gem "oai", git: "https://github.com/code4lib/ruby-oai.git"
+gem "oai", git: "https://github.com/boost/ruby-oai.git"
 
 gem "active_model_serializers", git: "https://github.com/rails-api/active_model_serializers.git"
 
