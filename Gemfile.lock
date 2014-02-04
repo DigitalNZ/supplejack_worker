@@ -17,10 +17,10 @@ GIT
       tzinfo
 
 GIT
-  remote: https://github.com/code4lib/ruby-oai.git
-  revision: d57a23250774751b8bb3484012c9e11162462cb2
+  remote: https://github.com/boost/ruby-oai.git
+  revision: a6642907e0571e9ae7341970eb43e844e3d8c039
   specs:
-    oai (0.3.0)
+    oai (0.3.1)
       builder (>= 2.0.0)
       faraday
       faraday_middleware
@@ -115,7 +115,7 @@ GEM
     factory_girl_rails (4.2.1)
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
-    faraday (0.8.8)
+    faraday (0.8.9)
       multipart-post (~> 1.2.0)
     faraday_middleware (0.9.0)
       faraday (>= 0.7.4, < 0.9)
