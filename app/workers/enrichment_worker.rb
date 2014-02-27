@@ -62,17 +62,16 @@ class EnrichmentWorker < AbstractWorker
       unless enrichment.errors.any?
         post_to_api(enrichment) unless job.test?
       else
-        Rails.logger.info "Enrichment Errors: #{enrichment.errors.inspect}"
+        Airbrake.notify(StandardError.new("Enrichment Errors: #{enrichment.errors.inspect}"))
       end
 
       rescue RestClient::ResourceNotFound => e
-        Rails.logger.info "Resource Not Found: #{enrichment.inspect}"
+        Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}")
       rescue StandardError => e
-        Rails.logger.info "\n#{e.message}, #{e.class.inspect}"
-        e.backtrace.each {|b| Rails.logger.info b }
+        Airbrake.notify(e)
       end
     end
-    puts "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
+    Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   end
 
   private

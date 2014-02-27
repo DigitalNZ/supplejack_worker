@@ -20,7 +20,7 @@ gem "figaro",       ">= 0.5.0"
 gem "devise",       ">= 2.1.2"
 gem "kaminari",     "~> 0.14.1"
 
-gem 'honeybadger'
+gem "airbrake"
 
 gem 'state_machine'
 gem 'sidekiq'

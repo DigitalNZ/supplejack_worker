@@ -7,7 +7,8 @@ class Snippet < ActiveResource::Base
     begin
       snippet = find(:one, from: :current_version, params: {name: name, environment: environment})
     rescue StandardError => e
-      Rails.logger.info "Snippet with name: #{name} was not found"
+      Rails.logger.error "Snippet with name: #{name} was not found"
+      Airbrake.notify(e)
       return nil
     end
   end
