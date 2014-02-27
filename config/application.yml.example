@@ -13,7 +13,7 @@ development:
   MANAGER_HOST: "http://localhost:3001"
   MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
-  HONEYBADGER_API_KEY: "anc123"
+  AIRBRAKE_API_KEY: "anc123"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
 
@@ -22,7 +22,7 @@ test:
   MANAGER_HOST: "http://localhost:3001"
   MANAGER_API_KEY: "12345"
   HARVESTER_CACHING_ENABLED: false
-  HONEYBADGER_API_KEY: "anc123"
+  AIRBRAKE_API_KEY: "anc123"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
 
@@ -31,7 +31,7 @@ staging:
   MANAGER_HOST: "http://harvester.org"
   MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
-  HONEYBADGER_API_KEY: "anc123"
+  AIRBRAKE_API_KEY: "anc123"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   LINK_CHECKING_ENABLED: "true"
   HOST: 'worker.harvester.org'
@@ -45,7 +45,7 @@ production:
   MANAGER_HOST: "http://harvester.org"
   MANAGER_API_KEY: "abc123"
   HARVESTER_CACHING_ENABLED: true
-  HONEYBADGER_API_KEY: "anc123"
+  AIRBRAKE_API_KEY: "anc123"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   LINK_CHECKING_ENABLED: "true"
   SMTP_ADDRESS: "your SMTP address"

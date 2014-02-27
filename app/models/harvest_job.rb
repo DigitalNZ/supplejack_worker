@@ -22,7 +22,7 @@ class HarvestJob < AbstractJob
     rescue StandardError, ScriptError => e
       self.create_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
       self.fail_job(e.message)
-      Sidekiq.logger.error "Caught Exception. Message:#{e.message}, created harvest failure and failed job"
+      Airbrake.notify(e, error_message: "Caught Exception. Message:#{e.message}, created harvest failure and failed job")
     end
   end
 
@@ -32,6 +32,7 @@ class HarvestJob < AbstractJob
     rescue RestClient::Exception => e
       self.create_harvest_failure(exception_class: e.class, message: "Flush old records failed with the following error mesage: #{e.message}", backtrace: e.backtrace[0..30])
       self.fail_job(e.message)
+      Airbrake.notify(e, error_message: "Flush old records failed with the following error mesage: #{e.message}")
     end
   end
 
@@ -53,6 +54,7 @@ class HarvestJob < AbstractJob
     rescue StandardError, ScriptError => e
       self.create_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
       self.fail_job(e.message)
+      Airbrake.notify(e)
     end
   end
 
