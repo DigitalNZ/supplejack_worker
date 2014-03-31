@@ -218,7 +218,7 @@ describe LinkCheckWorker do
       end
 
       it "should throw an exception" do
-        expect { worker.send(:link_check, "http://hehehe.com", "tapuhi") }.to raise_exception
+        expect { worker.send(:link_check, "http://hehehe.com", "tapuhi") }.to raise_error(ThrottleLimitError)
       end
     end
   end
