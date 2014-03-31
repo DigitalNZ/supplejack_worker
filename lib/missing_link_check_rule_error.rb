@@ -1,0 +1,2 @@
+class MissingLinkCheckRuleError < StandardError
+end
