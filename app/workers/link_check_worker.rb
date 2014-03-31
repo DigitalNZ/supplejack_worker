@@ -57,7 +57,7 @@ class LinkCheckWorker
         conn.expire(collection, rules.try(:throttle) || 2)
         RestClient.get(url)
       else
-        raise Exception.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
+        raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
       end
     end
   end
