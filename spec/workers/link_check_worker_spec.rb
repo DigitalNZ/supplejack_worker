@@ -61,6 +61,32 @@ describe LinkCheckWorker do
       end
     end
 
+    context "link check rule doesn't exist" do
+      let(:logger) { double(:logger) }
+
+      before(:each) do
+        worker.stub(:rules) { nil }
+        Rails.stub(:logger) { logger }
+        logger.stub(:error)
+      end
+
+      it "should send a MissingLinkCheckRuleError to Airbrake with the missing source_id" do
+        MissingLinkCheckRuleError.should_receive(:new).with('tapuhi')
+        Airbrake.should_receive(:notify)
+        worker.perform(link_check_job.id.to_s)
+      end
+
+      it "should return if the rule isn't found" do
+        Airbrake.should_receive(:notify).once()
+        worker.perform(link_check_job.id.to_s)
+      end
+
+      it "should write the source_id to the log file" do
+        logger.should_receive(:error).with("MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [tapuhi]")
+        worker.perform(link_check_job.id.to_s)
+      end
+    end
+
     context "link check job not found" do
       it "should not check the link" do
         worker.stub(:link_check_job) { nil }

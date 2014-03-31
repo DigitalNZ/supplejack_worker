@@ -9,6 +9,12 @@ class LinkCheckWorker
   def perform(link_check_job_id, strike=0)
     @link_check_job_id = link_check_job_id
     begin
+      unless rules.present?
+        Rails.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
+        Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
+        return
+      end
+
       if link_check_job.present? and rules.active
         response = link_check(link_check_job.url, link_check_job.source._id)
         if validate_link_check_rule(response, link_check_job.source._id)
