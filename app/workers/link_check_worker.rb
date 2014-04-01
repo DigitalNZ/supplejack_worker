@@ -9,18 +9,20 @@ class LinkCheckWorker
   def perform(link_check_job_id, strike=0)
     @link_check_job_id = link_check_job_id
     begin
-      unless rules.present?
-        Rails.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
-        Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
-        return
-      end
+      if link_check_job.present? && link_check_job.source.present?
+        unless rules.present?
+          Rails.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
+          Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
+          return
+        end
 
-      if link_check_job.present? and rules.active
-        response = link_check(link_check_job.url, link_check_job.source._id)
-        if validate_link_check_rule(response, link_check_job.source._id)
-          set_record_status(link_check_job.record_id, "active") if strike > 0
-        else
-          suppress_record(link_check_job_id, link_check_job.record_id, strike)
+        if rules.active
+          response = link_check(link_check_job.url, link_check_job.source._id)
+          if validate_link_check_rule(response, link_check_job.source._id)
+            set_record_status(link_check_job.record_id, "active") if strike > 0
+          else
+            suppress_record(link_check_job_id, link_check_job.record_id, strike)
+          end
         end
       end
     rescue RestClient::ResourceNotFound => e

@@ -66,6 +66,7 @@ describe LinkCheckWorker do
 
       before(:each) do
         worker.stub(:rules) { nil }
+        worker.stub_chain(:link_check_job, :source) { double(:source) }
         Rails.stub(:logger) { logger }
         logger.stub(:error)
       end
