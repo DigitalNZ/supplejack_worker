@@ -19,3 +19,4 @@
 /worker.sublime-project
 /worker.sublime-workspace
 .ruby-version
+.idea/*
