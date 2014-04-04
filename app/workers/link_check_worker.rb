@@ -27,6 +27,8 @@ class LinkCheckWorker
       end
     rescue RestClient::ResourceNotFound => e
       suppress_record(link_check_job_id, link_check_job.record_id, strike)
+    rescue ThrottleLimitError => e
+      # No operation here. Prevents Airbrake from notifying ThrottleLimitError.
     rescue StandardError => e
       Airbrake.notify(e, error_message: "There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
     end
