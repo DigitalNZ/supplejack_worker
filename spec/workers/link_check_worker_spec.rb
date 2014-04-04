@@ -103,6 +103,11 @@ describe LinkCheckWorker do
         worker.perform(link_check_job.id.to_s)
       end
 
+      it 'handles throttling error' do
+        worker.stub(:link_check).and_raise(ThrottleLimitError.new('ThrottleLimitError'))
+        expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception
+      end
+      
       it "should handle networking errors" do
         worker.stub(:link_check).and_raise(StandardError.new('RestClient Exception'))
         expect {worker.perform(link_check_job.id.to_s)}.to_not raise_exception
