@@ -6,7 +6,7 @@ For more information on how to configure and use this application refer to the [
 
 ## Getting Started
 
-We strongly recommend that you use the Rails Application Template to install the Supplejack Stack. See http://digitalnz.github.io/supplejack/start/install-setup.html for details.
+We strongly recommend that you use the Rails Application Template to install the Supplejack Stack. See [Getting Started](http://digitalnz.github.io/supplejack/start/install-setup.html) for details.
 
 However, if you would like to install just the worker, clone this repository and then rename `application.yml.example` to `application.yml`
 
