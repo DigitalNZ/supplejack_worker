@@ -4,9 +4,11 @@ The Supplejack Worker is a rails application that uses [Sidekiq](http://sidekiq.
 
 For more information on how to configure and use this application refer to the [documentation](http://digitalnz.github.io/supplejack)
 
-## Getting started
+## Getting Started
 
-Clone this repository and then rename `application.yml.example` to `application.yml`
+We strongly recommend that you use the Rails Application Template to install the Supplejack Stack. See http://digitalnz.github.io/supplejack/start/install-setup.html for details.
+
+However, if you would like to install just the worker, clone this repository and then rename `application.yml.example` to `application.yml`
 
 Update the environment variables for each environment that you are using to reflect your setup. An example environment configuration is included below:
 
@@ -25,6 +27,7 @@ staging:
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"    # Who should be notified about link checking results 
   API_MONGOID_HOSTS: "localhost:27017"            # IP address of the Mongo instance for your API. Can be multiple values
 ```
+
 Start your app using the following commands:
 
 ```bash 
@@ -37,7 +40,7 @@ bundle exec sidekiq
 
 You should now be able to view the Sidekiq dashboard at http://localhost:3002/sidekiq
 
-## Worker jobs
+## Worker Jobs
 ### Harvesting jobs
 These use the harvester core gem to interpret a given parser which it uses to generate records and posts them to the Supplejack API (this is a simplified overview of the process).
 
