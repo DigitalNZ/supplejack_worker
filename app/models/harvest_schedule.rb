@@ -24,7 +24,7 @@ class HarvestSchedule
   field :at_minutes,      type: Integer
   field :offset,          type: Integer
   field :environment,     type: String
-  field :recurrent,       type: Boolean,  default: true
+  field :recurrent,       type: Boolean,  default: false
   field :last_run_at,     type: DateTime, default: nil
   field :next_run_at,     type: DateTime
   field :status,          type: String,   default: "active"
