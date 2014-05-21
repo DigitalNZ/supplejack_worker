@@ -5,4 +5,4 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
+SupplejackCommon.parser_base_path = Rails.root.to_s + "/tmp/parsers"

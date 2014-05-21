@@ -66,8 +66,8 @@ describe EnrichmentWorker do
     end
 
     it "should call before and after on the Enrichment class" do
-      HarvesterCore::TapuhiRecordsEnrichment.should_receive(:before).with("ndha_rights")
-      HarvesterCore::TapuhiRecordsEnrichment.should_receive(:after).with("ndha_rights")
+      SupplejackCommon::TapuhiRecordsEnrichment.should_receive(:before).with("ndha_rights")
+      SupplejackCommon::TapuhiRecordsEnrichment.should_receive(:after).with("ndha_rights")
       worker.perform(1)
     end
   end
@@ -124,12 +124,12 @@ describe EnrichmentWorker do
     before do
       worker.send(:setup_parser)
       parser.stub(:enrichment_definitions) { {ndha_rights: {}} }
-      HarvesterCore::Enrichment.stub(:new) { enrichment }
+      SupplejackCommon::Enrichment.stub(:new) { enrichment }
       worker.stub(:post_to_api) { nil }
     end
 
     it "should initialize a enrichment" do
-      HarvesterCore::Enrichment.should_receive(:new).with("ndha_rights", worker.send(:enrichment_options), record, TestClass)
+      SupplejackCommon::Enrichment.should_receive(:new).with("ndha_rights", worker.send(:enrichment_options), record, TestClass)
       worker.process_record(record)
     end
 
@@ -231,13 +231,13 @@ describe EnrichmentWorker do
       worker.send(:setup_parser)
     end
 
-    it "defaults to HarvesterCore::Enrichment" do
-      worker.send(:enrichment_class).should eq HarvesterCore::Enrichment
+    it "defaults to SupplejackCommon::Enrichment" do
+      worker.send(:enrichment_class).should eq SupplejackCommon::Enrichment
     end
 
     it "uses a the custom TapuhiRelationships enrichment" do
       parser.stub(:enrichment_definitions) { {ndha_rights: {type: "TapuhiRecords"}} }
-      worker.send(:enrichment_class).should eq HarvesterCore::TapuhiRecordsEnrichment
+      worker.send(:enrichment_class).should eq SupplejackCommon::TapuhiRecordsEnrichment
     end
   end
 

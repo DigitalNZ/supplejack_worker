@@ -9,11 +9,11 @@ require "spec_helper"
 
 describe HarvestWorker do
   let(:worker) { HarvestWorker.new }
-  let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < HarvesterCore::Xml::Base; end", file_name: "natlib_pages.rb") }
+  let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < SupplejackCommon::Xml::Base; end", file_name: "natlib_pages.rb") }
   let(:job) { HarvestJob.new(environment: "staging", parser_id: "abc123") }
 
   before(:each) do
-    HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
+    SupplejackCommon.parser_base_path = Rails.root.to_s + "/tmp/parsers"
     RestClient.stub(:post)
 
     worker.stub(:job) { job }

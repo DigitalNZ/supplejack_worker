@@ -19,7 +19,7 @@ describe Parser do
     end
 
     it "should initialize a loader object" do
-      HarvesterCore::Loader.should_receive(:new).with(parser, :staging)
+      SupplejackCommon::Loader.should_receive(:new).with(parser, :staging)
       parser.load_file(:staging)
     end
 
