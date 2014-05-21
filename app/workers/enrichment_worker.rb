@@ -95,7 +95,7 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def enrichment_class
-    klass = "HarvesterCore::#{enrichment_options[:type]}Enrichment"
+    klass = "SupplejackCommon::#{enrichment_options[:type]}Enrichment"
     klass.constantize
   end
 

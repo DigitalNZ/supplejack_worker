@@ -85,12 +85,12 @@ describe HarvestJob do
 
   describe "records" do
 
-    let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < HarvesterCore::Xml::Base; end", file_name: "natlib_pages.rb") }
+    let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < SupplejackCommon::Xml::Base; end", file_name: "natlib_pages.rb") }
     let(:record1) { double(:record) }
     let(:record2) { double(:record) }
 
     before do
-      HarvesterCore.parser_base_path = Rails.root.to_s + "/tmp/parsers"
+      SupplejackCommon.parser_base_path = Rails.root.to_s + "/tmp/parsers"
       parser.load_file("staging")
 
       job.stub(:environment) { "staging" }
