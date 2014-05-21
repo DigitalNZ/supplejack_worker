@@ -12,7 +12,6 @@ class ApiUpdateWorker
 		job = AbstractJob.find(job_id)
 
 		attributes.merge!(preview: true) if job.environment == "preview"
-		puts attributes.inspect
 
 		measure = Benchmark.measure do
       response = RestClient.post "#{ENV["API_HOST"]}#{path}", attributes.to_json, content_type: :json, accept: :json
