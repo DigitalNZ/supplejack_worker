@@ -14,7 +14,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.12'
 
-gem 'supplejack_common', git: 'git@github.com:DigitalNZ/supplejack_common.git'
+# gem 'supplejack_common', git: 'git@github.com:DigitalNZ/supplejack_common.git'
+gem 'supplejack_common', git: 'git@scm.digitalnz.org:harvester/core.git'
 
 gem "oai", git: "https://github.com/boost/ruby-oai.git"
 
