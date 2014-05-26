@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:DigitalNZ/supplejack_common.git
+  remote: git@scm.digitalnz.org:harvester/core.git
   revision: aefe30c668f948bcceec35ff0e9e15a3a5a0bf21
   specs:
     supplejack_common (0.0.1)
