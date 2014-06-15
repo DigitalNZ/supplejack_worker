@@ -32,4 +32,8 @@ class ParserVersion < ActiveResource::Base
   def source
     Parser.find(parser_id).source
   end
+
+  def data_type
+    Parser.find(parser_id).data_type
+  end
 end

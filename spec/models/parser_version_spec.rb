@@ -9,7 +9,7 @@ require "spec_helper"
 
 describe ParserVersion do
 
-  let(:parser) { Parser.new(name: "Europeana", id: "123") }
+  let(:parser) { Parser.new(name: "Europeana", id: "123", data_type: "Record") }
   let(:parser_version) { ParserVersion.new(parser_id: "123") }
   let(:job) { mock_model(HarvestJob).as_null_object }
   let(:source) { Source.new }
@@ -54,4 +54,12 @@ describe ParserVersion do
       parser_version.source
     end
   end
+
+   describe "#data_type" do
+    it "finds the parser" do
+      Parser.should_receive(:find).with("123") { parser }
+      parser_version.data_type
+    end
+  end
+
 end

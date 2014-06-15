@@ -64,12 +64,13 @@ describe HarvestWorker do
     before do
       record.stub(:deletable?) { false }
       job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
+      job.stub_chain(:parser, :data_type) { 'Record' }
       worker.instance_variable_set(:@source_id, 'tapuhi')
       worker.stub(:post_to_api)
     end
 
     it "posts the record to the api with job_id" do
-      worker.should_receive(:post_to_api).with(hash_including({title: "Hi", internal_identifier: ["record123"], job_id: job.id.to_s }))
+      worker.should_receive(:post_to_api).with(hash_including({title: "Hi", internal_identifier: ["record123"], job_id: job.id.to_s}))
       worker.process_record(record, job)
     end
 
@@ -125,12 +126,12 @@ describe HarvestWorker do
   end
 
   describe "#post_to_api" do
-    let(:attributes) { {"title" => "Hi"} }
+    let(:attributes) { {:title => "Hi", :data_type => "Record"} }
 
     it "should post to the API" do
       job.stub(:required_enrichments) { }
       worker.post_to_api(attributes)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_fragments" => nil}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => {"title" => "Hi", "data_type" => "Record"}, "required_fragments" => nil}, job.id.to_s)
     end
 
     context "async false" do
@@ -149,7 +150,7 @@ describe HarvestWorker do
       it "should send the required enricments to the api" do
         job.stub(:required_enrichments) { [:ndha_rights] }
         worker.post_to_api(attributes)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => attributes, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => {"title" => "Hi", "data_type" => "Record"}, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
       end
     end
   end
