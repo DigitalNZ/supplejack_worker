@@ -46,7 +46,7 @@ class HarvestWorker < AbstractWorker
         self.delete_from_api(record.attributes[:internal_identifier]) unless job.test?
         job.records_count += 1
       elsif record.valid?
-        attributes = record.attributes.merge(job_id: job.id.to_s, source_id: @source_id)
+        attributes = record.attributes.merge(job_id: job.id.to_s, source_id: @source_id, data_type: job.parser.data_type)
         self.post_to_api(attributes) unless job.test?
         job.records_count += 1
       else
@@ -62,11 +62,14 @@ class HarvestWorker < AbstractWorker
   end
 
   def post_to_api(attributes, async=true)
+    data_type = attributes[:data_type].downcase == 'concept' ? 'concept' : 'record'
+    path = "/harvester/#{attributes[:data_type].downcase.pluralize}.json"
+
     if async
-      ApiUpdateWorker.perform_async("/harvester/records.json", {record: attributes, required_fragments: job.required_enrichments}, job.id.to_s)
+      ApiUpdateWorker.perform_async("/harvester/#{data_type.pluralize}.json", {data_type.to_sym => attributes, required_fragments: job.required_enrichments}, job.id.to_s)
     else
       api_update_worker = ApiUpdateWorker.new
-      api_update_worker.perform("/harvester/records.json", {record: attributes, required_fragments: job.required_enrichments}, job.id.to_s)
+      api_update_worker.perform("/harvester/#{data_type.pluralize}.json", {data_type.to_sym => attributes, required_fragments: job.required_enrichments}, job.id.to_s)
     end
   end
 
