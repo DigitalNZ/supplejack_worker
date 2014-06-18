@@ -14,7 +14,7 @@ describe PreviewWorker do
 
 	let(:worker) { PreviewWorker.new }
 
-	let(:record1) { double(:record, raw_data: '{"id": "123"}', attributes: {title: "Clip the dog"}, field_errors: {}, validation_errors: {}) }
+	let(:record1) { double(:record, raw_data: '{"id": "123"}', attributes: {title: "Clip the dog", data_type: 'record'}, field_errors: {}, validation_errors: {}) }
 	let(:record2) { double(:record) }
 
 	before do
@@ -129,6 +129,7 @@ describe PreviewWorker do
 		 record1.stub(:errors) { {} }
 		 preview.stub(:save)
 		 job.stub_chain(:parser, :source, :source_id) { "tahpuhi" }
+		 job.stub_chain(:parser, :data_type) { "record" }
 		end
 
 		it "should update the attribute status to: 'harvesting record'" do
@@ -189,7 +190,7 @@ describe PreviewWorker do
 			record1.stub(:valid?) { true }
 			record1.stub(:deletable?) { false }
 			job.stub_chain(:parser, :enrichment_definitions) { {} }
-			Repository::PreviewRecord.stub(:where) { [record] }
+			SupplejackApi::PreviewRecord.stub(:where) { [record] }
 			worker.stub(:strip_ids) { record.attributes }
 			worker.stub(:post_to_api)
 		end
@@ -248,7 +249,7 @@ describe PreviewWorker do
 		end
 
 		it "should find the preview record" do
-		  Repository::PreviewRecord.should_receive(:where).with(record_id: 1234) { [record] }
+		  SupplejackApi::PreviewRecord.should_receive(:where).with(record_id: 1234) { [record] }
 		  worker.send(:enrich_record, record1)
 		end
 

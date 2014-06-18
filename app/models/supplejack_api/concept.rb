@@ -5,17 +5,18 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-module Repository
-  class Fragment
+module SupplejackApi
+  class Concept
     include Mongoid::Document
 
-    embedded_in :record, class_name: "Repository::Record"
+    store_in session: 'api', collection: 'concepts'
 
-    embeds_many :authorities, cascade_callbacks: true, class_name: "Repository::Authority"
-    embeds_many :locations, cascade_callbacks: true, class_name: "Repository::Location"
+    embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiConcept::ConceptFragment'
 
-    def relation
-    	self[:relation]
+    default_scope where(status: 'active')
+
+    def primary
+      self.fragments.where(priority: 0).first
     end
   end
 end

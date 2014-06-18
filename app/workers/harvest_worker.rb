@@ -9,6 +9,8 @@ require "snippet"
 
 class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
+  include Matcher::ConceptMatcher
+
   sidekiq_options retry: 1
   sidekiq_retry_in { 1 }
 
@@ -47,8 +49,13 @@ class HarvestWorker < AbstractWorker
         job.records_count += 1
       elsif record.valid?
         attributes = record.attributes.merge(job_id: job.id.to_s, source_id: @source_id, data_type: job.parser.data_type)
-        self.post_to_api(attributes) unless job.test?
-        job.records_count += 1
+
+        if job.parser.record? || (job.parser.concept? && attributes[:match_concepts].present? && 
+            create_concept?(attributes))
+
+          self.post_to_api(attributes) unless job.test?
+          job.records_count += 1
+        end
       else
         job.invalid_records.build(created_at: Time.now, raw_data: record.raw_data, error_messages: record.errors.full_messages)
       end
@@ -62,14 +69,17 @@ class HarvestWorker < AbstractWorker
   end
 
   def post_to_api(attributes, async=true)
-    data_type = attributes[:data_type].downcase == 'concept' ? 'concept' : 'record'
-    path = "/harvester/#{attributes[:data_type].downcase.pluralize}.json"
+    data_type = attributes.delete(:data_type).downcase.to_sym rescue :record
+    path = "/harvester/#{data_type.to_s.pluralize}.json"
+
+    attributes.delete(:data_type)
+    attributes.delete(:match_concepts)
 
     if async
-      ApiUpdateWorker.perform_async("/harvester/#{data_type.pluralize}.json", {data_type.to_sym => attributes, required_fragments: job.required_enrichments}, job.id.to_s)
+      ApiUpdateWorker.perform_async(path, {data_type => attributes, required_fragments: job.required_enrichments}, job.id.to_s)
     else
       api_update_worker = ApiUpdateWorker.new
-      api_update_worker.perform("/harvester/#{data_type.pluralize}.json", {data_type.to_sym => attributes, required_fragments: job.required_enrichments}, job.id.to_s)
+      api_update_worker.perform(path, {data_type => attributes, required_fragments: job.required_enrichments}, job.id.to_s)
     end
   end
 

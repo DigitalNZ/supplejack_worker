@@ -55,11 +55,4 @@ describe ParserVersion do
     end
   end
 
-   describe "#data_type" do
-    it "finds the parser" do
-      Parser.should_receive(:find).with("123") { parser }
-      parser_version.data_type
-    end
-  end
-
 end
