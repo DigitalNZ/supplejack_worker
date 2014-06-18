@@ -5,12 +5,10 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-module Repository
-  class Record
-    include Enrichable
+module SupplejackApi
+  class PreviewRecord
+  	include Enrichable
 
-    store_in collection: 'records'
-
-    default_scope where(:status.in => ["active", "partial"])
+    store_in collection: 'preview_records'
   end
 end

@@ -47,8 +47,12 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = "random"
 
+  # Disable logging in test env
+  Sidekiq::Logging.logger = nil
+
   config.before(:suite) do
     DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner[:mongoid, {:connection => :dnz_api_test}]
   end
   config.before(:each) do
     DatabaseCleaner.start

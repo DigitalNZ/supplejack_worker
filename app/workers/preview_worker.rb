@@ -77,8 +77,7 @@ class PreviewWorker < HarvestWorker
 
 	def process_record(record)
 		preview.update_attribute(:status, "Parser loaded and data fetched. Parsing raw data and checking harvest validations...")
-
-		record.attributes.merge! source_id: job.parser.source.source_id
+		record.attributes.merge!(source_id: job.parser.source.source_id, data_type: job.parser.data_type)
 
 		preview.raw_data = record.raw_data
 		preview.harvested_attributes = record.attributes.to_json
@@ -110,7 +109,7 @@ class PreviewWorker < HarvestWorker
 		preview.update_attribute(:status, "All enrichments complete.")
 		preview.update_attribute(:status, "Fetching final preview record from API...")
 
-		preview_record = Repository::PreviewRecord.where(record_id: current_record_id.to_i).first
+		preview_record = SupplejackApi::PreviewRecord.where(record_id: current_record_id.to_i).first
 
 		unless preview_record.nil?
 			preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json)

@@ -33,7 +33,11 @@ class ParserVersion < ActiveResource::Base
     Parser.find(parser_id).source
   end
 
-  def data_type
-    Parser.find(parser_id).data_type
+  def concept?
+    self.data_type == 'concept'
+  end
+
+  def record?
+    self.data_type == 'record'
   end
 end

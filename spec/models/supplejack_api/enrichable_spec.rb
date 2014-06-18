@@ -7,9 +7,9 @@
 
 require "spec_helper"
 
-describe Repository::Enrichable do
+describe SupplejackApi::Enrichable do
   
-  let(:record) { Repository::Record.new }
+  let(:record) { SupplejackApi::Record.new }
   let!(:primary_fragment) { record.fragments.build(dc_identifier: ["tap:1234"], priority: 0, is_part_of: ["tap:12345"], relation: ["tap:123456"], authorities: []) }
   let(:fragment) { record.fragments.build(dc_identifier: ["tap:1234"], priority: 1) }
 

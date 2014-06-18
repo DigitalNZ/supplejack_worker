@@ -5,10 +5,12 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-module Repository
-  class Location
-    include Mongoid::Document
+module SupplejackApi
+  class Record
+    include Enrichable
 
-    embedded_in :fragment, class_name: "Repository::Fragment"
+    store_in collection: 'records'
+
+    default_scope where(:status.in => ["active", "partial"])
   end
 end

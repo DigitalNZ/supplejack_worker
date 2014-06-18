@@ -21,6 +21,6 @@ class ApiUpdateWorker
 
     job.inc(:posted_records_count, 1)
 
-    puts "#{job.class}: POST (#{measure.real.round(4)})" unless Rails.env.test?
+    Sidekiq.logger.info "POST #{job.class} #{job.environment.capitalize} to #{path}. Time: #{measure.real.round(4)}s"
 	end
 end

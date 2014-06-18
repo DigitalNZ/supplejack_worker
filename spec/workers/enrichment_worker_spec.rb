@@ -82,7 +82,7 @@ describe EnrichmentWorker do
     end
 
     it "should fetch records based on the source_id" do
-      Repository::Record.should_receive(:where).with("fragments.source_id" => "nlnzcat") { query }
+      SupplejackApi::Record.should_receive(:where).with("fragments.source_id" => "nlnzcat") { query }
       worker.records
     end
 
@@ -92,7 +92,7 @@ describe EnrichmentWorker do
       end
 
       it "only returns records with a fragment containing harvest job's id" do
-        Repository::Record.should_receive(:where).with("fragments.job_id" => "abc123") { query }
+        SupplejackApi::Record.should_receive(:where).with("fragments.job_id" => "abc123") { query }
         worker.records
       end
     end
@@ -101,7 +101,7 @@ describe EnrichmentWorker do
       before { job.stub(:record_id) {"abc123"} }
 
       it "should fetch a specific record" do
-        Repository::Record.should_receive(:where).with(record_id: job.record_id, "fragments.source_id" => "nlnzcat") { query }
+        SupplejackApi::Record.should_receive(:where).with(record_id: job.record_id, "fragments.source_id" => "nlnzcat") { query }
         worker.records
       end
 
@@ -110,7 +110,7 @@ describe EnrichmentWorker do
         before { job.stub(:preview?) { true } }
 
         it "should fetch a specific record from the preview_records collection" do
-          Repository::PreviewRecord.should_receive(:where).and_call_original
+          SupplejackApi::PreviewRecord.should_receive(:where).and_call_original
           worker.records
         end
       end
