@@ -1,21 +1,6 @@
 GIT
-  remote: https://github.com/boost/ruby-oai.git
-  revision: a6642907e0571e9ae7341970eb43e844e3d8c039
-  specs:
-    oai (0.3.1)
-      builder (>= 2.0.0)
-      faraday
-      faraday_middleware
-
-GIT
-  remote: https://github.com/rails-api/active_model_serializers.git
-  revision: 8ac4bf90067eef442a6208848f86e55892d724f1
-  specs:
-    active_model_serializers (0.8.1)
-      activemodel (>= 3.2)
-
-PATH
-  remote: ../common
+  remote: git@github.com:DigitalNZ/supplejack_common.git
+  revision: 99541b45dfe68b99840c5c85571310de308bcd22
   specs:
     supplejack_common (0.0.1)
       actionpack (~> 3.2)
@@ -30,6 +15,22 @@ PATH
       redis (~> 3)
       rest-client (~> 1.6.7)
       tzinfo
+
+GIT
+  remote: https://github.com/boost/ruby-oai.git
+  revision: a6642907e0571e9ae7341970eb43e844e3d8c039
+  specs:
+    oai (0.3.1)
+      builder (>= 2.0.0)
+      faraday
+      faraday_middleware
+
+GIT
+  remote: https://github.com/rails-api/active_model_serializers.git
+  revision: 8ac4bf90067eef442a6208848f86e55892d724f1
+  specs:
+    active_model_serializers (0.8.1)
+      activemodel (>= 3.2)
 
 GEM
   remote: https://rubygems.org/
