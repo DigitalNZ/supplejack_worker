@@ -12,8 +12,9 @@ module Matcher::ConceptMatcher
       return false
     end
 
+    multi_value_fields = [:name, :isRelatedTo, :hasMet, :sameAs]
     args = args.dup
-    args = args.each {|arg, value| args[arg] = Array(value).first }
+    args = args.each {|arg, value| args[arg] = Array(value).first unless multi_value_fields.include?(arg.to_sym) }
 
     case args[:match_concepts]
     when :create_or_match
@@ -47,7 +48,7 @@ module Matcher::ConceptMatcher
           internal_identifier: concept.internal_identifier,
           source_id: args[:source_id],
           landing_url: concept.landing_url,
-          sameAs: args[:internal_identifier],
+          sameAs: args[:sameAs],
           match_status: 'strong'
         }
         ApiUpdateWorker.perform_async('/harvester/concepts.json', {concept: post_attributes}, args[:job_id])
