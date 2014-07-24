@@ -71,12 +71,12 @@ describe Matcher::ConceptMatcher do
       it "should not post an update if the source is reharvested" do
         fragment.update_attribute(:source_id, 'mccahon_co_nz')
         worker.send(:lookup, attributes)
-        expect(ApiUpdateWorker).not_to have_enqueued_job("/harvester/concepts.json", {"concept"=>{"internal_identifier"=>"http://www.mccahon.co.nz/", "source_id" => "mccahon_co_nz", "landing_url"=>"http://www.mccahon.co.nz/", "sameAs"=>"http://www.mccahon.co.nz/", "match_status"=>"strong"}}, nil)
+        expect(ApiUpdateWorker).not_to have_enqueued_job("/harvester/concepts.json", {"concept"=>{"internal_identifier"=>"http://www.mccahon.co.nz/", "source_id" => "mccahon_co_nz", "sameAs"=>"http://www.mccahon.co.nz/", "match_status"=>"strong"}}, nil)
       end
 
       it "should post an update to the API with the sameAs and match_status fields" do
         worker.send(:lookup, attributes)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/concepts.json", {"concept"=>{"internal_identifier"=>"http://www.mccahon.co.nz/", "source_id" => "mccahon_co_nz", "landing_url"=>"http://www.mccahon.co.nz/", "sameAs"=>["http://www.en.wikipedia.com/mccahon"], "match_status"=>"strong"}}, nil)
+        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/concepts.json", {"concept"=>{"internal_identifier"=>"http://www.mccahon.co.nz/", "source_id" => "mccahon_co_nz", "sameAs"=>["http://www.en.wikipedia.com/mccahon"], "match_status"=>"strong"}}, nil)
       end
     end
   end

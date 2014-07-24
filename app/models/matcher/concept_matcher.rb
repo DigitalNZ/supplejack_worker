@@ -47,7 +47,6 @@ module Matcher::ConceptMatcher
         post_attributes = {
           internal_identifier: concept.internal_identifier,
           source_id: args[:source_id],
-          landing_url: concept.landing_url,
           sameAs: args[:sameAs],
           match_status: 'strong'
         }
