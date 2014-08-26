@@ -8,8 +8,6 @@
 class HarvestSchedule
   include Mongoid::Document
   include Mongoid::Timestamps
-  include Mongoid::Paranoia
-
   include ActiveModel::SerializerSupport
 
   has_many :harvest_jobs

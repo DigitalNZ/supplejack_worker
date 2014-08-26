@@ -9,7 +9,7 @@ require "spec_helper"
 
 describe HarvestJobsController do
 
-  let(:job) { mock_model(HarvestJob).as_null_object }
+  let(:job) { double(:harvest_job, save: true, update_attributes: true) }
 
   before(:each) do
     controller.stub(:authenticate_user!) { true }
@@ -33,7 +33,6 @@ describe HarvestJobsController do
   end
 
   describe "#GET show" do
-    
     it "finds the harvest job" do
       HarvestJob.should_receive(:find).with("1") { job }
       get :show, id: 1, format: "js"

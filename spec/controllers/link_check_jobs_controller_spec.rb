@@ -10,12 +10,12 @@ require 'spec_helper'
 describe LinkCheckJobsController do
 
   describe "POST create" do
-    let(:link_check) { double(:link_check) }
+    let(:link_check_job) { create(:link_check_job) }
 
     it "should create a link_check_job" do
-      LinkCheckJob.should_receive(:create).with({'url' => 'http://google.co.nz', 'source_id' => 'tapuhi'}) { link_check }
+      LinkCheckJob.should_receive(:create).with({'url' => 'http://google.co.nz', 'source_id' => 'tapuhi'}) { link_check_job }
       post :create, { link_check: {url: "http://google.co.nz", source_id: 'tapuhi' } }
-      assigns(:link_check).should eq link_check
+      assigns(:link_check).should eq link_check_job
     end
   end
 

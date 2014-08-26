@@ -1,9 +1,11 @@
 require 'spec_helper'
 
 describe Matcher::ConceptMatcher do
+  
   class TestWorker
     include Matcher::ConceptMatcher
   end
+
   let(:worker) { TestWorker.new }
 
   let(:attributes) { {priority: 0, source_id: 'mccahon_co_nz', match_concepts: :create_or_match, 

@@ -9,13 +9,11 @@ require 'spec_helper'
 
 describe PreviewsController do
 
-	let(:preview) { mock_model(Preview, id: "123").as_null_object }
-	let(:user) { mock_model(User, id: "1234").as_null_object }
+	let(:preview) { create(:preview, id: "123") }
+	let(:user) { create(:user, id: "1234") }
 	
 	describe "POST 'create'" do
-
 		let(:preview) { double(:preview) }
-
 		before { Preview.stub(:spawn_preview_worker) { "abc123" } }
 
 		it "spawns a preview worker" do

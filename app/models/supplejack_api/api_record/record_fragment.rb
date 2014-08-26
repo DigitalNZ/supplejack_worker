@@ -10,6 +10,7 @@
 class SupplejackApi::ApiRecord::RecordFragment
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Attributes::Dynamic
 
   embedded_in :record
   delegate :record_id, to: :record

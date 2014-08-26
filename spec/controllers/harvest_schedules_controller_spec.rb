@@ -9,7 +9,7 @@ require 'spec_helper'
 
 describe HarvestSchedulesController do
 
-  let(:schedule) { mock_model(HarvestSchedule).as_null_object }
+  let(:schedule) { double(:harvest_schedule, save: true, destroy: true, update_attributes: true) }
 
   before(:each) do
     controller.stub(:authenticate_user!) { true }
@@ -24,7 +24,8 @@ describe HarvestSchedulesController do
 
     context "params[:harvest_schedule] is present" do
       it "should use a where query " do
-        HarvestSchedule.should_receive(:where).with({ "parser_id" => "abc123" }) {[schedule]}
+        HarvestSchedule.stub(:where) { [schedule] }
+        HarvestSchedule.should_receive(:where).with({ "parser_id" => "abc123" })
         get :index, harvest_schedule: { parser_id: "abc123" }
         assigns(:harvest_schedules).should eq [schedule]
       end

@@ -9,8 +9,8 @@ require 'spec_helper'
 
 describe LinkCheckRulesController do
 
-  let(:link_check_rule) { mock_model(LinkCheckRule, collection_title: "TAPUHI").as_null_object }
-  let(:user) { mock_model(User).as_null_object }
+  let(:link_check_rule) { create(:link_check_rule) }
+  let(:user) { create(:user) }
 
   before(:each) do
     controller.stub(:authenticate_user!) { true }
@@ -20,14 +20,14 @@ describe LinkCheckRulesController do
   describe "GET 'index'" do
     it "should get all of the collection rules" do
       LinkCheckRule.should_receive(:all) { [link_check_rule] }
-      get :index
+      get :index, {}, format: 'json'
       assigns(:link_check_rules).should eq [link_check_rule]
     end
 
     it "should do a where if link_check_rule is defined" do
       params = {link_check_rule: {collection_title: "TAPUHI"}}
       LinkCheckRule.should_receive(:where).with(params[:link_check_rule].stringify_keys)
-      get :index, params
+      get :index, params, format: 'json'
     end
   end
 

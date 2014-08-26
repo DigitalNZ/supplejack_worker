@@ -15,7 +15,7 @@ describe EnrichmentWorker do
   end
 
   let(:worker) { EnrichmentWorker.new }
-  let(:job) { FactoryGirl.create(:enrichment_job, environment: "production", enrichment: "ndha_rights") }
+  let(:job) { create(:enrichment_job, environment: "production", enrichment: "ndha_rights") }
   let(:parser) { double(:parser, enrichment_definitions: {ndha_rights: {type: "TapuhiRecords"}}, loader: double(:loader, parser_class: TestClass)).as_null_object }
 
   before(:each) do
@@ -25,7 +25,11 @@ describe EnrichmentWorker do
   end
 
   describe "#perform" do
-
+    before(:each) do
+      worker.send(:setup_parser)
+      job.stub_chain(:parser, :source, :source_id) { "nlnzcat" }
+    end
+    
     it "should set the @job_id as a string" do
       worker.perform(1234)
       worker.instance_variable_get("@job_id").should eq "1234"
@@ -73,7 +77,6 @@ describe EnrichmentWorker do
   end
 
   describe "#records" do
-
     let(:query) { double(:query).as_null_object }
 
     before(:each) do

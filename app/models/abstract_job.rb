@@ -8,6 +8,8 @@
 class AbstractJob
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Attributes::Dynamic
+  include AASM
 
   include ActiveModel::SerializerSupport
 
@@ -91,49 +93,53 @@ class AbstractJob
     self.parser.enrichment_definitions(environment).dup.keep_if {|name, options| options[:required_for_active_record] }.keys
   end
 
-  state_machine :status, initial: :ready do
-    event :start do
-      transition :ready => :active
-    end
-
-    event :finish do
-      transition all => :finished
-    end
-
-    event :error do
-      transition all => :failed
-    end
-
-    event :stop do
-      transition :active => :stopped
-    end
-
-    state :ready
+  aasm column: 'status' do
+    state :ready, initial: true
     state :active
     state :finished
     state :failed
     state :stopped
 
-    after_transition :ready => :active do |job|
-      job.start_time = Time.now
-      job.records_count = 0
-      job.processed_count = 0
-      job.save
+    event :start do
+      after do
+        self.start_time = Time.now
+        self.records_count = 0
+        self.processed_count = 0
+      end
+
+      transitions :from => :ready, :to => :active  
     end
 
-    after_transition all => :finished do |job|
-      job.end_time = Time.now
-      job.calculate_throughput
-      job.calculate_errors_count
-      job.save
+    event :finish do
+      after do
+        self.end_time = Time.now
+        self.calculate_throughput
+        self.calculate_errors_count
+      end
+
+      transitions :to => :finished
     end
 
-    after_transition all => [:failed, :stopped] do |job|
-      job.start_time = Time.now if job.start_time.blank?
-      job.end_time = Time.now
-      job.calculate_errors_count
-      job.save
+    event :error do
+      after do
+        self.start_time = Time.now if self.start_time.blank?
+        self.end_time = Time.now
+        self.calculate_errors_count
+      end
+
+      transitions :to => :failed
     end
+
+    event :stop do
+      after do
+        self.start_time = Time.now if self.start_time.blank?
+        self.end_time = Time.now
+        self.calculate_errors_count
+      end
+
+      transitions :to => :stopped
+    end
+
   end
 
   def fail_job(status_message=nil)

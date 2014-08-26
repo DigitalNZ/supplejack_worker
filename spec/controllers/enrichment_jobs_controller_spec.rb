@@ -9,34 +9,32 @@ require "spec_helper"
 
 describe EnrichmentJobsController do
 
-  let(:job) { mock_model(EnrichmentJob).as_null_object }
+  let(:job) { double(:enrichment_job, save: true, update_attributes: true) }
 
   before(:each) do
     controller.stub(:authenticate_user!) { true }
   end
   
   describe "POST create" do
-    before(:each) do
-      EnrichmentJob.stub(:new) { job }
-    end
-
     it "initializes a new enrichment job" do
-      EnrichmentJob.should_receive(:new).with({"strategy" => "xml", "file_name" => "youtube.rb"}) { job }
-      post :create, enrichment_job: {strategy: "xml", file_name: "youtube.rb"}, format: "js"
-      assigns(:enrichment_job).should eq job
+      post :create, enrichment_job: {strategy: "xml", file_name: "youtube.rb"}, format: "json"
+      expect(assigns(:enrichment_job)).to be_a_new(EnrichmentJob)
+      expect(assigns(:enrichment_job).strategy).to eq 'xml'
+      expect(assigns(:enrichment_job).file_name).to eq 'youtube.rb'
     end
 
     it "should save the enrichment job" do
-      job.should_receive(:save)
-      post :create, enrichment_job: {strategy: "xml", file_name: "youtube.rb"}, format: "js"
+      EnrichmentJob.any_instance.should_receive(:save)
+      post :create, enrichment_job: {strategy: "xml", file_name: "youtube.rb"}, format: "json"
+      expect(assigns(:enrichment_job).strategy).to eq 'xml'
+      expect(assigns(:enrichment_job).file_name).to eq 'youtube.rb'
     end
   end
 
   describe "#GET show" do
-    
     it "finds the enrichment job" do
       EnrichmentJob.should_receive(:find).with("1") { job }
-      get :show, id: 1, format: "js"
+      get :show, id: 1, format: "json"
       assigns(:enrichment_job).should eq job
     end
   end
@@ -48,13 +46,13 @@ describe EnrichmentJobsController do
 
     it "finds the enrichment job" do
       EnrichmentJob.should_receive(:find).with("1") { job }
-      put :update, id: 1, format: "js"
+      put :update, id: 1, format: "json"
       assigns(:enrichment_job).should eq job
     end
 
     it "should update the attributes" do
       job.should_receive(:update_attributes).with({"stop" => true})
-      put :update, id: 1, enrichment_job: {stop: true}, format: "js"
+      put :update, id: 1, enrichment_job: {stop: true}, format: "json"
     end
   end
 end

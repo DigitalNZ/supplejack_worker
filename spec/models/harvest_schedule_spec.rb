@@ -58,7 +58,7 @@ describe HarvestSchedule do
     def schedule_with_next_run_at(attributes)
       attributes.reverse_merge!(cron: "* * * * *", recurrent: true, start_time: Time.now - 10.minutes)
       s = HarvestSchedule.create(attributes)
-      s.set(:next_run_at, attributes[:next_run_at])
+      s.set(next_run_at: attributes[:next_run_at])
       s
     end
 
