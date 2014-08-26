@@ -7,11 +7,9 @@
 
 class LinkCheckJobsController < ApplicationController
 
-  respond_to :json
-
   def create
     @link_check = LinkCheckJob.create(link_check_params)
-    respond_with @link_check
+    render json: @link_check
   end
 
   private

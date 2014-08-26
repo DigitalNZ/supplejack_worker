@@ -8,6 +8,7 @@
 class InvalidRecord
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Attributes::Dynamic
 
   include ActiveModel::SerializerSupport
 

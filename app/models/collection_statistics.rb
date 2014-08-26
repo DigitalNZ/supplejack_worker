@@ -52,7 +52,7 @@ class CollectionStatistics
     record = {record_id: record_id, landing_url: landing_url}
     unless records.include?(record)
     	records << record
-      inc("#{collection}_count".to_sym, 1)
+      inc("#{collection}_count".to_sym => 1)
     end
   end
 

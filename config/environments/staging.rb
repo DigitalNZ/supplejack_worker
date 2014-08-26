@@ -52,6 +52,9 @@ HarvesterWorker::Application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
 
+  # Do not eager load code on boot.
+  config.eager_load = true
+
   ActionMailer::Base.delivery_method = :smtp
   # Include your app's configuration here:
   ActionMailer::Base.smtp_settings = {

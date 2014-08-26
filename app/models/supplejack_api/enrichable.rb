@@ -11,6 +11,7 @@ module SupplejackApi
 
     included do 
       include Mongoid::Document
+      include Mongoid::Attributes::Dynamic
 
       store_in session: 'api'
 

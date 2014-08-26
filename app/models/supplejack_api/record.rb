@@ -11,6 +11,8 @@ module SupplejackApi
 
     store_in collection: 'records'
 
-    default_scope where(:status.in => ["active", "partial"])
+    embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiRecord::RecordFragment'
+
+    default_scope -> { where(:status.in => ["active", "partial"]) }
   end
 end

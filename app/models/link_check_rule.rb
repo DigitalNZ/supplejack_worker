@@ -8,6 +8,7 @@
 class LinkCheckRule
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Mongoid::Attributes::Dynamic
   
   # Note, confusingluy source_id is the mongo id (522e341474544847dd000004) of the source, not the field called source_id (tapuhi)
   field :source_id, type: String

@@ -9,13 +9,13 @@ require "spec_helper"
 
 describe AbstractJob do
   
-  let(:job) { FactoryGirl.create(:abstract_job, parser_id: "12345", version_id: "666") }
+  let(:job) { create(:abstract_job, parser_id: "12345", version_id: "666") }
 
   describe ".search" do
-    let!(:active_job) { FactoryGirl.create(:abstract_job, status: "active") }
+    let!(:active_job) { create(:abstract_job, status: "active") }
 
     it "returns all active harvest jobs" do
-      finished_job = FactoryGirl.create(:abstract_job, status: "finished")
+      finished_job = create(:abstract_job, status: "finished")
       AbstractJob.search("status" => "active").should eq [active_job]
     end
 
@@ -25,23 +25,23 @@ describe AbstractJob do
     end
 
     it "returns the recent harvest jobs first" do
-      active_job2 = FactoryGirl.create(:abstract_job, status: "active", start_time: Time.now + 5.seconds)
+      active_job2 = create(:abstract_job, status: "active", start_time: Time.now + 5.seconds)
       AbstractJob.search("status" => "active").first.should eq active_job2
     end
 
     it "returns only test harvest jobs of a specific parser" do
-      job2 = FactoryGirl.create(:abstract_job, parser_id: "333", environment: "test")
+      job2 = create(:abstract_job, parser_id: "333", environment: "test")
       AbstractJob.search("parser_id" => "333", "environment" => "test").should eq [job2]
     end
 
     it "limits the number of harvest jobs returned" do
-      job2 = FactoryGirl.create(:abstract_job, parser_id: "333", environment: "test", start_time: Time.now + 5.seconds)
+      job2 = create(:abstract_job, parser_id: "333", environment: "test", start_time: Time.now + 5.seconds)
       AbstractJob.search("limit" => "1").to_a.size.should eq 1
     end
 
     it "should find all harvest jobs either in staging or production" do
-      job1 = FactoryGirl.create(:abstract_job, parser_id: "333", environment: "staging", start_time: Time.now)
-      job2 = FactoryGirl.create(:abstract_job, parser_id: "334", environment: "production", start_time: Time.now + 2.seconds)
+      job1 = create(:abstract_job, parser_id: "333", environment: "staging", start_time: Time.now)
+      job2 = create(:abstract_job, parser_id: "334", environment: "production", start_time: Time.now + 2.seconds)
       jobs = AbstractJob.search("environment" => ["staging", "production"]).to_a
       jobs.should include(job2)
       jobs.should include(job1)
@@ -136,18 +136,17 @@ describe AbstractJob do
     end
 
     describe "start!" do
-      it "should set the status to active" do
-        job.start!
-        job.active?.should be_true
-      end
-
       it "should set the start time to now" do
         time = Time.now
         Timecop.freeze(time) do
           job.start!
-          job.reload
           job.start_time.to_i.should eq time.to_i
         end
+      end
+
+      it "should set the status to active" do
+        job.start!
+        job.active?.should be_true
       end
 
       it "should set the records count to 0" do
@@ -176,7 +175,6 @@ describe AbstractJob do
         time = Time.now
         Timecop.freeze(time) do
           job.finish!
-          job.reload
           job.end_time.to_i.should eq time.to_i
         end
       end
@@ -208,7 +206,7 @@ describe AbstractJob do
           time = Time.now
           Timecop.freeze(time) do
             job.error!
-            job.reload.end_time.to_i.should eq time.to_i
+            job.end_time.to_i.should eq time.to_i
           end
         end
 
@@ -223,16 +221,14 @@ describe AbstractJob do
             job.reload.start_time.to_i.should_not eq time.to_i
           end
         end
-        
       end
 
       it "should set the end time to now" do
         job.start!
-
         time = Time.now
         Timecop.freeze(time) do
           job.error!
-          job.reload.end_time.to_i.should eq time.to_i
+          job.end_time.to_i.should eq time.to_i
         end
       end
 
@@ -261,7 +257,7 @@ describe AbstractJob do
         time = Time.now
         Timecop.freeze(time) do
           job.stop!
-          job.reload.end_time.to_i.should eq time.to_i
+          job.end_time.to_i.should eq time.to_i
         end
       end
 
@@ -326,10 +322,10 @@ describe AbstractJob do
 
   describe ".jobs_since" do
 
-    let!(:finished_job) { FactoryGirl.create(:abstract_job, status: "finished", start_time: (DateTime.now - 1), environment: "staging" ) }
+    let!(:finished_job) { create(:abstract_job, status: "finished", start_time: (DateTime.now - 1), environment: "staging" ) }
  
     it "returns a count of harvest jobs in the last 2 days" do
-      old_finished_job = FactoryGirl.create(:abstract_job, status: "finished", start_time: (DateTime.now - 3), environment: "staging" )
+      old_finished_job = create(:abstract_job, status: "finished", start_time: (DateTime.now - 3), environment: "staging" )
       since = DateTime.now - 2
       AbstractJob.jobs_since( {'datetime'=>since.to_s, 'environment'=>'staging', 'status'=>'finished'} ).should eq [finished_job]
     end
@@ -360,7 +356,7 @@ describe AbstractJob do
     it "returns the proper duration" do
       time = Time.now
       Timecop.freeze(time) do
-        job = FactoryGirl.create(:abstract_job, start_time: time)
+        job = create(:abstract_job, start_time: time)
         job.end_time = Time.now + 5.seconds
         job.duration.should eq 5
       end

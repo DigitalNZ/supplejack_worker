@@ -8,8 +8,7 @@
 require "spec_helper"
 
 describe AbstractJobsController do
-
-  let(:job) { mock_model(AbstractJob).as_null_object }
+  let(:job) { create(:abstract_job) }
 
   before(:each) do
     controller.stub(:authenticate_user!) { true }

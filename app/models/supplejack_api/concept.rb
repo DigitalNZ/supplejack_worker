@@ -8,12 +8,13 @@
 module SupplejackApi
   class Concept
     include Mongoid::Document
+    include Mongoid::Attributes::Dynamic
 
     store_in session: 'api', collection: 'concepts'
 
     embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiConcept::ConceptFragment'
 
-    default_scope where(status: 'active')
+    default_scope -> { where(status: 'active') }
 
     def primary
       self.fragments.where(priority: 0).first

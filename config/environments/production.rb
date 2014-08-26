@@ -58,6 +58,9 @@ HarvesterWorker::Application.configure do
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
 
+  # Do not eager load code on boot.
+  config.eager_load = true
+
   ActionMailer::Base.delivery_method = :smtp
   # Include your app's configuration here:
   ActionMailer::Base.smtp_settings = {

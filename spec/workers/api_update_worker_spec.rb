@@ -25,13 +25,13 @@ describe ApiUpdateWorker do
 		end
 
 		it "should set the jobs last_posted_record_id" do
-			job.should_receive(:set).with(:last_posted_record_id, 123)
+			job.should_receive(:set).with({last_posted_record_id: 123})
 		  RestClient.should_receive(:post) { response }
 		  worker.perform("/harvester/records/123/fragments.json", {}, 1)
 		end
 
 		it "should update the posted_records_count on the job" do
-		  job.should_receive(:inc).with(:posted_records_count, 1)
+		  job.should_receive(:inc).with({ posted_records_count: 1})
 		  worker.perform(123, {}, 1)
 		end
 
