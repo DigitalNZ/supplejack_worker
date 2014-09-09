@@ -32,7 +32,7 @@ class HarvestSchedule
   before_save :generate_cron
   before_save :generate_next_run_at
 
-  default_scope -> { where(status: "active") }
+  default_scope -> { where(status: 'active', deleted_at: nil) }
 
   scope :one_off, -> { where(recurrent: false).exists(last_run_at: false) }
   scope :recurrent, -> { where(recurrent: true) }
