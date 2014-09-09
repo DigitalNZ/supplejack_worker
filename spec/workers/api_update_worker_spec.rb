@@ -10,7 +10,7 @@ require "spec_helper"
 describe ApiUpdateWorker do
 
 	let(:worker) { ApiUpdateWorker.new }
-	let(:job) { double(:enrichment_job).as_null_object }
+	let(:job) { FactoryGirl.create(:harvest_job) }
 
 	describe "#perform" do
 		let(:response) { {record_id: 123}.to_json }

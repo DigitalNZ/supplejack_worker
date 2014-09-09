@@ -35,6 +35,19 @@ describe AbstractWorker do
 	    end
 	  end
 
+	  context "status is finished" do
+	    let(:job) { FactoryGirl.create(:harvest_job, status: "finished") }
+
+	    it "returns true" do
+	      worker.stop_harvest?.should be_true
+	    end
+
+	    it "should not finsihed the job (again)" do
+	      job.should_not_receive(:finish!)
+	      worker.stop_harvest?
+	    end
+	  end
+
 	  context "status is active" do
 	    let(:job) { FactoryGirl.create(:harvest_job, status: "active") }
 
