@@ -1,7 +1,6 @@
 GIT
   remote: git@github.com:DigitalNZ/supplejack_common.git
-  revision: e1408cabf305e1266b0da2fde4b78812327fa153
-  branch: rails-mongo-upgrade
+  revision: 49a48dfd02aa6f297b32f3e82d6484b42e5ef05d
   specs:
     supplejack_common (0.0.2)
       actionpack (<= 4.1.4)
