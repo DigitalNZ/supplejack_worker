@@ -14,7 +14,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '4.1.4'
 gem 'protected_attributes'
-gem 'supplejack_common', git: 'git@github.com:DigitalNZ/supplejack_common.git', branch: 'rails-mongo-upgrade'
+gem 'supplejack_common', git: 'git@github.com:DigitalNZ/supplejack_common.git'
 # gem 'supplejack_common', path: '/code/boost/supplejack/supplejack_common'
 gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
 gem 'active_model_serializers', '~> 0.9.0'
