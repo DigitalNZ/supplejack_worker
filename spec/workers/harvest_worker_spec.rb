@@ -216,16 +216,4 @@ describe HarvestWorker do
       expect(ApiDeleteWorker).to have_enqueued_job("abc123", job.id.to_s)
     end
   end
-
-  context "sslv3" do
-    # Connections intentionally un-stubbed. See config/initializers/sslv3.rb
-    
-    it "should make a request to https://quakestudiesapi.canterbury.ac.nz/oaiprovider/ with sslv3" do
-      RestClient.get('https://quakestudiesapi.canterbury.ac.nz/oaiprovider/').code.should eq 200
-    end
-
-    it "shouldn't break existing SSL connection" do
-      RestClient.get('https://google.co.nz').code.should eq 200
-    end
-  end
 end
