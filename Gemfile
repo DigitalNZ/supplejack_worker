@@ -12,10 +12,10 @@ end
 
 source 'https://rubygems.org'
 
+gem 'supplejack_common', git: 'git@github.com:DigitalNZ/supplejack_common.git'
+
 gem 'rails', '4.1.4'
 gem 'protected_attributes'
-gem 'supplejack_common', git: 'git@scm.digitalnz.org:harvester/core.git'
-# gem 'supplejack_common', path: '/code/boost/supplejack/supplejack_common'
 gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
 gem 'active_model_serializers', '~> 0.9.0'
 gem 'thin',         '>= 1.5.0'
@@ -39,7 +39,6 @@ gem 'jquery-rails'
 group :assets do
   gem 'sass-rails',   '~> 4.0.3'
   gem 'coffee-rails', '~> 4.0.1'
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
   gem 'therubyracer', :platforms => :ruby
   gem 'uglifier', '>= 1.0.3'
 end
