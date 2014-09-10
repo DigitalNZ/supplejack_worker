@@ -1,5 +1,5 @@
 GIT
-  remote: git@scm.digitalnz.org:harvester/core.git
+  remote: git@github.com:DigitalNZ/supplejack_common.git
   revision: 49a48dfd02aa6f297b32f3e82d6484b42e5ef05d
   specs:
     supplejack_common (0.0.2)
@@ -222,7 +222,7 @@ GEM
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
-    rdoc (4.1.1)
+    rdoc (4.1.2)
       json (~> 1.4)
     redis (3.1.0)
     redis-namespace (1.5.1)
