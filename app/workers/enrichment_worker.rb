@@ -66,11 +66,12 @@ class EnrichmentWorker < AbstractWorker
         return unless enrichment.enrichable?
 
         enrichment.set_attribute_values
-      unless enrichment.errors.any?
-        post_to_api(enrichment) unless job.test?
-      else
-        Airbrake.notify(StandardError.new("Enrichment Errors: #{enrichment.errors.inspect}"))
-      end
+        unless enrichment.errors.any?
+          post_to_api(enrichment) unless job.test?
+        else
+          Airbrake.notify(StandardError.new("Enrichment Errors: #{enrichment.errors.inspect}"))
+          Sidekiq.logger.error "Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n PARSER CLASS: #{@parser_class.inspect}"
+        end
 
       rescue RestClient::ResourceNotFound => e
         Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}")
