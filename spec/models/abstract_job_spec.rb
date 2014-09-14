@@ -160,7 +160,7 @@ describe AbstractJob do
       end
 
       it "should save the job" do
-        job.should_receive(:save) { true }
+        job.should_receive(:save)
         job.start!
       end
     end
@@ -190,7 +190,7 @@ describe AbstractJob do
       end
 
       it "should save the job" do
-        job.should_receive(:save) { true }
+        job.should_receive(:save)
         job.finish!
       end
     end
@@ -238,7 +238,7 @@ describe AbstractJob do
       end
 
       it "should save the job" do
-        job.should_receive(:save) { true }
+        job.should_receive(:save)
         job.error!
       end
     end
@@ -262,7 +262,7 @@ describe AbstractJob do
       end
 
       it "should save the job" do
-        job.should_receive(:save) { true }
+        job.should_receive(:save)
         job.stop!
       end
     end
