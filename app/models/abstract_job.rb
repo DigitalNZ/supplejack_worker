@@ -105,6 +105,7 @@ class AbstractJob
         self.start_time = Time.now
         self.records_count = 0
         self.processed_count = 0
+        save
       end
 
       transitions :from => :ready, :to => :active  
@@ -115,6 +116,7 @@ class AbstractJob
         self.end_time = Time.now
         self.calculate_throughput
         self.calculate_errors_count
+        save
       end
 
       transitions :to => :finished
@@ -125,6 +127,7 @@ class AbstractJob
         self.start_time = Time.now if self.start_time.blank?
         self.end_time = Time.now
         self.calculate_errors_count
+        save
       end
 
       transitions :to => :failed
@@ -135,6 +138,7 @@ class AbstractJob
         self.start_time = Time.now if self.start_time.blank?
         self.end_time = Time.now
         self.calculate_errors_count
+        save
       end
 
       transitions :to => :stopped
