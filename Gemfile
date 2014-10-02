@@ -55,6 +55,7 @@ group :development, :test do
   gem 'rspec', '~> 2.14.0'
   gem 'rspec-rails', '~> 2.14.0'
   gem 'factory_girl_rails', '>= 4.1.0'
+  gem 'debugger'
 end
 
 group :test do
