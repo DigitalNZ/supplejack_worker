@@ -153,6 +153,10 @@ describe HarvestSchedule do
   describe "#create_job" do
     let(:schedule) { FactoryGirl.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
 
+    before {
+      schedule.stub(:allowed?) { true }
+    }
+
     it "should create a new harvest job" do
       schedule.create_job
       job = schedule.harvest_jobs.last
@@ -189,6 +193,24 @@ describe HarvestSchedule do
       schedule.reload
       job = schedule.harvest_jobs.last
       job.enrichments.should eq ["ndha_rights"]
+    end
+  end
+
+  describe "#allowed" do
+    let(:schedule) { FactoryGirl.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
+    let(:parser) { double(:parser, parser_id: "1234", allow_full_and_flush: true) }
+    
+    before {
+      Parser.stub(:find) { parser }
+    }  
+
+    it 'returns false if full and flush is not allowed' do
+      parser.stub(:allow_full_and_flush) { false }
+      expect(schedule.allowed?).to be_false
+    end
+
+    it 'returns true if full and flush is allowed' do
+      expect(schedule.allowed?).to be_true
     end
   end
 end

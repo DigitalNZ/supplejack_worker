@@ -37,6 +37,11 @@ class HarvestSchedule
   scope :one_off, -> { where(recurrent: false).exists(last_run_at: false) }
   scope :recurrent, -> { where(recurrent: true) }
 
+  def allowed?
+    parser = Parser.find(self.parser_id)
+    return !!parser.allow_full_and_flush
+  end
+
   def self.one_offs_to_be_run
     self.one_off.lte(start_time: Time.now).gte(start_time: Time.now - 6.minutes)
   end
@@ -78,9 +83,11 @@ class HarvestSchedule
   end
 
   def create_job
-    self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, mode: self.mode, enrichments: self.enrichments)
-    self.last_run_at = Time.now
-    self.status = "inactive" unless self.recurrent
-    self.save
+    if allowed?
+      self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, mode: self.mode, enrichments: self.enrichments)
+      self.last_run_at = Time.now
+      self.status = "inactive" unless self.recurrent
+      self.save
+    end
   end
 end
