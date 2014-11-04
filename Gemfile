@@ -30,6 +30,7 @@ gem 'sidekiq',      '~> 2.15.0'
 # if you require 'sinatra' you get the DSL extended to Object
 gem 'sinatra', :require => nil
 gem 'activeresource', require: 'active_resource'
+gem 'chronic', '~> 0.10.2'
 gem 'whenever', :require => false
 gem 'parse-cron'
 gem 'jquery-rails'
