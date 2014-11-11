@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:DigitalNZ/supplejack_common.git
+  remote: https://github.com/DigitalNZ/supplejack_common.git
   revision: f4d10f0e740f6892e9e7d78856c876d4be72e34d
   specs:
     supplejack_common (0.0.2)
