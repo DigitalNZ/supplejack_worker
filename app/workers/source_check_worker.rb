@@ -36,6 +36,8 @@ class SourceCheckWorker
   end
 
   def up?(landing_url)
+    return true if landing_url.nil?
+    
     if response = get(landing_url)
       validate_link_check_rule(response, self.source._id)
     end
