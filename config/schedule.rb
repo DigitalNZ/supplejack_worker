@@ -5,6 +5,10 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
+if @enviroment == "development"
+  env :PATH, ENV['PATH']
+end
+
 every :day, at: "2:00am" do
   runner "HarvestJob.clear_raw_data"
 end
