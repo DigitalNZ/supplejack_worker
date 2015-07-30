@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 64e5a51e2bfe7d87db638fba8d77aeb08606be23
+  revision: 4ad6b26c9204f50b87e4564a2a1a74fc4e55c055
   specs:
     supplejack_common (0.0.2)
       actionpack (<= 4.1.4)
@@ -91,7 +91,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.7.1)
-    columnize (0.8.9)
+    columnize (0.9.0)
     connection_pool (2.2.0)
     crass (1.0.2)
     cucumber (1.3.16)
