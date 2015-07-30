@@ -13,6 +13,7 @@ end
 source 'https://rubygems.org'
 
 gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git'
+#gem 'supplejack_common', path: ENV['SUPPLEJACK_COMMON']
 
 gem 'rails', '4.1.4'
 gem 'protected_attributes'
