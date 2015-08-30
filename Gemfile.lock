@@ -1,12 +1,14 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 4ad6b26c9204f50b87e4564a2a1a74fc4e55c055
+  revision: fedd34d329d93bbcc6f76197af253505fd02dae0
+  branch: tl/new_fetch
   specs:
     supplejack_common (0.0.2)
       actionpack (<= 4.1.4)
       activesupport (<= 4.1.4)
       chronic (<= 0.10.2)
       dimensions
+      htmlentities
       json (~> 1.7.7)
       jsonpath (~> 0.5.0)
       mimemagic
@@ -150,6 +152,7 @@ GEM
       guard (~> 2.1)
       rspec (>= 2.14, < 4.0)
     hike (1.2.3)
+    htmlentities (4.3.4)
     i18n (0.7.0)
     jquery-rails (3.1.1)
       railties (>= 3.0, < 5.0)
