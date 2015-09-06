@@ -49,17 +49,12 @@ group :development do
   gem 'better_errors',      '~> 1.1.0 '
   gem 'guard-rspec'
   gem 'rb-fsevent',         '~> 0.9.1'
-
-  if RUBY_VERSION =~ /2/
-    gem 'pry-byebug'
-  end
 end
 
 group :development, :test do
   gem 'rspec', '~> 2.14.0'
   gem 'rspec-rails', '~> 2.14.0'
   gem 'factory_girl_rails', '>= 4.1.0'
-  gem 'debugger' if RUBY_VERSION =~ /1.9/
 end
 
 group :test do
