@@ -1,5 +1,7 @@
 # Supplejack Worker
 
+[![Build Status](https://travis-ci.org/DigitalNZ/supplejack_worker.svg?branch=master)](https://travis-ci.org/DigitalNZ/supplejack_worker
+
 The Supplejack Worker is a rails application that uses [Sidekiq](http://sidekiq.org/) to run all of the various jobs that occur in the harvesting and link checking process. To create and mange these jobs we recommend installing and configuring the [Supplejack Manager](https://github.com/DigitalNZ/supplejack_manager).
 
 For more information on how to configure and use this application refer to the [documentation](http://digitalnz.github.io/supplejack)
