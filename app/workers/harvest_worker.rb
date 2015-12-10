@@ -11,7 +11,7 @@ class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
   include Matcher::ConceptMatcher
 
-  sidekiq_options retry: 1
+  sidekiq_options retry: 1, backtrace: true
   sidekiq_retry_in { 1 }
 
   sidekiq_retries_exhausted do |msg|
