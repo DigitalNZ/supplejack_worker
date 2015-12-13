@@ -50,6 +50,7 @@ group :development do
   gem 'better_errors',      '~> 1.1.0 '
   gem 'guard-rspec'
   gem 'rb-fsevent',         '~> 0.9.1'
+  gem 'pry-rails'
 end
 
 group :development, :test do
