@@ -15,9 +15,18 @@ class ApiUpdateWorker < AbstractWorker
 		attributes.merge!(preview: true) if @job.environment == "preview"
 
 		measure = Benchmark.measure do
-      response = RestClient.post "#{ENV["API_HOST"]}#{path}", attributes.to_json, content_type: :json, accept: :json
-      response = JSON.parse(response)
-      @job.set(last_posted_record_id: response["record_id"])
+      tries = 0
+      begin
+        if tries < 10
+          response = RestClient::Request.execute(method: :post, url: "#{ENV["API_HOST"]}#{path}", payload: attributes.to_json, timeout: 10, headers: {content_type: :json, accept: :json})
+          response = JSON.parse(response)
+          @job.set(last_posted_record_id: response["record_id"])
+        end
+      rescue RestClient::RequestTimeout => e
+        Sidekiq.logger.info "ApiUpdateWorker POST to API failed, tries: #{tries}"
+        tries += 1
+        retry
+      end
     end
 
     @job.inc(:posted_records_count => 1)
