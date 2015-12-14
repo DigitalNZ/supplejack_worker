@@ -18,7 +18,7 @@ class ApiUpdateWorker < AbstractWorker
       tries = 0
       begin
         if tries < 10
-          response = RestClient::Request.execute(method: :post, url: "#{ENV["API_HOST"]}#{path}", payload: attributes.to_json, timeout: 10, headers: {content_type: :json, accept: :json})
+          response = RestClient::Request.execute(method: :post, url: "#{ENV["API_HOST"]}#{path}", payload: attributes.to_json, timeout: 10, open_timeout: 10, headers: {content_type: :json, accept: :json})
           response = JSON.parse(response)
           @job.set(last_posted_record_id: response["record_id"])
         end
