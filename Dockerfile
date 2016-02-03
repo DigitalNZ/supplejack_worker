@@ -3,11 +3,14 @@ RUN apt-get update -qq && apt-get install -y build-essential nodejs npm nodejs-l
 RUN npm install -g phantomjs
 
 RUN apt-get install -y g++
-# for nokogiri
+# For nokogiri
 RUN apt-get install -y libxml2-dev libxslt1-dev
 
 # capybara-webkit
 RUN apt-get install -y qt5-default libqt5webkit5-dev
+
+# Utilities
+RUN apt-get install -y nmap htop
 
 RUN mkdir /worker
 
@@ -35,4 +38,3 @@ RUN bundle install
 WORKDIR /worker
 
 ADD . /worker
-# CMD bash -c '/manager/boot.sh'
