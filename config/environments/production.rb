@@ -65,6 +65,7 @@ HarvesterWorker::Application.configure do
   # Include your app's configuration here:
   ActionMailer::Base.smtp_settings = {
     :address  => ENV['SMTP_ADDRESS'],
+    :enable_starttls_auto => ENV['ENABLE_STARTTLS_AUTO'] == 'true',
     :port  => 25
   }
 
