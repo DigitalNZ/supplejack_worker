@@ -3,8 +3,9 @@ RUN apt-get update -qq && apt-get install -y build-essential nodejs npm nodejs-l
 RUN npm install -g phantomjs-prebuilt
 
 RUN apt-get install -y g++
+
 # For nokogiri
-RUN apt-get install -y libxml2-dev libxslt1-dev
+RUN apt-get install -y libxml2-dev libxslt1-dev libxslt-dev liblzma-dev curl
 
 # capybara-webkit
 RUN apt-get install -y qt5-default libqt5webkit5-dev
@@ -12,9 +13,12 @@ RUN apt-get install -y qt5-default libqt5webkit5-dev
 # Utilities
 RUN apt-get install -y nmap htop
 
+# Use libxml2, libxslt a packages from alpine for building nokogiri
+RUN bundle config build.nokogiri --use-system-libraries
+
 RUN mkdir /worker
 
-CMD ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
+# CMD ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 
 # http://ilikestuffblog.com/2014/01/06/how-to-skip-bundle-install-when-deploying-a-rails-app-to-docker/
 WORKDIR /tmp
