@@ -28,6 +28,6 @@ COPY Gemfile.lock Gemfile.lock
 # Cache bundle install
 ENV BUNDLE_PATH /bundle
 
-RUN bundle install --deployment
+RUN bundle install
 WORKDIR /worker
 ADD . /worker
