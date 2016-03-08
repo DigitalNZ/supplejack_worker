@@ -11,7 +11,7 @@ every :day, at: '2:00am' do
   runner 'HarvestJob.clear_raw_data'
 end
 
-every 5.minutes do
+every 4.minutes do
   runner 'ExpensiveCrons.call'
 end
 
