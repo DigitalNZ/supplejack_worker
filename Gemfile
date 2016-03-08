@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -50,13 +50,13 @@ group :development do
   gem 'better_errors',      '~> 1.1.0 '
   gem 'guard-rspec'
   gem 'rb-fsevent',         '~> 0.9.1'
-  gem 'pry-rails'
 end
 
 group :development, :test do
   gem 'rspec', '~> 2.14.0'
   gem 'rspec-rails', '~> 2.14.0'
   gem 'factory_girl_rails', '>= 4.1.0'
+  gem 'pry-rails'
 end
 
 group :test do
