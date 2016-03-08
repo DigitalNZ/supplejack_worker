@@ -4,21 +4,10 @@
 #
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
-
-env :PATH, ENV['PATH'] if @enviroment == 'development'
-
-every :day, at: '2:00am' do
-  runner 'HarvestJob.clear_raw_data'
-end
-
-every 5.minutes do
-  runner 'ExpensiveCrons.call'
-end
-
-every 1.day, at: '6:00 am' do
-  runner 'CollectionStatistics.email_daily_stats'
-end
-
-every 2.hours do
-  runner 'EnqueueSourceChecksWorker.perform_async'
+class ExpensiveCrons
+  def self.call
+    HarvestSchedule.create_one_off_jobs
+    HarvestSchedule.create_recurrent_jobs
+    NetworkChecker.check
+  end
 end
