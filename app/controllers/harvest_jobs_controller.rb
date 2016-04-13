@@ -18,7 +18,7 @@ class HarvestJobsController < ApplicationController
   end
 
   def show
-    @harvest_job = HarvestJob&.find(params[:id])
+    @harvest_job = HarvestJob.find(params[:id])
     render json: @harvest_job
   end
 
