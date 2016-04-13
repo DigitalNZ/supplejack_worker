@@ -27,7 +27,7 @@ gem 'devise',       '~> 3.0.4'
 gem 'kaminari',     '~> 0.14.1'
 gem 'airbrake'
 gem 'aasm',         '~> 3.3.3'
-gem 'sidekiq',      '~> 2.15.0'
+gem 'sidekiq', '~> 4.1', '>= 4.1.1'
 # if you require 'sinatra' you get the DSL extended to Object
 gem 'sinatra', :require => nil
 gem 'activeresource', require: 'active_resource'
