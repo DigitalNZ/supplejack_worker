@@ -24,6 +24,8 @@ class HarvestJobsController < ApplicationController
 
   def create
     @harvest_job = HarvestJob.new(params[:harvest_job])
+    nil&.upcase
+    
     if @harvest_job.save
       render json: @harvest_job
     else
