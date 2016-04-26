@@ -172,7 +172,6 @@ GEM
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
-    libv8 (3.16.14.3)
     listen (2.7.9)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
@@ -246,7 +245,6 @@ GEM
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
     redis (3.2.2)
-    ref (1.0.5)
     rest-client (1.6.9)
       mime-types (~> 1.16)
     rspec (2.14.1)
@@ -296,9 +294,6 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (~> 2.8)
-    therubyracer (0.12.1)
-      libv8 (~> 3.16.14.0)
-      ref
     thin (1.6.2)
       daemons (>= 1.0.9)
       eventmachine (>= 1.0.0)
@@ -359,7 +354,6 @@ DEPENDENCIES
   sidekiq (~> 4.1, >= 4.1.1)
   sinatra
   supplejack_common!
-  therubyracer
   thin (>= 1.5.0)
   timecop
   uglifier (>= 1.0.3)
