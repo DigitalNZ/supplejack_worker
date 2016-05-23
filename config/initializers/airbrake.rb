@@ -6,8 +6,8 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 Airbrake.configure do |config|
-  config.project_key = '55ec146de217fb5c05d235469a4d9279'
-  config.project_id = '96483'
+  config.project_key = ENV['AIRBRAKE_PROJECT_API_KEY']
+  config.project_id = ENV['AIRBRAKE_PROJECT_ID']
   config.ignore_environments = %w(development test)
   config.ignore << 'ThrottleLimitError'
 end
