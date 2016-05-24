@@ -176,6 +176,10 @@ GEM
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
+    lograge (0.3.6)
+      actionpack (>= 3)
+      activesupport (>= 3)
+      railties (>= 3)
     lumberjack (1.0.9)
     mail (2.5.4)
       mime-types (~> 1.16)
@@ -338,6 +342,7 @@ DEPENDENCIES
   guard-rspec
   jquery-rails
   kaminari (~> 0.14.1)
+  lograge
   mongoid (~> 4.0.0)
   mongoid_paranoia
   oai!
@@ -360,4 +365,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   1.12.3
+   1.12.4
