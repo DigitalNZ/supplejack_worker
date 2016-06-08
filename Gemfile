@@ -35,6 +35,7 @@ gem 'chronic', '~> 0.10.2'
 gem 'whenever', :require => false
 gem 'parse-cron'
 gem 'jquery-rails'
+gem 'lograge'
 
 # Gems used only for assets and not required
 # in production environments by default.
