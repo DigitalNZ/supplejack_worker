@@ -17,6 +17,7 @@ RUN apt-get install -y nmap htop
 RUN bundle config build.nokogiri --use-system-libraries
 
 RUN mkdir /worker
+RUN mkdir -p /worker/tmp/pids
 
 # CMD ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 
