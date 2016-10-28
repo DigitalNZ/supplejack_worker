@@ -23,6 +23,6 @@ every 2.hours do
   runner 'EnqueueSourceChecksWorker.perform_async'
 end
 
-every '0 2 28 * *' do
+every :monday, at: '2:30am' do
   rake 'sidekiq_jobs:purge'
 end
