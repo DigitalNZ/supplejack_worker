@@ -8,6 +8,7 @@
 class LinkCheckJob
   include ActiveModel::ForbiddenAttributesProtection
   include Mongoid::Document
+  include Mongoid::Timestamps
   
   field :url,       type: String
   field :record_id, type: Integer
@@ -26,5 +27,5 @@ class LinkCheckJob
   def enqueue
     LinkCheckWorker.perform_async(self.id.to_s) if ENV['LINK_CHECKING_ENABLED'] == 'true'
   end
-
 end
+
