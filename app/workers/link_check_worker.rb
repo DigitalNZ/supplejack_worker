@@ -75,6 +75,7 @@ class LinkCheckWorker
           return nil
         end
       else
+        Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
         raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
       end
     end
