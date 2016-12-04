@@ -14,20 +14,24 @@ class LinkCheckWorker
   sidekiq_retry_in { |count| 2 * Random.rand(1..5) }
 
   def perform(link_check_job_id, strike=0)
+    Sidekiq.logger.info "FIX: Starting LinkCheckWorker for #{link_check_job_id}"
     @link_check_job_id = link_check_job_id
     begin
       if link_check_job.present? && link_check_job.source.present?
         unless rules.present?
-          Rails.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
+          Sidekiq.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
           Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
           return
         end
 
         if rules.active
+          Sidekiq.logger.info "FIX: Rule Active"
           response = link_check(link_check_job.url, link_check_job.source._id)
-          if validate_link_check_rule(response, link_check_job.source._id)
+          if response && validate_link_check_rule(response, link_check_job.source._id)
+            Sidekiq.logger.info "FIX: Valid Link"
             set_record_status(link_check_job.record_id, "active") if strike > 0
           else
+            Sidekiq.logger.info "FIX: InValid Link. Response: #{response}"
             suppress_record(link_check_job_id, link_check_job.record_id, strike)
           end
         end
@@ -61,10 +65,15 @@ class LinkCheckWorker
   end
 
   def link_check(url, collection)
-    Sidekiq.redis do |conn| 
+    Sidekiq.redis do |conn|
       if conn.setnx(collection, 0)
         conn.expire(collection, rules.try(:throttle) || 2)
-        RestClient.get(url)
+        begin
+          RestClient.get(url)
+        rescue => e
+          Sidekiq.logger.info "FIX: ResctClient landing URL CALL FAILED. Error: #{e.message}"
+          return nil
+        end
       else
         raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
       end
