@@ -74,8 +74,9 @@ describe LinkCheckWorker do
       before(:each) do
         worker.stub(:rules) { nil }
         worker.stub_chain(:link_check_job, :source) { double(:source) }
-        Rails.stub(:logger) { logger }
+        Sidekiq.stub(:logger) { logger }
         logger.stub(:error)
+        logger.stub(:info)
       end
 
       it "should send a MissingLinkCheckRuleError to Airbrake with the missing source_id" do
