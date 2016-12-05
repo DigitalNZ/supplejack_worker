@@ -195,6 +195,11 @@ describe LinkCheckWorker do
     it "should return the response" do
       worker.send(:link_check, "http://google.co.nz", "").should eq response
     end
+
+    it 'returns nil if rest client hits an exception' do
+      allow(RestClient).to receive(:get).and_raise('404 not found')
+      worker.send(:link_check, "http://google.co.nz", "").should eq nil
+    end
     
     context "has the lock " do
 
