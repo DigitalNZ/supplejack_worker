@@ -23,7 +23,7 @@ class LinkCheckWorker
           Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
           return
         end
-
+        
         if rules.active
           response = link_check(link_check_job.url, link_check_job.source._id)
           if response && validate_link_check_rule(response, link_check_job.source._id)
