@@ -83,8 +83,8 @@ class LinkCheckWorker
   end
 
   def suppress_record(link_check_job_id, record_id, strike)
-    timings = {0 => 1.hours, 1 => 5.hours, 2 => 72.hours}
-    
+    timings = [1.hours, 5.hours, 72.hours]
+
     if strike >= 3
       set_record_status(record_id, "deleted")
     else
