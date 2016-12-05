@@ -14,7 +14,7 @@ class LinkCheckWorker
   sidekiq_retry_in { |count| 2 * Random.rand(1..5) }
 
   def perform(link_check_job_id, strike=0)
-    Sidekiq.logger.info "FIX: Starting LinkCheckWorker for #{link_check_job_id}"
+    Sidekiq.logger.info "FIX: Starting LinkCheckWorker for #{link_check_job_id} with strike: #{strike}"
     @link_check_job_id = link_check_job_id
     begin
       if link_check_job.present? && link_check_job.source.present?
@@ -26,6 +26,9 @@ class LinkCheckWorker
 
         if rules.active
           Sidekiq.logger.info "FIX: Rule Active"
+          Sidekiq.logger.info "FIX: URL: #{link_check_job.url}"
+          Sidekiq.logger.info "FIX: source: #{link_check_job.source.name}"
+
           response = link_check(link_check_job.url, link_check_job.source._id)
           if response && validate_link_check_rule(response, link_check_job.source._id)
             Sidekiq.logger.info "FIX: Valid Link"
@@ -67,6 +70,7 @@ class LinkCheckWorker
   def link_check(url, collection)
     Sidekiq.redis do |conn|
       if conn.setnx(collection, 0)
+        Sidekiq.logger.info "FIX: Trying "
         conn.expire(collection, rules.try(:throttle) || 2)
         begin
           RestClient.get(url)
@@ -75,8 +79,8 @@ class LinkCheckWorker
           return nil
         end
       else
-        Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
-        raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
+        Sidekiq.logger.info("FIX: Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
+        raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
       end
     end
   end
