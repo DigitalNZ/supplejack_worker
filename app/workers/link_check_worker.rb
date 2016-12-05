@@ -98,7 +98,7 @@ class LinkCheckWorker
       RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", {record: {status: status}})
       add_record_stats(record_id, status)
     rescue StandardError => e
-      Rails.logger.warn("Record not found when updating status in LinkChecking. Ignoring.")
+      Sidekiq.logger.warn("Record not found when updating status in LinkChecking. Ignoring.")
     end
   end
 end
