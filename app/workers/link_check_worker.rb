@@ -14,7 +14,7 @@ class LinkCheckWorker
   sidekiq_retry_in { |count| 2 * Random.rand(1..5) }
 
   def perform(link_check_job_id, strike=0)
-    Sidekiq.logger.info "FIX: Starting LinkCheckWorker for #{link_check_job_id} with strike: #{strike}"
+    Sidekiq.logger.info "Starting LinkCheckWorker for #{link_check_job_id} with strike #{strike}"
     @link_check_job_id = link_check_job_id
     begin
       if link_check_job.present? && link_check_job.source.present?
@@ -25,16 +25,12 @@ class LinkCheckWorker
         end
 
         if rules.active
-          Sidekiq.logger.info "FIX: Rule Active"
-          Sidekiq.logger.info "FIX: URL: #{link_check_job.url}"
-          Sidekiq.logger.info "FIX: source: #{link_check_job.source.name}"
-
           response = link_check(link_check_job.url, link_check_job.source._id)
           if response && validate_link_check_rule(response, link_check_job.source._id)
-            Sidekiq.logger.info "FIX: Valid Link"
+            Sidekiq.logger.info "Unsuppressing Record for landing_url #{link_check_job.url}"
             set_record_status(link_check_job.record_id, "active") if strike > 0
           else
-            Sidekiq.logger.info "FIX: InValid Link. Response: #{response}"
+            Sidekiq.logger.info "Suppressing Record for landing_url #{link_check_job.url}"
             suppress_record(link_check_job_id, link_check_job.record_id, strike)
           end
         end
@@ -75,11 +71,12 @@ class LinkCheckWorker
         begin
           RestClient.get(url)
         rescue => e
-          Sidekiq.logger.info "FIX: ResctClient landing URL CALL FAILED. Error: #{e.message}"
+          Sidekiq.logger.info "ResctClient get failed for #{url}. Error: #{e.message}"
+          # This return will make the record to be suppressed
           return nil
         end
       else
-        Sidekiq.logger.info("FIX: Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
+        Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
         raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
       end
     end
