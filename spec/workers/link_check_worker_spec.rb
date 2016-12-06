@@ -15,10 +15,7 @@ describe LinkCheckWorker do
   let(:link_check_rule) { double(:link_check_rule, status_codes: "200, 3..", xpath: '//p', throttle: 3, active: true) }
   let(:conn) { double(:conn) }
 
-  before do
-    # worker.stub(:rules) { link_check_rule }
-    Sidekiq.stub(:redis).and_yield(conn)
-  end
+  before { Sidekiq.stub(:redis).and_yield(conn) }
 
   describe '#perform' do
     after(:each) { worker.perform(link_check_job.id.to_s) }
@@ -32,8 +29,7 @@ describe LinkCheckWorker do
         worker.stub(:link_check_job) { link_check_job }
         link_check_job.stub_chain(:source, :_id) { 'abc123' }
         worker.stub(:rules) { link_check_rule }
-        conn.stub(:setnx) { true }
-        conn.stub(:expire) { true }
+        worker.stub(:link_check) { response }
       end
 
       it 'finds the link check rule' do
@@ -48,13 +44,115 @@ describe LinkCheckWorker do
         expect(link_check_rule).to receive(:active)
       end
 
+      it 'notifies an airbrake error when rule not present' do
+        link_check_rule.stub(:present?) { false }
+        expect(Airbrake).to receive(:notify).with(MissingLinkCheckRuleError.new(link_check_job.source_id))
+      end
+
       it 'calls the link check method' do
         expect(worker).to receive(:link_check).with(link_check_job.url, link_check_job.source._id)
       end
 
-      it 'notifies airbrake an error when rule not present' do
-        link_check_rule.stub(:present?) { false }
-        expect(Airbrake).to receive(:notify).with(MissingLinkCheckRuleError.new(link_check_job.source_id))
+      context 'when response is nil' do
+        before { worker.stub(:link_check) { nil } }
+
+        it 'suppresse the record with strike 0' do
+          expect(worker).to receive(:suppress_record).with(link_check_job.id.to_s,
+                                                           link_check_job.record_id, 0)
+        end
+      end
+
+      context 'when response is not nil' do
+        before { worker.stub(:link_check) { response } }
+
+        it 'validates the response' do
+          expect(worker).to receive(:validate_link_check_rule).with(response,
+                                                                    link_check_job.source._id)
+        end
+
+        context 'and response is invalid' do
+          before { worker.stub(:validate_link_check_rule) { false} }
+
+          it 'suppresse the record with strike 0' do
+            expect(worker).to receive(:suppress_record).with(link_check_job.id.to_s,
+                                                           link_check_job.record_id, 0)
+          end
+        end
+
+        context 'and response is valid' do
+          before { worker.stub(:validate_link_check_rule) { true} }
+
+          context 'and strike is greated than 1' do
+            after { worker.perform(link_check_job.id.to_s, 1) }
+
+            it 'updates the record as active' do
+              expect(worker).to receive(:set_record_status).with(link_check_job.record_id,
+                                                                 'active')
+            end
+          end      
+        end
+
+        context 'exceptions' do
+          it 'handles throttling error' do
+            worker.stub(:link_check).and_raise(ThrottleLimitError.new('ThrottleLimitError'))
+            expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception
+          end
+          
+          it "should handle networking errors" do
+            worker.stub(:link_check).and_raise(StandardError.new('RestClient Exception'))
+            expect {worker.perform(link_check_job.id.to_s)}.to_not raise_exception
+          end
+        end
+      end
+    end
+  end
+
+  describe '#link_check' do
+    context 'when throttle limit succeeds' do
+      before do
+        conn.stub(:setnx) { true }
+        conn.stub(:expire) { true }
+        worker.stub(:rules) { link_check_rule }
+      end
+
+      after { worker.send(:link_check, 'http://boost.co.nz', 'some') }
+
+      # The next request can be made only when this value expires
+      it 'sets an expiry for redis value with throttle of the rule' do
+        expect(conn).to receive(:expire).with('some', link_check_rule.throttle)
+      end
+
+      it 'sets the expiry value as default 2 when the rules has no throlltle' do
+        link_check_rule.stub(:throttle) { nil }
+        expect(conn).to receive(:expire).with('some', 2)
+      end
+
+      it 'makes a restclient get call with url' do
+        expect(RestClient).to receive(:get).with('http://boost.co.nz')
+      end
+
+      context 'when restclient request fails with exception' do
+        before { RestClient.stub(:get).and_raise { RestClient::ResourceNotFound.new('Something Wrong') } }
+
+        it 'returns nil' do
+          expect(worker.send(:link_check, 'http://boost.co.nz', 'some')).to eq nil
+        end
+      end
+
+      context 'when requestclient request succeeds' do
+        before { RestClient.stub(:get) { response } }
+
+        it 'returns response' do
+          expect(worker.send(:link_check, 'http://boost.co.nz', 'some')).to eq response
+        end
+      end
+    end
+
+    context 'when throttle limit fails' do
+      before { conn.stub(:setnx) { false } }
+
+      it 'raises an ThrottleLimitError' do
+         expect { worker.send(:link_check, 'http://boost.co.nz', 'some') }.to raise_error(ThrottleLimitError)
       end
     end
   end

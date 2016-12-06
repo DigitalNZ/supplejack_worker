@@ -23,7 +23,7 @@ class LinkCheckWorker
           Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
           return
         end
-        
+
         if rules.active
           response = link_check(link_check_job.url, link_check_job.source._id)
           if response && validate_link_check_rule(response, link_check_job.source._id)
@@ -35,8 +35,6 @@ class LinkCheckWorker
           end
         end
       end
-    rescue RestClient::ResourceNotFound => e
-      suppress_record(link_check_job_id, link_check_job.record_id, strike)
     rescue ThrottleLimitError => e
       # No operation here. Prevents Airbrake from notifying ThrottleLimitError.
     rescue StandardError => e
@@ -66,7 +64,6 @@ class LinkCheckWorker
   def link_check(url, collection)
     Sidekiq.redis do |conn|
       if conn.setnx(collection, 0)
-        Sidekiq.logger.info "FIX: Trying "
         conn.expire(collection, rules.try(:throttle) || 2)
         begin
           RestClient.get(url)
