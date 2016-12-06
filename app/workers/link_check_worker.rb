@@ -14,26 +14,27 @@ class LinkCheckWorker
   sidekiq_retry_in { |count| 2 * Random.rand(1..5) }
 
   def perform(link_check_job_id, strike=0)
+    Sidekiq.logger.info "Starting LinkCheckWorker for #{link_check_job_id} with strike #{strike}"
     @link_check_job_id = link_check_job_id
     begin
       if link_check_job.present? && link_check_job.source.present?
         unless rules.present?
-          Rails.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
+          Sidekiq.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
           Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
           return
         end
 
         if rules.active
           response = link_check(link_check_job.url, link_check_job.source._id)
-          if validate_link_check_rule(response, link_check_job.source._id)
-            set_record_status(link_check_job.record_id, "active") if strike > 0
+          if response && validate_link_check_rule(response, link_check_job.source._id)
+            Sidekiq.logger.info "Unsuppressing Record for landing_url #{link_check_job.url}"
+            set_record_status(link_check_job.record_id, 'active') if strike > 0
           else
+            Sidekiq.logger.info "Suppressing Record for landing_url #{link_check_job.url}"
             suppress_record(link_check_job_id, link_check_job.record_id, strike)
           end
         end
       end
-    rescue RestClient::ResourceNotFound => e
-      suppress_record(link_check_job_id, link_check_job.record_id, strike)
     rescue ThrottleLimitError => e
       # No operation here. Prevents Airbrake from notifying ThrottleLimitError.
     rescue StandardError => e
@@ -44,7 +45,7 @@ class LinkCheckWorker
   private
 
   def add_record_stats(record_id, status)
-    status = "activated" if status == "active"
+    status = 'activated' if status == 'active'
     collection_stats.add_record!(record_id, status, link_check_job.url)
   end
 
@@ -61,23 +62,30 @@ class LinkCheckWorker
   end
 
   def link_check(url, collection)
-    Sidekiq.redis do |conn| 
+    Sidekiq.redis do |conn|
       if conn.setnx(collection, 0)
         conn.expire(collection, rules.try(:throttle) || 2)
-        RestClient.get(url)
+        begin
+          RestClient.get(url)
+        rescue => e
+          Sidekiq.logger.info "ResctClient get failed for #{url}. Error: #{e.message}"
+          # This return will make the record to be suppressed
+          return nil
+        end
       else
-        raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry")
+        Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
+        raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
       end
     end
   end
 
   def suppress_record(link_check_job_id, record_id, strike)
-    timings = {0 => 1.hours, 1 => 5.hours, 2 => 72.hours}
-    
+    timings = [1.hours, 5.hours, 72.hours]
+
     if strike >= 3
-      set_record_status(record_id, "deleted")
+      set_record_status(record_id, 'deleted')
     else
-      set_record_status(record_id, "suppressed") unless strike > 0
+      set_record_status(record_id, 'suppressed') unless strike > 0
       LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
     end
   end
@@ -87,7 +95,7 @@ class LinkCheckWorker
       RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", {record: {status: status}})
       add_record_stats(record_id, status)
     rescue StandardError => e
-      Rails.logger.warn("Record not found when updating status in LinkChecking. Ignoring.")
+      Sidekiq.logger.warn("Record not found when updating status in LinkChecking. Ignoring.")
     end
   end
 end
