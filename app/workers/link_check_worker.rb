@@ -28,7 +28,7 @@ class LinkCheckWorker
           response = link_check(link_check_job.url, link_check_job.source._id)
           if response && validate_link_check_rule(response, link_check_job.source._id)
             Sidekiq.logger.info "Unsuppressing Record for landing_url #{link_check_job.url}"
-            set_record_status(link_check_job.record_id, "active") if strike > 0
+            set_record_status(link_check_job.record_id, 'active') if strike > 0
           else
             Sidekiq.logger.info "Suppressing Record for landing_url #{link_check_job.url}"
             suppress_record(link_check_job_id, link_check_job.record_id, strike)
@@ -45,7 +45,7 @@ class LinkCheckWorker
   private
 
   def add_record_stats(record_id, status)
-    status = "activated" if status == "active"
+    status = 'activated' if status == 'active'
     collection_stats.add_record!(record_id, status, link_check_job.url)
   end
 
@@ -83,9 +83,9 @@ class LinkCheckWorker
     timings = [1.hours, 5.hours, 72.hours]
 
     if strike >= 3
-      set_record_status(record_id, "deleted")
+      set_record_status(record_id, 'deleted')
     else
-      set_record_status(record_id, "suppressed") unless strike > 0
+      set_record_status(record_id, 'suppressed') unless strike > 0
       LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
     end
   end
