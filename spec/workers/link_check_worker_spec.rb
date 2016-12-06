@@ -49,6 +49,11 @@ describe LinkCheckWorker do
         expect(Airbrake).to receive(:notify).with(MissingLinkCheckRuleError.new(link_check_job.source_id))
       end
 
+      it 'dosent call link check if rule is not active' do
+        link_check_rule.stub(:active) { false }
+        expect(worker).to_not receive(:link_check)
+      end
+
       it 'calls the link check method' do
         expect(worker).to receive(:link_check).with(link_check_job.url, link_check_job.source._id)
       end
@@ -157,108 +162,15 @@ describe LinkCheckWorker do
     end
   end
 
-  # describe "#perform" do
-  #   before do
-  #     link_check_job.stub_chain(:source, :_id) { 'abc123' }
-  #     worker.stub(:link_check_job) { link_check_job }
-  #   end
+  describe '#set_record_status' do
+    before { RestClient.stub(:put) }
+    after { worker.send(:set_record_status, '123', 'deleted') }
 
-  #   it "should perform a link_check" do
-  #     worker.should_receive(:link_check).with(link_check_job.url, link_check_job.source._id)
-  #     worker.perform(link_check_job.id.to_s)
-  #   end
-
-  #   context "validate_link_check_rule returns false" do
-  #     before { worker.stub(:link_check) { response } }
-  #     it "should supress the record" do
-  #       worker.stub(:validate_link_check_rule) { false }
-  #       worker.should_receive(:suppress_record).with(link_check_job.id.to_s, link_check_job.record_id, 0)
-  #       worker.perform(link_check_job.id.to_s)
-  #     end
-  #   end
-
-  #   context "validate_link_check_rule returns true" do
-  #     before { worker.stub(:link_check) { response } }
-
-  #     it "should not set the record status if on the 0th strike" do
-  #       worker.should_not_receive(:set_record_status).with(link_check_job.record_id, "active")
-  #       worker.stub(:validate_link_check_rule) { true }
-  #       worker.perform(link_check_job.id.to_s)
-  #     end
-
-  #     it "should reactivate the record if strike is greater than 0" do
-  #       worker.should_receive(:set_record_status).with(link_check_job.record_id, "active")
-  #       worker.stub(:validate_link_check_rule) { true }
-  #       worker.perform(link_check_job.id.to_s, 1)
-  #     end
-  #   end
-    
-  #   context "link checking not active for collection" do
-  #     before do
-  #       worker.stub(:link_check_job) { link_check_job }
-  #       link_check_rule.stub(:active) { false }
-  #     end
-
-  #     it "should not check the link" do
-  #       worker.should_not_receive(:link_check)
-  #       worker.perform("anc123")
-  #     end
-  #   end
-
-  #   context "link check rule doesn't exist" do
-  #     let(:logger) { double(:logger) }
-
-  #     before(:each) do
-  #       worker.stub(:rules) { nil }
-  #       worker.stub_chain(:link_check_job, :source) { double(:source) }
-  #       Sidekiq.stub(:logger) { logger }
-  #       logger.stub(:error)
-  #       logger.stub(:info)
-  #     end
-
-  #     it "should send a MissingLinkCheckRuleError to Airbrake with the missing source_id" do
-  #       MissingLinkCheckRuleError.should_receive(:new).with('tapuhi')
-  #       Airbrake.should_receive(:notify)
-  #       worker.perform(link_check_job.id.to_s)
-  #     end
-
-  #     it "should return if the rule isn't found" do
-  #       Airbrake.should_receive(:notify).once()
-  #       worker.perform(link_check_job.id.to_s)
-  #     end
-
-  #     it "should write the source_id to the log file" do
-  #       logger.should_receive(:error).with("MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [tapuhi]")
-  #       worker.perform(link_check_job.id.to_s)
-  #     end
-  #   end
-
-  #   context "link check job not found" do
-  #     it "should not check the link" do
-  #       worker.stub(:link_check_job) { nil }
-  #       worker.should_not_receive(:link_check)
-  #       worker.perform("anc123")
-  #     end
-  #   end
-
-  #   context "exceptions" do
-  #     it "should sends a request to the DNZ API updating the status of the record to 'supressed' on a 404 error" do
-  #       worker.stub(:link_check).and_raise(RestClient::ResourceNotFound.new("url not work bro")) 
-  #       worker.should_receive(:suppress_record).with(link_check_job.id.to_s, link_check_job.record_id, 0)
-  #       worker.perform(link_check_job.id.to_s)
-  #     end
-
-  #     it 'handles throttling error' do
-  #       worker.stub(:link_check).and_raise(ThrottleLimitError.new('ThrottleLimitError'))
-  #       expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception
-  #     end
-      
-  #     it "should handle networking errors" do
-  #       worker.stub(:link_check).and_raise(StandardError.new('RestClient Exception'))
-  #       expect {worker.perform(link_check_job.id.to_s)}.to_not raise_exception
-  #     end
-  #   end
-  # end
+    it 'makes a http PUT call with restclinet to the API_HOST' do
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/123",
+                                               { record: { status: 'deleted'}})
+    end
+  end
 
   # describe "add_record_stats" do
 
@@ -318,65 +230,6 @@ describe LinkCheckWorker do
   #   end
   # end
 
-  # describe "#link_check" do
-
-  #   let(:response) { double(:response) }
-
-  #   before do 
-  #     RestClient.stub(:get) { response }
-  #     conn.stub(:setnx) { true }
-  #     conn.stub(:expire)
-  #     worker.stub(:link_check_rule) { link_check_rule }
-  #   end
-
-  #   it "should return the response" do
-  #     worker.send(:link_check, "http://google.co.nz", "").should eq response
-  #   end
-
-  #   it 'returns nil if rest client hits an exception' do
-  #     allow(RestClient).to receive(:get).and_raise('404 not found')
-  #     worker.send(:link_check, "http://google.co.nz", "").should eq nil
-  #   end
-    
-  #   context "has the lock " do
-
-  #     it "it sets the expire on the key & performs a rest client get" do
-  #       conn.should_receive(:expire).with("TAPUHI", 3)
-  #       RestClient.should_receive(:get).with("http://hehehe.com")
-  #       worker.send(:link_check, "http://hehehe.com", "TAPUHI")
-  #     end
-
-  #     context "no collection rule for collection" do
-  #       before { worker.stub(:rules) { nil } }
-
-  #       it "throttle should be 2 seconds" do
-  #         conn.should_receive(:expire).with("TAPUHI", 2)
-  #         worker.send(:link_check, "http://hehehe.com", "TAPUHI")
-  #       end
-  #     end
-
-  #     context "throttle is nil" do
-  #       let(:link_check_rule) { double(:link_check_rule, status_codes: "200, 3..", xpath: '//p', throttle: nil) }
-
-  #       it "throttle should default to 2 seconds if throttle is nil" do
-  #         worker.stub(:link_check_rule) { link_check_rule }
-  #         conn.should_receive(:expire).with("TAPUHI", 2)
-  #         worker.send(:link_check, "http://hehehe.com", "TAPUHI")
-  #       end
-  #     end
-  #   end
-
-  #   context "does not have the lock" do
-  #     before do
-  #       conn.stub(:setnx) { false }
-  #       Sidekiq.stub(:redis).and_yield(conn)
-  #     end
-
-  #     it "should throw an exception" do
-  #       expect { worker.send(:link_check, "http://hehehe.com", "tapuhi") }.to raise_error(ThrottleLimitError)
-  #     end
-  #   end
-  # end
 
   # describe "#suppress_record" do
 
