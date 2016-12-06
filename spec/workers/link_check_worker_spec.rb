@@ -168,7 +168,16 @@ describe LinkCheckWorker do
 
     it 'makes a http PUT call with restclinet to the API_HOST' do
       expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/123",
-                                               { record: { status: 'deleted'}})
+                                               { record: { status: 'deleted' } })
+    end
+  end
+
+  describe '#link_check_job' do
+    before { worker.instance_variable_set(:@link_check_job_id, link_check_job.id) }
+    
+    it 'memoizes the link check job' do
+      expect(LinkCheckJob).to receive(:find).once.with(link_check_job.id)
+      worker.send(:link_check_job)
     end
   end
 
@@ -219,16 +228,7 @@ describe LinkCheckWorker do
   #   end
   # end
 
-  # describe "link_check_job" do
 
-  #   before { worker.instance_variable_set(:@link_check_job_id, link_check_job.id) }
-    
-  #   it "memoizes the result" do
-  #     LinkCheckJob.should_receive(:find).once { link_check_job }
-  #     worker.send(:link_check_job)
-  #     worker.send(:link_check_job)
-  #   end
-  # end
 
 
   # describe "#suppress_record" do
