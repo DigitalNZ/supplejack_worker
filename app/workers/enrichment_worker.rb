@@ -7,7 +7,7 @@
 
 class EnrichmentWorker < AbstractWorker
   include Sidekiq::Worker
-  sidekiq_options retry: 1
+  sidekiq_options retry: 1, queue: 'default'
   sidekiq_retry_in { 1 }
 
   sidekiq_retries_exhausted do |msg|
