@@ -25,6 +25,10 @@ describe SourceCheckWorker do
       worker.stub(:suppress_collection)
     end
 
+    it 'is a default priority job' do
+      expect(worker.sidekiq_options_hash['queue']).to eq 'default'
+    end
+
     it "should retrieve landing urls from the API to check" do
       worker.stub(:up?) {true}
       worker.should_receive(:source_records) { @records }
