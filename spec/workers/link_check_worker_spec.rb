@@ -32,6 +32,10 @@ describe LinkCheckWorker do
         worker.stub(:link_check) { response }
       end
 
+      it 'is a low priority job' do
+        expect(worker.sidekiq_options_hash['queue']).to eq 'low'
+      end
+
       it 'finds the link check rule' do
         expect(worker).to receive(:rules)
       end
