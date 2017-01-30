@@ -31,6 +31,10 @@ describe HarvestWorker do
       job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
     end
 
+    it 'is a default priority job' do
+      expect(worker.sidekiq_options_hash['queue']).to eq 'default'
+    end
+
     it "processes each record" do
       worker.should_receive(:process_record).with(record, job)
       worker.perform(1)
