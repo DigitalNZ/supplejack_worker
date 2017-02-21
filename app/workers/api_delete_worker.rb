@@ -7,6 +7,7 @@
 
 class ApiDeleteWorker
 	include Sidekiq::Worker
+  sidekiq_options queue: 'default'
 
 	def perform(identifier, job_id)
 		job = AbstractJob.find(job_id)

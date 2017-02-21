@@ -18,12 +18,16 @@ describe EnqueueSourceChecksWorker do
   before { LinkCheckRule.stub(:all) { link_check_rules } }
 
   describe "#perform" do
+    it 'is a default priority job' do
+      expect(worker.sidekiq_options_hash['queue']).to eq 'default'
+    end
+        
     it "should enqueue a source check worker for each source to check" do
       worker.perform
       ["1", "2"].each do |source|
         expect(SourceCheckWorker).to have_enqueued_job(source)
       end
-    end
+    end    
   end
 
   describe ".sources_to_check" do

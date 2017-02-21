@@ -30,6 +30,10 @@ describe EnrichmentWorker do
       job.stub_chain(:parser, :source, :source_id) { "nlnzcat" }
     end
     
+    it 'is a default priority job' do
+      expect(worker.sidekiq_options_hash['queue']).to eq 'default'
+    end
+        
     it "should set the @job_id as a string" do
       worker.perform(1234)
       worker.instance_variable_get("@job_id").should eq "1234"
