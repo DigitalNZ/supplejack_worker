@@ -8,7 +8,7 @@
 require "snippet"
 
 class PreviewWorker < HarvestWorker
-	sidekiq_options retry: 1
+	sidekiq_options retry: 1, queue: 'critical'
 	sidekiq_retry_in { 1 }
 
 	attr_reader :preview_id

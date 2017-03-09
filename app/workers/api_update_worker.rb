@@ -7,6 +7,7 @@
 
 class ApiUpdateWorker < AbstractWorker
 	include Sidekiq::Worker
+  sidekiq_options queue: 'default'
 
 	def perform(path, attributes, job_id)
     @job = AbstractJob.find(job_id)

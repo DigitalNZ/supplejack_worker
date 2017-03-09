@@ -7,6 +7,7 @@
 
 class EnqueueSourceChecksWorker
   include Sidekiq::Worker
+  sidekiq_options queue: 'default'
 
   def perform
     EnqueueSourceChecksWorker.sources_to_check.each do |collection|

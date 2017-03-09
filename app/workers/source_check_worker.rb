@@ -8,6 +8,7 @@
 class SourceCheckWorker
   include Sidekiq::Worker
   include ValidatesResource
+  sidekiq_options queue: 'default'
 
   attr_reader :source
 

@@ -9,7 +9,7 @@ class LinkCheckWorker
   include Sidekiq::Worker
   include ValidatesResource
 
-  sidekiq_options :retry => 100
+  sidekiq_options retry: 100, queue: 'low'
 
   sidekiq_retry_in { |count| 2 * Random.rand(1..5) }
 
