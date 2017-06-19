@@ -5,17 +5,19 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
+# HarvestScheduleSerializer
 class HarvestScheduleSerializer < ActiveModel::Serializer
 
-  attributes :id, :parser_id, :start_time, :cron, :frequency, :at_hour, :at_minutes, :offset, :environment
-  attributes :next_run_at, :last_run_at, :recurrent, :mode, :enrichments
+  attributes :id, :parser_id, :start_time, :cron, :frequency, :at_hour,
+             :at_minutes, :offset, :environment, :next_run_at, :last_run_at,
+             :recurrent, :mode, :enrichments, :status
 
   def at_hour
-  	object.at_hour.to_s.rjust(2, "0")
+    object.at_hour.to_s.rjust(2, '0')
   end
 
   def at_minutes
-  	object.at_minutes.to_s.rjust(2, "0")
+    object.at_minutes.to_s.rjust(2, '0')
   end
 
 end
