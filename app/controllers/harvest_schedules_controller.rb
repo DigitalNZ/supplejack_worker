@@ -39,6 +39,7 @@ class HarvestSchedulesController < ApplicationController
 
   def update
     @harvest_schedule = HarvestSchedule.find(params[:id])
+
     @harvest_schedule.update_attributes(params[:harvest_schedule])
     render json: @harvest_schedule
   end
