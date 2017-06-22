@@ -25,14 +25,14 @@ class HarvestSchedule
   field :recurrent,       type: Boolean,  default: false
   field :last_run_at,     type: DateTime, default: nil
   field :next_run_at,     type: DateTime
-  field :status,          type: String,   default: "active"
+  field :status,          type: String, default: 'active'
   field :enrichments,     type: Array
   field :mode,            type: String
 
   before_save :generate_cron
   before_save :generate_next_run_at
 
-  default_scope -> { where(status: 'active', deleted_at: nil) }
+  default_scope -> { where(:status.in => %w(active paused)) }
 
   scope :one_off, -> { where(recurrent: false).exists(last_run_at: false) }
   scope :recurrent, -> { where(recurrent: true) }
@@ -63,12 +63,13 @@ class HarvestSchedule
   end
 
   def active?
-    self.status == "active"
+    status == 'active'
   end
 
   def next_job
-    return nil unless self.cron.present?
-    parser = CronParser.new(self.cron)
+    return nil unless cron.present?
+
+    parser = CronParser.new(cron)
     parser.next(Time.now)
   end
 
@@ -79,15 +80,21 @@ class HarvestSchedule
   end
 
   def generate_next_run_at
-    self.next_run_at = self.next_job
+    self.next_run_at = next_job
   end
 
   def create_job
-    if allowed?
-      self.harvest_jobs.create(parser_id: self.parser_id, environment: self.environment, mode: self.mode, enrichments: self.enrichments)
+    return unless allowed?
+
+    if active?
+      harvest_jobs.create(parser_id: parser_id,
+                          environment: environment,
+                          mode: mode, enrichments: enrichments)
+
       self.last_run_at = Time.now
-      self.status = "inactive" unless self.recurrent
-      self.save
+      self.status = 'inactive' unless recurrent
     end
+
+    save
   end
 end

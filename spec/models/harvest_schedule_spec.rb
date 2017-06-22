@@ -12,11 +12,22 @@ describe HarvestSchedule do
   let(:schedule) { HarvestSchedule.new(cron: "* * * * *") }
   let(:time) { Time.parse("2013-02-26 13:30:00") }
 
+  describe 'scope' do
+    it 'returns only harvest schedules which are either active or paused' do
+      s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "222", status: 'active')
+      s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: "111", status: 'paused')
+      s3 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "333", status: 'inactive')
+    
+      HarvestSchedule.all.should eq [s1, s2]
+    end
+  end
+
   describe ".one_offs_to_be_run" do
     it "should only return non recurrent schedules" do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "222")
         s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: "111")
+
         HarvestSchedule.one_offs_to_be_run.should eq [s1]
       end
     end
@@ -156,6 +167,18 @@ describe HarvestSchedule do
     before {
       schedule.stub(:allowed?) { true }
     }
+
+    it 'checks if the job is active' do
+      schedule.should_receive(:active?)
+      schedule.create_job
+    end
+
+    it 'wont create job if schedule is not active' do
+      schedule.stub(:active?) { false }
+      schedule.create_job
+
+      schedule.harvest_jobs.last.should eq nil
+    end
 
     it "should create a new harvest job" do
       schedule.create_job
