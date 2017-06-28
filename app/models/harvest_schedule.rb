@@ -47,10 +47,12 @@ class HarvestSchedule
   end
 
   def self.create_one_off_jobs
+    Sidekiq.logger.info "SCHEDULED HARVEST: #{Time.now} : Inside create_one_off_jobs"
     self.one_offs_to_be_run.each(&:create_job)
   end
 
   def self.recurrents_to_be_run
+    Sidekiq.logger.info "SCHEDULED HARVEST: #{Time.now} : Inside recurrents_to_be_run"
     self.recurrent.lte(next_run_at: Time.now).lte(start_time: Time.now)
   end
 
@@ -84,7 +86,11 @@ class HarvestSchedule
   end
 
   def create_job
+    Sidekiq.logger.info "SCHEDULED HARVEST: #{Time.now} : Inside create_job"
     return unless allowed?
+
+    Sidekiq.logger.info "SCHEDULED HARVEST: #{Time.now} : parser_id #{parser_id}"
+    Sidekiq.logger.info "SCHEDULED HARVEST: #{Time.now} : active? #{active?}"
 
     if active?
       harvest_jobs.create(parser_id: parser_id,
@@ -93,6 +99,8 @@ class HarvestSchedule
 
       self.last_run_at = Time.now
       self.status = 'inactive' unless recurrent
+
+      Sidekiq.logger.info "SCHEDULED HARVEST: #{Time.now} : last_run_at #{self.last_run_at}"
     end
 
     save
