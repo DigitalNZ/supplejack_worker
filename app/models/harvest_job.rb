@@ -45,7 +45,7 @@ class HarvestJob < AbstractJob
 
   def records(&block)
     begin
-      start! unless self.active?
+      start! if self.may_start?
 
       options = {}
       options[:limit] = limit.to_i if limit.to_i > 0

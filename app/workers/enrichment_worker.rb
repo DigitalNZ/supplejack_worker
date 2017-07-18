@@ -24,7 +24,7 @@ class EnrichmentWorker < AbstractWorker
   def perform(enrichment_job_id)
     @job_id = enrichment_job_id.to_s
 
-    job.start!
+    job.start! if job.may_start?
     setup_parser
 
     enrichment_class.before(job.enrichment)
