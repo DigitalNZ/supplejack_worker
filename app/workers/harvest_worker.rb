@@ -86,5 +86,4 @@ class HarvestWorker < AbstractWorker
   def delete_from_api(identifier)
     ApiDeleteWorker.perform_async(identifier.first, job.id.to_s) if identifier.any?
   end
-
 end
