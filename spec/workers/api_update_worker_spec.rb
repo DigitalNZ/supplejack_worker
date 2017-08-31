@@ -5,44 +5,98 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'spec_helper'
 
 describe ApiUpdateWorker do
-
   let(:worker) { ApiUpdateWorker.new }
   let(:job) { FactoryGirl.create(:harvest_job) }
 
-  describe "#perform" do
-    let(:response) { {record_id: 123}.to_json }
+  describe '#perform' do
+    let(:success_response) do
+      {
+        status: 'success',
+        record_id: 123
+      }
+    end
+
+    let(:failed_response) do
+      {
+        status: 'failed',
+        exception_class: 'Exception',
+        message: 'Error message',
+        raw_data: 'some data',
+        record_id: 123
+      }
+    end
+
     before(:each) do
-      AbstractJob.stub(:find).with(1) {job}
-      RestClient::Request.stub(:execute) { response }
+      AbstractJob.stub(:find).and_return(job)
     end
 
     it 'is a default priority job' do
       expect(worker.sidekiq_options_hash['queue']).to eq 'default'
     end
 
-    it "should post attributes to the api" do
-      RestClient::Request.should_receive(:execute).with({:method=>:post, :url=>"#{ENV["API_HOST"]}/harvester/records/123/fragments.json", :payload=>"{}", :timeout=>10, :open_timeout=>10, :headers=>{:content_type=>:json, :accept=>:json}}) { response }
-      worker.perform("/harvester/records/123/fragments.json", {}, 1)
+    it 'post attributes to the api' do
+      RestClient.should_receive(:post).and_return(success_response.to_json)
+      worker.perform('/harvester/records/123/fragments.json', {}, 1)
     end
 
-    it "should set the jobs last_posted_record_id" do
-      job.should_receive(:set).with({last_posted_record_id: 123})
-      RestClient::Request.should_receive(:execute) { response }
-      worker.perform("/harvester/records/123/fragments.json", {}, 1)
+    it 'merges preview=true into attributes if environment is preview' do
+      job.stub(:environment) { 'preview' }
+
+      RestClient.should_receive(:post) do |_, attributes, _|
+        expect(attributes).to eq({ preview: true }.to_json)
+      end.and_return(success_response.to_json)
+
+      worker.perform('/harvester/records/123/fragments.json', {}, 1)
     end
 
-    it "should update the posted_records_count on the job" do
-      job.should_receive(:inc).with({ posted_records_count: 1})
-      worker.perform(123, {}, 1)
+    context 'API return a status: :failed' do
+      before(:each) do
+        RestClient.stub(:post).and_return(failed_response.to_json)
+      end
+
+      it 'increments job.posted_records_count' do
+        job.should_receive(:inc).with(posted_records_count: 1)
+        worker.perform('/harvester/records/123/fragments.json', {}, 1)
+      end
+
+      it 'updates job.last_posted_record_id' do
+        job.should_receive(:set).with(last_posted_record_id: 123)
+        worker.perform('/harvester/records/123/fragments.json', {}, 1)
+      end
+
+      it 'adds a FailedRecord to job.failed_records array' do
+        exception_class = failed_response[:exception_class]
+        message = failed_response[:message]
+        raw_data = failed_response[:raw_data]
+
+        worker.perform('/harvester/records/123/fragments.json', {}, 1)
+        failed = job.failed_records.first
+
+        expect(failed.attributes['exception_class']).to eq exception_class
+        expect(failed.attributes['message']).to eq message
+        expect(failed.attributes['raw_data']).to eq raw_data
+      end
     end
 
-    it "merges preview=true into attributes if environment is preview" do
-      job.stub(:environment) { "preview" }
-      RestClient::Request.should_receive(:execute).with({:method=>:post, :url=>"#{ENV["API_HOST"]}/harvester/records/123/fragments.json", :payload=>"{\"preview\":true}", :timeout=>10, :open_timeout=>10, :headers=>{:content_type=>:json, :accept=>:json}}) { response }
-      worker.perform("/harvester/records/123/fragments.json", {}, 1)
+    context 'API return a status: :success' do
+      before(:each) do
+        RestClient.stub(:post).and_return(success_response.to_json)
+      end
+
+      it 'increments job.posted_records_count' do
+        job.should_receive(:inc).with(posted_records_count: 1)
+
+        worker.perform('/harvester/records/123/fragments.json', {}, 1)
+      end
+
+      it 'updates job.last_posted_record_id' do
+        job.should_receive(:set).with(last_posted_record_id: 123)
+
+        worker.perform('/harvester/records/123/fragments.json', {}, 1)
+      end
     end
   end
 end
