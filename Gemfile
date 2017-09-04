@@ -42,7 +42,7 @@ gem 'lograge'
 group :assets do
   gem 'sass-rails',   '~> 4.0.3'
   gem 'coffee-rails', '~> 4.0.1'
-  # gem 'therubyracer', :platforms => :ruby
+  gem 'therubyracer', :platforms => :ruby
   gem 'uglifier', '>= 1.0.3'
 end
 
@@ -61,7 +61,7 @@ group :development, :test do
 end
 
 group :test do
-  gem 'database_cleaner',   '~> 1.3.0'
+  gem 'database_cleaner',   '~> 1.6.0'
   gem 'cucumber-rails',     '>= 1.4.1', :require => false
   gem 'timecop'
   gem 'rspec-sidekiq'
