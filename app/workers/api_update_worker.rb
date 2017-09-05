@@ -8,8 +8,10 @@ class ApiUpdateWorker < AbstractWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'default', retry: 5, backtrace: true
   sidekiq_retry_in { 5.seconds }
+
   sidekiq_retries_exhausted do |msg|
-    Sidekiq.logger.warn "Failed #{msg['class']} with #{msg['args']}: #{msg['error_message']}"
+    Airbrake.notify(msg)
+
     job_id = msg['args'].last
     job = AbstractJob.find(job_id)
 
