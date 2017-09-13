@@ -40,4 +40,17 @@ class AbstractWorker
     job.reload
     job.posted_records_count == job.records_count
   end
+
+  def process_response(response)
+    job.set(last_posted_record_id: response['record_id'])
+    job.inc(posted_records_count: 1)
+
+    return if response['status'] == 'success'
+
+    job.failed_records << FailedRecord.new(
+      exception_class: response['exception_class'],
+      message: response['message'],
+      raw_data: response['raw_data']
+    )
+  end
 end
