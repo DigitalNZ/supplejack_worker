@@ -74,7 +74,7 @@ describe ApiUpdateWorker do
         }
       end
 
-      it 'raises an exception when it receives a failed response' do
+      it 'raises an exception' do
         expect { worker.perform('/harvester/records/123/fragments.json', {}, 1) }.to raise_exception
       end
     end
