@@ -47,6 +47,18 @@ describe ApiDeleteWorker do
         RestClient.stub(:put).and_return(failed_response.to_json)
       end
 
+      it 'triggers an Airbrake notification' do
+        described_class.within_sidekiq_retries_exhausted_block {
+          expect(Airbrake).to receive(:notify)
+        }
+      end
+
+      it 'creates a new instance of FailedRecord' do
+        described_class.within_sidekiq_retries_exhausted_block {
+          expect(FailedRecord).to receive(:new).with(exception_class: 'ApiDeleteWorker', message: 'An error occured', backtrace: nil, raw_data: '[]')
+        }
+      end
+
       it 'raises an exception' do
         expect { worker.perform('/harvester/records/123/fragments.json', {}) }.to raise_exception
       end
