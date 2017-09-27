@@ -42,35 +42,6 @@ describe ApiDeleteWorker do
       worker.perform('/harvester/records/123/fragments.json', {})
     end
 
-    context 'API return a status: :failed' do
-      before(:each) do
-        RestClient.stub(:put).and_return(failed_response.to_json)
-      end
-
-      it 'increments job.posted_records_count' do
-        job.should_receive(:inc).with(posted_records_count: 1)
-        worker.perform('/harvester/records/123/fragments.json', {})
-      end
-
-      it 'updates job.last_posted_record_id' do
-        job.should_receive(:set).with(last_posted_record_id: 123)
-        worker.perform('/harvester/records/123/fragments.json', {})
-      end
-
-      it 'adds a FailedRecord to job.failed_records array' do
-        exception_class = failed_response[:exception_class]
-        message = failed_response[:message]
-        raw_data = failed_response[:raw_data]
-
-        worker.perform('/harvester/records/123/fragments.json', {})
-        failed = job.failed_records.first
-
-        expect(failed.attributes['exception_class']).to eq exception_class
-        expect(failed.attributes['message']).to eq message
-        expect(failed.attributes['raw_data']).to eq raw_data
-      end
-    end
-
     context 'API return a status: :success' do
       before(:each) do
         RestClient.stub(:put).and_return(success_response.to_json)
