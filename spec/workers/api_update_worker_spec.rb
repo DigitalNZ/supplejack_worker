@@ -11,6 +11,11 @@ describe ApiUpdateWorker do
   let(:worker) { ApiUpdateWorker.new }
   let(:job) { FactoryGirl.create(:harvest_job) }
 
+  it 'is retryable' do
+    expect(described_class).to be_retryable 5
+  end
+
+
   describe '#perform' do
     let(:success_response) do
       {
@@ -52,32 +57,25 @@ describe ApiUpdateWorker do
       worker.perform('/harvester/records/123/fragments.json', {}, 1)
     end
 
-    context 'API return a status: :failed' do
+    context 'Api return status: :failed' do
       before(:each) do
         RestClient.stub(:post).and_return(failed_response.to_json)
       end
 
-      it 'increments job.posted_records_count' do
-        job.should_receive(:inc).with(posted_records_count: 1)
-        worker.perform('/harvester/records/123/fragments.json', {}, 1)
+      it 'triggers an Airbrake notification' do
+        described_class.within_sidekiq_retries_exhausted_block {
+          expect(Airbrake).to receive(:notify)
+        }
       end
 
-      it 'updates job.last_posted_record_id' do
-        job.should_receive(:set).with(last_posted_record_id: 123)
-        worker.perform('/harvester/records/123/fragments.json', {}, 1)
+      it 'creates a new instance of FailedRecord' do
+        described_class.within_sidekiq_retries_exhausted_block {
+          expect(FailedRecord).to receive(:new).with(exception_class: 'ApiUpdateWorker', message: 'An error occured', backtrace: nil, raw_data: '[]')
+        }
       end
 
-      it 'adds a FailedRecord to job.failed_records array' do
-        exception_class = failed_response[:exception_class]
-        message = failed_response[:message]
-        raw_data = failed_response[:raw_data]
-
-        worker.perform('/harvester/records/123/fragments.json', {}, 1)
-        failed = job.failed_records.first
-
-        expect(failed.attributes['exception_class']).to eq exception_class
-        expect(failed.attributes['message']).to eq message
-        expect(failed.attributes['raw_data']).to eq raw_data
+      it 'raises an exception when it receives a failed response' do
+        expect { worker.perform('/harvester/records/123/fragments.json', {}, 1) }.to raise_exception
       end
     end
 

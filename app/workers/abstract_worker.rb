@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -14,7 +14,7 @@ class AbstractWorker
     job.reload
 
     # When a harvest operator manually stops a job,
-    # it gets finished below, but we cannot (currently) stop the 
+    # it gets finished below, but we cannot (currently) stop the
     # Sidekiq job so this will be executed again with status 'finished'
     # the next time stop_harvest? is called in the loop
     return true if job.finished?
@@ -42,15 +42,9 @@ class AbstractWorker
   end
 
   def process_response(response)
+    # raising an Exception will cause Sidekiq to retry the job.
+    raise Exception unless response['status'] == 'success'
     job.set(last_posted_record_id: response['record_id'])
     job.inc(posted_records_count: 1)
-
-    return if response['status'] == 'success'
-
-    job.failed_records << FailedRecord.new(
-      exception_class: response['exception_class'],
-      message: response['message'],
-      raw_data: response['raw_data']
-    )
   end
 end
