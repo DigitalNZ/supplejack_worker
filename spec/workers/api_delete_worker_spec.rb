@@ -42,6 +42,16 @@ describe ApiDeleteWorker do
       worker.perform('/harvester/records/123/fragments.json', {})
     end
 
+    context 'API return a status: :failed' do
+      before(:each) do
+        RestClient.stub(:put).and_return(failed_response.to_json)
+      end
+
+      it 'raises an exception' do
+        expect { worker.perform('/harvester/records/123/fragments.json', {}) }.to raise_exception
+      end
+    end
+
     context 'API return a status: :success' do
       before(:each) do
         RestClient.stub(:put).and_return(success_response.to_json)
