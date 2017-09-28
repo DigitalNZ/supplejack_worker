@@ -74,8 +74,8 @@ describe ApiUpdateWorker do
         }
       end
 
-      it 'raises an exception' do
-        expect { worker.perform('/harvester/records/123/fragments.json', {}, 1) }.to raise_exception
+      it 'raises Supplejack::HarvestError exception' do
+        expect { worker.perform('/harvester/records/123/fragments.json', {}, 1) }.to raise_error(Supplejack::HarvestError)
       end
     end
 
