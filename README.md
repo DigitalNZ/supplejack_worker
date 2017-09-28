@@ -1,3 +1,5 @@
+![Supplejack Logo](https://raw.githubusercontent.com/DigitalNZ/supplejack_manager/master/app/assets/images/logo.png)
+
 # Supplejack Worker
 
 [![Build Status](https://travis-ci.org/DigitalNZ/supplejack_worker.svg?branch=master)](https://travis-ci.org/DigitalNZ/supplejack_worker)
