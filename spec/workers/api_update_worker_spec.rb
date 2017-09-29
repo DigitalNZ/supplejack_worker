@@ -62,18 +62,6 @@ describe ApiUpdateWorker do
         RestClient.stub(:post).and_return(failed_response.to_json)
       end
 
-      it 'triggers an Airbrake notification' do
-        described_class.within_sidekiq_retries_exhausted_block {
-          expect(Airbrake).to receive(:notify)
-        }
-      end
-
-      it 'creates a new instance of FailedRecord' do
-        described_class.within_sidekiq_retries_exhausted_block {
-          expect(FailedRecord).to receive(:new).with(exception_class: 'ApiUpdateWorker', message: 'An error occured', backtrace: nil, raw_data: '[]')
-        }
-      end
-
       it 'raises Supplejack::HarvestError exception' do
         expect { worker.perform('/harvester/records/123/fragments.json', {}, 1) }.to raise_error(Supplejack::HarvestError)
       end
