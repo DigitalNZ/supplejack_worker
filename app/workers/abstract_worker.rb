@@ -1,10 +1,13 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# frozen_string_literal: true
+
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
+# app/workers/abstract_worker.rb
 class AbstractWorker
   include Sidekiq::Worker
 
@@ -14,7 +17,7 @@ class AbstractWorker
     job.reload
 
     # When a harvest operator manually stops a job,
-    # it gets finished below, but we cannot (currently) stop the 
+    # it gets finished below, but we cannot (currently) stop the
     # Sidekiq job so this will be executed again with status 'finished'
     # the next time stop_harvest? is called in the loop
     return true if job.finished?
@@ -27,13 +30,13 @@ class AbstractWorker
   end
 
   def job
-    @job ||= AbstractJob.find(self.job_id.to_s)
+    @job ||= AbstractJob.find(job_id.to_s)
   end
 
   protected
 
   def sanitize_id(id)
-    id.is_a?(Hash) ? id["$oid"] : id
+    id.is_a?(Hash) ? id['$oid'] : id
   end
 
   def api_update_finished?
@@ -42,15 +45,19 @@ class AbstractWorker
   end
 
   def process_response(response)
+    # raising an Exception will cause Sidekiq to retry the job.
+    unless response['status'] == 'success'
+      # This scenario is because we cannot send an Array to the manager
+      # via Active Resource
+      job.retried_records << response['record_id']
+      job.save!
+      job.set(retried_records_count: job.retried_records.uniq.count)
+      raise Supplejack::HarvestError.new(response['message'],
+                                         response['backtrace'],
+                                         response['raw_data'])
+    end
+
     job.set(last_posted_record_id: response['record_id'])
     job.inc(posted_records_count: 1)
-
-    return if response['status'] == 'success'
-
-    job.failed_records << FailedRecord.new(
-      exception_class: response['exception_class'],
-      message: response['message'],
-      raw_data: response['raw_data']
-    )
   end
 end

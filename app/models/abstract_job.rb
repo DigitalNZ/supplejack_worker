@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -30,7 +30,9 @@ class AbstractJob
   field :failed_records_count,  type: Integer,  default: 0
   field :posted_records_count,  type: Integer,  default: 0
   field :parser_code,           type: String
-  field :last_posted_record_id,  type: String
+  field :last_posted_record_id, type: String
+  field :retried_records,       type: Array, default: []
+  field :retried_records_count, type: Integer, default: 0
 
   embeds_many :invalid_records
   embeds_many :failed_records
@@ -108,7 +110,7 @@ class AbstractJob
         save
       end
 
-      transitions :from => :ready, :to => :active  
+      transitions :from => :ready, :to => :active
     end
 
     event :finish do
