@@ -172,7 +172,7 @@ describe LinkCheckWorker do
 
     it 'makes a http PUT call with restclinet to the API_HOST' do
       expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/123",
-                                               { record: { status: 'deleted' } })
+                                               { record: { status: 'deleted' }, api_key: ENV['HARVESTER_API_KEY'] })
     end
   end
 
@@ -233,7 +233,7 @@ describe LinkCheckWorker do
     before { RestClient.stub(:put) }
 
     it 'should make a post to the api to change the status to supressed for the record' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", {record: { status: 'suppressed' }})
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", {record: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY']})
       worker.send(:suppress_record, link_check_job.id.to_s, 'abc123', 0)
     end
 

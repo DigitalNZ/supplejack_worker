@@ -77,17 +77,12 @@ describe SourceCheckWorker do
 
     before do
       JSON.stub(:parse) { [] }
-      RestClient.stub(:get).with("#{ENV['API_HOST']}/sources/#{source._id}/link_check_records") { response }
+      RestClient.stub(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}/link_check_records") { response }
     end
 
     it "should retrieve landing urls from the API to check" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/sources/#{source._id}/link_check_records") { response }
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }) { response }
       worker.send(:source_records)
-    end
-
-    it "should parse the response" do
-      worker.send(:source_records)
-      expect(JSON).to have_received(:parse).with(response)
     end
   end
 
@@ -97,7 +92,7 @@ describe SourceCheckWorker do
     end
 
     it "should retrieve the collections status" do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/sources/#{source._id}")
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}", params: { api_key: ENV['HARVESTER_API_KEY'] })
       worker.send(:source_active?)
     end
 
@@ -149,7 +144,7 @@ describe SourceCheckWorker do
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/sources/#{source._id}", source: {status: 'suppressed'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}", source: {status: 'suppressed'}, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:suppress_collection)
     end
 
@@ -167,7 +162,7 @@ describe SourceCheckWorker do
     end
 
     it "should suppress the collection" do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/sources/#{source._id}", source: {status: 'active'})
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}", source: {status: 'active'}, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:activate_collection)
     end
 
