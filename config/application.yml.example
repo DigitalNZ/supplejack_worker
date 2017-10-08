@@ -10,6 +10,7 @@
 
 development:
   API_HOST: "http://localhost:3000"
+  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
   API_MONGOID_HOSTS: "localhost:27017"
   MANAGER_HOST: "http://localhost:3001"
   MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
@@ -20,6 +21,7 @@ development:
 
 test:
   API_HOST: "http://localhost:3000"
+  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
   API_MONGOID_HOSTS: "localhost:27017"
   MANAGER_HOST: "http://localhost:3001"
   MANAGER_API_KEY: "12345"
@@ -30,6 +32,7 @@ test:
 
 staging:
   API_HOST: "http://api.harvester.org"
+  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
   MANAGER_HOST: "http://harvester.org"
   MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true

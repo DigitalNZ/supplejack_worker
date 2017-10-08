@@ -21,7 +21,7 @@ class ApiUpdateWorker < AbstractWorker
       exception_class: msg['class'],
       message: e.message,
       backtrace: e.backtrace,
-      raw_data: e.raw_data.to_json
+      raw_data: (e.try(:raw_data) || e).to_json
     )
 
     job.inc(posted_records_count: 1)
