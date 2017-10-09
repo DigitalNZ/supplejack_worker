@@ -60,11 +60,11 @@ describe AbstractJob do
     let!(:disposable_job) { create(:abstract_job, created_at: 4.months.ago) }
     let!(:important_job)  { create(:abstract_job) }
 
-    it 'returns jobs that are more 3 months old' do
+    it 'returns jobs that are more than 3 months old' do
       expect(AbstractJob.disposable).to include disposable_job
     end
 
-    it 'does not reutrn jobs that are less than 3 months old' do
+    it 'does not return jobs that are less than 3 months old' do
       expect(AbstractJob.disposable).not_to include important_job
     end
   end
