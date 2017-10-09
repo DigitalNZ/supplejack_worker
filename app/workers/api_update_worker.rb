@@ -21,7 +21,7 @@ class ApiUpdateWorker < AbstractWorker
       exception_class: msg['class'],
       message: e.message,
       backtrace: e.backtrace,
-      raw_data: e.raw_data.to_json
+      raw_data: (e.try(:raw_data) || e).to_json
     )
 
     job.inc(posted_records_count: 1)
@@ -35,7 +35,7 @@ class ApiUpdateWorker < AbstractWorker
 
     response = RestClient.post(
       "#{ENV['API_HOST']}#{path}",
-      attributes.to_json,
+      attributes.merge(api_key: ENV['HARVESTER_API_KEY']).to_json,
       content_type: :json, accept: :json
     )
     response = JSON.parse(response)
