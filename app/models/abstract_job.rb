@@ -42,7 +42,7 @@ class AbstractJob
 
   validates_presence_of   :parser_id, :environment
 
-  scope :disposable, -> { lt(created_at: Time.now-7.days).gt(created_at: Time.now-21.days) }
+  scope :disposable, -> { lt(created_at: Time.now - 3.months) }
 
   def self.search(params)
     search_params = params.try(:dup).try(:symbolize_keys) || {}

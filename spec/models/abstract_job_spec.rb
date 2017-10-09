@@ -1,14 +1,14 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 require "spec_helper"
 
 describe AbstractJob do
-  
+
   let(:job) { create(:abstract_job, parser_id: "12345", version_id: "666") }
 
   describe ".search" do
@@ -53,6 +53,19 @@ describe AbstractJob do
       AbstractJob.should_receive(:disposable) { [job] }
       job.should_receive(:clear_raw_data)
       AbstractJob.clear_raw_data
+    end
+  end
+
+  describe 'disposable' do
+    let!(:disposable_job) { create(:abstract_job, created_at: 4.months.ago) }
+    let!(:important_job)  { create(:abstract_job) }
+
+    it 'returns jobs that are more 3 months old' do
+      expect(AbstractJob.disposable).to include disposable_job
+    end
+
+    it 'does not reutrn jobs that are less than 3 months old' do
+      expect(AbstractJob.disposable).not_to include important_job
     end
   end
 
@@ -109,7 +122,7 @@ describe AbstractJob do
     end
 
     context "without version_id and environment" do
-      before do 
+      before do
         job.version_id = ""
         job.environment = nil
       end
@@ -323,7 +336,7 @@ describe AbstractJob do
   describe ".jobs_since" do
 
     let!(:finished_job) { create(:abstract_job, status: "finished", start_time: (DateTime.now - 1), environment: "staging" ) }
- 
+
     it "returns a count of harvest jobs in the last 2 days" do
       old_finished_job = create(:abstract_job, status: "finished", start_time: (DateTime.now - 3), environment: "staging" )
       since = DateTime.now - 2
