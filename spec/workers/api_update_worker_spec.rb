@@ -51,7 +51,7 @@ describe ApiUpdateWorker do
       job.stub(:environment) { 'preview' }
 
       RestClient.should_receive(:post) do |_, attributes, _|
-        expect(attributes).to eq({ preview: true }.to_json)
+        expect(attributes).to eq({ preview: true, api_key: ENV['HARVESTER_API_KEY'] }.to_json)
       end.and_return(success_response.to_json)
 
       worker.perform('/harvester/records/123/fragments.json', {}, 1)

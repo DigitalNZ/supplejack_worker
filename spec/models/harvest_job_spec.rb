@@ -78,7 +78,7 @@ describe HarvestJob do
   describe "#flush_old_records" do
     it "should post to the apis /harvester/records/flush action with source_id and the harvest_job_id" do
       job.stub(:source_id) {'tapuhi'}
-      RestClient.should_receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: 'tapuhi', job_id: job.id})
+      RestClient.should_receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: 'tapuhi', job_id: job.id, api_key: ENV['HARVESTER_API_KEY']})
       job.flush_old_records
     end
   end

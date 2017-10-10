@@ -29,7 +29,7 @@ class ApiDeleteWorker < AbstractWorker
     @job_id = job_id
     response = RestClient.put(
       "#{ENV['API_HOST']}/harvester/records/delete",
-      { id: identifier },
+      { id: identifier, api_key: ENV['HARVESTER_API_KEY'] },
       content_type: :json, accept: :json
     )
     response = JSON.parse(response)
