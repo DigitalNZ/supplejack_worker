@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: ac711d2d0689515180b6990a731cff74dfdb595e
+  revision: e88aca3422c1dfb2f0c6d18ec8b09522dfc21fe9
+  branch: rm/sj-harvesting-from-http-header-auth
   specs:
     supplejack_common (0.0.2)
       actionpack (<= 4.1.4)
