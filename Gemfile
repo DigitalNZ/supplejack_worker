@@ -12,7 +12,7 @@ end
 
 source 'https://rubygems.org'
 
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git'
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', branch: 'rm/retry-harvest-urls'
 # gem 'supplejack_common', path: '/webspace/supplejack/common'
 #gem 'supplejack_common', path: ENV['SUPPLEJACK_COMMON']
 
