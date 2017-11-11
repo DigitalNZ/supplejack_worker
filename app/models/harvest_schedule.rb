@@ -39,7 +39,7 @@ class HarvestSchedule
 
   def allowed?
     parser = Parser.find(self.parser_id) rescue nil
-    return !!parser&.allow_full_and_flush
+    return !!parser.allow_full_and_flush
   end
 
   def self.one_offs_to_be_run
