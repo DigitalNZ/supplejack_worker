@@ -1,22 +1,23 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'spec_helper'
 
 describe EnrichmentWorker do
-
   class TestClass
     class_attribute :environment
-    def self.get_source_id; "nlnzcat"; end
+    def self.get_source_id
+      'nlnzcat'
+    end
   end
 
   let(:worker) { EnrichmentWorker.new }
-  let(:job) { create(:enrichment_job, environment: "production", enrichment: "ndha_rights") }
-  let(:parser) { double(:parser, enrichment_definitions: {ndha_rights: {type: "TapuhiRecords"}}, loader: double(:loader, parser_class: TestClass)).as_null_object }
+  let(:job) { create(:enrichment_job, environment: 'production', enrichment: 'ndha_rights') }
+  let(:parser) { double(:parser, enrichment_definitions: {ndha_rights: { required_for_active_record: true }}, loader: double(:loader, parser_class: TestClass)).as_null_object }
 
   before(:each) do
     job.stub(:parser) { parser }
@@ -29,11 +30,11 @@ describe EnrichmentWorker do
       worker.send(:setup_parser)
       job.stub_chain(:parser, :source, :source_id) { "nlnzcat" }
     end
-    
+
     it 'is a default priority job' do
       expect(worker.sidekiq_options_hash['queue']).to eq 'default'
     end
-        
+
     it "should set the @job_id as a string" do
       worker.perform(1234)
       worker.instance_variable_get("@job_id").should eq "1234"
@@ -70,12 +71,6 @@ describe EnrichmentWorker do
 
     it "should check the api update has finished" do
       worker.should_receive(:api_update_finished?)
-      worker.perform(1)
-    end
-
-    it "should call before and after on the Enrichment class" do
-      SupplejackCommon::TapuhiRecordsEnrichment.should_receive(:before).with("ndha_rights")
-      SupplejackCommon::TapuhiRecordsEnrichment.should_receive(:after).with("ndha_rights")
       worker.perform(1)
     end
   end
@@ -241,11 +236,6 @@ describe EnrichmentWorker do
     it "defaults to SupplejackCommon::Enrichment" do
       worker.send(:enrichment_class).should eq SupplejackCommon::Enrichment
     end
-
-    it "uses a the custom TapuhiRelationships enrichment" do
-      parser.stub(:enrichment_definitions) { {ndha_rights: {type: "TapuhiRecords"}} }
-      worker.send(:enrichment_class).should eq SupplejackCommon::TapuhiRecordsEnrichment
-    end
   end
 
   describe "#post_to_api" do
@@ -254,8 +244,8 @@ describe EnrichmentWorker do
 
     it "enqueues an ApiUpdate job with record_id, attributes (including job_id) and enrichment_job_id for each enriched record" do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/fragments.json", {"fragment" => {"category" => 'books', "job_id" => job.id.to_s}, "required_fragments" => []}, job.id.to_s)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/fragments.json", {"fragment" => {"title" => 'foo', "job_id" => job.id.to_s}, "required_fragments" => []}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/2/fragments.json", {"fragment" => {"category" => 'books', "job_id" => job.id.to_s}, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records/1/fragments.json", {"fragment" => {"title" => 'foo', "job_id" => job.id.to_s}, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
     end
 
     it "should increment the records count on the job" do
