@@ -1,27 +1,25 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 require 'spec_helper'
 
 describe CollectionStatistics do
+	let(:collection_statistics) { FactoryGirl.build(:collection_statistics, source_id: 'source_id', day: Date.today) }
 
-	let(:collection_statistics) { FactoryGirl.build(:collection_statistics, source_id: "tapuhi", day: Date.today) }
-  
-  context "validations" do
-
-  	it "should validate uniqueness of collection name" do
+  context 'validations' do
+  	it 'should validate uniqueness of collection name' do
   		collection_statistics.save
-  		collection_stats = FactoryGirl.build(:collection_statistics, source_id: "tapuhi")
+  		collection_stats = FactoryGirl.build(:collection_statistics, source_id: 'source_id')
   		collection_stats.should_not be_valid
   	end
 
     it "should validate the uniqueness of day" do
       collection_statistics.save
-      collection_stats = FactoryGirl.build(:collection_statistics, source_id: "tapuhi", day: Date.today)
+      collection_stats = FactoryGirl.build(:collection_statistics, source_id: 'source_id', day: Date.today)
       collection_stats.should_not be_valid
     end
 
@@ -31,7 +29,7 @@ describe CollectionStatistics do
   	end
 
     it "should validate the presence of day" do
-      collection_stats = FactoryGirl.build(:collection_statistics, source_id: "tapuhi")
+      collection_stats = FactoryGirl.build(:collection_statistics, source_id: 'source_id')
       collection_stats.should_not be_valid
     end
   end
