@@ -1,32 +1,32 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 require "spec_helper"
 
 describe EnrichmentJob do
-    
+
   let(:job) { FactoryGirl.create(:harvest_job, parser_id: "12345", version_id: "666", user_id: "1", environment: "staging") }
 
   context "validations" do
     it "should not be possible to have 2 active jobs for the same enrichment/parser/environment" do
-      job1 = FactoryGirl.create(:enrichment_job, enrichment: "tapuhi_relationships", parser_id: "333", environment: "staging", status: "active")
-      job2 = FactoryGirl.build(:enrichment_job, enrichment: "tapuhi_relationships", parser_id: "333", environment: "staging", status: "active")
+      job1 = FactoryGirl.create(:enrichment_job, enrichment: "duplicate_enrichment", parser_id: "333", environment: "staging", status: "active")
+      job2 = FactoryGirl.build(:enrichment_job, enrichment: "duplicate_enrichment", parser_id: "333", environment: "staging", status: "active")
       job2.should_not be_valid
     end
 
     it "should be possible to have 2 finished jobs for the same enrichment/parser/environment" do
-      job1 = FactoryGirl.create(:enrichment_job, enrichment: "tapuhi_relationships", parser_id: "333", environment: "staging", status: "finished")
-      job2 = FactoryGirl.build(:enrichment_job, enrichment: "tapuhi_relationships", parser_id: "333", environment: "staging", status: "finished")
+      job1 = FactoryGirl.create(:enrichment_job, enrichment: "duplicate_relationships", parser_id: "333", environment: "staging", status: "finished")
+      job2 = FactoryGirl.build(:enrichment_job, enrichment: "duplicate_relationships", parser_id: "333", environment: "staging", status: "finished")
       job2.should be_valid
     end
 
     it "should be possible to have 2 active jobs with the same parser/environment" do
-      job1 = FactoryGirl.create(:enrichment_job, enrichment: "tapuhi_relationships", parser_id: "333", environment: "staging", status: "active")
-      job2 = FactoryGirl.build(:enrichment_job, enrichment: "tapuhi_denormalization", parser_id: "333", environment: "staging", status: "active")
+      job1 = FactoryGirl.create(:enrichment_job, enrichment: "duplicate_relationships", parser_id: "333", environment: "staging", status: "active")
+      job2 = FactoryGirl.build(:enrichment_job, enrichment: "duplicate_denormalization", parser_id: "333", environment: "staging", status: "active")
       job2.should be_valid
     end
   end
@@ -53,7 +53,7 @@ describe EnrichmentJob do
   context "preview environment" do
 
     before {job.environment = "preview"}
-    
+
     it "does not enque a job after create" do
       EnrichmentWorker.should_not_receive(:perform_async)
       EnrichmentJob.create_from_harvest_job(job, :ndha_rights)

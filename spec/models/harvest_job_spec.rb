@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -77,8 +77,8 @@ describe HarvestJob do
 
   describe "#flush_old_records" do
     it "should post to the apis /harvester/records/flush action with source_id and the harvest_job_id" do
-      job.stub(:source_id) {'tapuhi'}
-      RestClient.should_receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: 'tapuhi', job_id: job.id, api_key: ENV['HARVESTER_API_KEY']})
+      job.stub(:source_id) { 'source_id' }
+      RestClient.should_receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", {source_id: 'source_id', job_id: job.id, api_key: ENV['HARVESTER_API_KEY']})
       job.flush_old_records
     end
   end
@@ -124,7 +124,7 @@ describe HarvestJob do
   end
 
   describe "#finish!" do
-    before do 
+    before do
       job.mode = 'full_and_flush'
     end
 

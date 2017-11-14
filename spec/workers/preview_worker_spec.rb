@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -259,15 +259,6 @@ describe PreviewWorker do
     it "should set the previews api_record" do
       preview.should_receive(:update_attribute).with(:api_record, record.attributes.to_json)
       worker.send(:enrich_record, record1)
-    end
-
-    context "enrichments with type set" do
-      before { job.stub_chain(:parser, :enrichment_definitions).and_return({tapuhi_groups: { type: "tapuhi_groups"}}) }
-
-      it "should not run enrichments that do have types" do
-        EnrichmentJob.should_not_receive(:create_from_harvest_job).with(job, :tapuhi_groups) { enrichment_job }
-        worker.send(:enrich_record, record1)
-      end
     end
   end
 
