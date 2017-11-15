@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -28,7 +28,7 @@ describe HarvestWorker do
       LoadedParser::Staging::NatlibPages.stub(:records) { [record] }
       worker.stub(:api_update_finished?) { true }
       worker.stub(:process_record)
-      job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
+      job.stub_chain(:parser, :source, :source_id) { 'source_id' }
     end
 
     it 'is a default priority job' do
@@ -68,10 +68,10 @@ describe HarvestWorker do
     context "record" do
       before do
         record.stub(:deletable?) { false }
-        job.stub_chain(:parser, :source, :source_id) {'tapuhi'}
+        job.stub_chain(:parser, :source, :source_id) { 'source_id' }
         job.stub_chain(:parser, :data_type) { 'record' }
         job.stub_chain(:parser, :record?) { true }
-        worker.instance_variable_set(:@source_id, 'tapuhi')
+        worker.instance_variable_set(:@source_id, 'source_id')
         worker.stub(:post_to_api)
       end
 
@@ -81,7 +81,7 @@ describe HarvestWorker do
       end
 
       it "posts the record to the api with source_id" do
-        worker.should_receive(:post_to_api).with(hash_including({source_id: 'tapuhi' }))
+        worker.should_receive(:post_to_api).with(hash_including({source_id: 'source_id' }))
         worker.process_record(record, job)
       end
 
@@ -137,12 +137,12 @@ describe HarvestWorker do
       before do
         record.stub(:deletable?) { false }
         job.stub(:parser) { parser }
-        worker.instance_variable_set(:@source_id, 'tapuhi')
+        worker.instance_variable_set(:@source_id, 'source_id')
         worker.stub(:post_to_api)
       end
 
       it "should determine whether to create or match a concept" do
-        worker.should_receive(:create_concept?).with(hash_including({label: ["Colin John McCahon"], internal_identifier: ["record123"], match_concepts: :create_or_match, source_id: 'tapuhi', data_type: 'concept'}))
+        worker.should_receive(:create_concept?).with(hash_including({label: ["Colin John McCahon"], internal_identifier: ["record123"], match_concepts: :create_or_match, source_id: 'source_id', data_type: 'concept'}))
         worker.process_record(record, job)
       end
     end

@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -10,10 +10,10 @@ require "spec_helper"
 describe SourceCheckWorker do
 
   let(:worker) { SourceCheckWorker.new }
-  let(:source) { double(:source, name: 'tapuhi', source_id: 'tapuhi', _id: 'abc123')}
+  let(:source) { double(:source, name: 'name', source_id: 'source_id', _id: 'abc123')}
 
   before(:each) do
-    worker.instance_variable_set(:@primary_collection,'TAPUHI')
+    worker.instance_variable_set(:@primary_collection, 'NAME')
     worker.instance_variable_set(:@source, source)
   end
 
@@ -32,18 +32,18 @@ describe SourceCheckWorker do
     it "should retrieve landing urls from the API to check" do
       worker.stub(:up?) {true}
       worker.should_receive(:source_records) { @records }
-      worker.perform('TAPUHI')
+      worker.perform('NAME')
     end
 
     it "should check that the records are up" do
       worker.stub(:source_records) { @records }
       worker.should_receive(:up?).with('http://google.com/1')
       worker.should_receive(:up?).with('http://google.com/2')
-      worker.perform('TAPUHI')
+      worker.perform('NAME')
     end
 
     context "the collection is active and all links are down" do
-      before do 
+      before do
         worker.stub(:source_active?) {true}
         worker.stub(:source_records) { @records }
         worker.stub(:up?).with('http://google.com/1') {false}
@@ -52,12 +52,12 @@ describe SourceCheckWorker do
 
       it "should add the collection to the blacklist" do
         worker.should_receive(:suppress_collection)
-        worker.perform('TAPUHI')
+        worker.perform('NAME')
       end
     end
 
     context "the collection is not active and any of the links are up" do
-      before do 
+      before do
         worker.stub(:source_active?) {false}
         worker.stub(:source_records) { @records }
         worker.stub(:up?).with('http://google.com/1') {true}
@@ -66,7 +66,7 @@ describe SourceCheckWorker do
 
       it "should remove the collection from the blacklist" do
         worker.should_receive(:activate_collection)
-        worker.perform('TAPUHI',)
+        worker.perform('NAME')
       end
     end
   end
@@ -128,7 +128,7 @@ describe SourceCheckWorker do
         worker.send(:up?,'http://google.com').should be_false
       end
     end
-    
+
     it "gets the url and validates it" do
       worker.should_receive(:get).with('http://blah.com') { response }
       worker.should_receive(:validate_link_check_rule).with(response, 'abc123') { true }
@@ -140,7 +140,7 @@ describe SourceCheckWorker do
 
     before do
       RestClient.stub(:put)
-      CollectionMailer.stub(:collection_status).with("tapuhi", "down")
+      CollectionMailer.stub(:collection_status).with("name", "down")
     end
 
     it "should suppress the collection" do
@@ -150,7 +150,7 @@ describe SourceCheckWorker do
 
     it "should send an email that the collection is down" do
       worker.send(:suppress_collection)
-      expect(CollectionMailer).to have_received(:collection_status).with("tapuhi", "down")
+      expect(CollectionMailer).to have_received(:collection_status).with('name', 'down')
     end
   end
 
@@ -158,7 +158,7 @@ describe SourceCheckWorker do
 
     before do
       RestClient.stub(:put)
-      CollectionMailer.stub(:collection_status).with("tapuhi", "up")
+      CollectionMailer.stub(:collection_status).with('name', 'up')
     end
 
     it "should suppress the collection" do
@@ -168,7 +168,7 @@ describe SourceCheckWorker do
 
     it "should send an email that the collection is down" do
       worker.send(:activate_collection)
-      expect(CollectionMailer).to have_received(:collection_status).with("tapuhi", "up")
+      expect(CollectionMailer).to have_received(:collection_status).with('name', 'up')
     end
   end
 end
