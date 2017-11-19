@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -11,10 +11,10 @@ class HarvestSchedule
   include ActiveModel::SerializerSupport
 
   has_many :harvest_jobs
-  
+
   index status: 1
 
-  field :parser_id,       type: String  
+  field :parser_id,       type: String
   field :start_time,      type: DateTime
   field :cron,            type: String
   field :frequency,       type: String
@@ -36,11 +36,6 @@ class HarvestSchedule
 
   scope :one_off, -> { where(recurrent: false).exists(last_run_at: false) }
   scope :recurrent, -> { where(recurrent: true) }
-
-  def allowed?
-    parser = Parser.find(self.parser_id) rescue nil
-    return !!parser&.allow_full_and_flush
-  end
 
   def self.one_offs_to_be_run
     self.one_off.lte(start_time: Time.now).gte(start_time: Time.now - 6.minutes)
@@ -84,8 +79,6 @@ class HarvestSchedule
   end
 
   def create_job
-    return unless allowed?
-
     if active?
       harvest_jobs.create(parser_id: parser_id,
                           environment: environment,
