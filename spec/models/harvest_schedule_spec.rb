@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -17,7 +17,7 @@ describe HarvestSchedule do
       s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "222", status: 'active')
       s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: "111", status: 'paused')
       s3 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: "333", status: 'inactive')
-    
+
       HarvestSchedule.all.should eq [s1, s2]
     end
   end
@@ -216,24 +216,6 @@ describe HarvestSchedule do
       schedule.reload
       job = schedule.harvest_jobs.last
       job.enrichments.should eq ["ndha_rights"]
-    end
-  end
-
-  describe "#allowed" do
-    let(:schedule) { FactoryGirl.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
-    let(:parser) { double(:parser, parser_id: "1234", allow_full_and_flush: true) }
-    
-    before {
-      Parser.stub(:find) { parser }
-    }  
-
-    it 'returns false if full and flush is not allowed' do
-      parser.stub(:allow_full_and_flush) { false }
-      expect(schedule.allowed?).to be_false
-    end
-
-    it 'returns true if full and flush is allowed' do
-      expect(schedule.allowed?).to be_true
     end
   end
 end
