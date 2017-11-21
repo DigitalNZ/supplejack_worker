@@ -14,7 +14,7 @@ class HarvestJobsController < ApplicationController
     response.headers["X-total"] = @harvest_jobs.total_count.to_s
     response.headers["X-offset"] = @harvest_jobs.offset_value.to_s
     response.headers["X-limit"] = @harvest_jobs.limit_value.to_s
-    render json: @harvest_jobs, serializer: ActiveModel::ArraySerializer
+    render json: @harvest_jobs
   end
 
   def show

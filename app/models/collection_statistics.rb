@@ -36,7 +36,7 @@ class CollectionStatistics
   def add_record!(record_id, collection, landing_url)
     return unless self.class.record_id_collection_whitelist.include? collection
     add_record_item(record_id, collection, landing_url)
-    self.save
+    self.save!
   end
 
   private
