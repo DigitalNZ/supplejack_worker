@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -48,15 +50,15 @@ describe ApiDeleteWorker do
       end
 
       it 'triggers an Airbrake notification' do
-        described_class.within_sidekiq_retries_exhausted_block {
+        described_class.within_sidekiq_retries_exhausted_block do
           expect(Airbrake).to receive(:notify)
-        }
+        end
       end
 
       it 'creates a new instance of FailedRecord' do
-        described_class.within_sidekiq_retries_exhausted_block {
+        described_class.within_sidekiq_retries_exhausted_block do
           expect(FailedRecord).to receive(:new).with(exception_class: 'ApiDeleteWorker', message: 'An error occured', backtrace: nil, raw_data: '[]')
-        }
+        end
       end
 
       it 'raises an exception' do

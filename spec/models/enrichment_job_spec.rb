@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -8,7 +10,6 @@
 require 'rails_helper'
 
 describe EnrichmentJob do
-
   let(:job) { FactoryBot.create(:harvest_job, parser_id: '12345', version_id: '666', user_id: '1', environment: 'staging') }
 
   context 'validations' do
@@ -32,7 +33,6 @@ describe EnrichmentJob do
   end
 
   describe '.create_from_harvest_job' do
-
     subject { EnrichmentJob.create_from_harvest_job(job, :ndha_rights) }
 
     it 'inherits values from harvest job' do
@@ -53,8 +53,7 @@ describe EnrichmentJob do
   end
 
   context 'preview environment' do
-
-    before {job.environment = 'preview'}
+    before { job.environment = 'preview' }
 
     it 'does not enque a job after create' do
       EnrichmentWorker.should_not_receive(:perform_async)

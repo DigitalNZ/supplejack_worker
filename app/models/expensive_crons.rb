@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014,
 # New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.

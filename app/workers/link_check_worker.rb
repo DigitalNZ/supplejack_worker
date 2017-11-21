@@ -1,7 +1,9 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# frozen_string_literal: true
+
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -11,9 +13,9 @@ class LinkCheckWorker
 
   sidekiq_options retry: 100, queue: 'low'
 
-  sidekiq_retry_in { |count| 2 * Random.rand(1..5) }
+  sidekiq_retry_in { |_count| 2 * Random.rand(1..5) }
 
-  def perform(link_check_job_id, strike=0)
+  def perform(link_check_job_id, strike = 0)
     Sidekiq.logger.info "Starting LinkCheckWorker for #{link_check_job_id} with strike #{strike}"
     @link_check_job_id = link_check_job_id
     begin
@@ -50,11 +52,15 @@ class LinkCheckWorker
   end
 
   def collection_stats
-    @collection_stats ||= CollectionStatistics.find_or_create_by({day: Date.today, source_id: link_check_job.source_id})
+    @collection_stats ||= CollectionStatistics.find_or_create_by(day: Date.today, source_id: link_check_job.source_id)
   end
 
   def link_check_job
-    @link_check_job ||= LinkCheckJob.find(@link_check_job_id) rescue nil
+    @link_check_job ||= begin
+                          LinkCheckJob.find(@link_check_job_id)
+                        rescue
+                          nil
+                        end
   end
 
   def rules
@@ -74,7 +80,7 @@ class LinkCheckWorker
         end
       else
         Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
-        raise ThrottleLimitError.new("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
+        raise ThrottleLimitError, "Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}"
       end
     end
   end
@@ -91,11 +97,9 @@ class LinkCheckWorker
   end
 
   def set_record_status(record_id, status)
-    begin
-      RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", { record: { status: status }, api_key: ENV['HARVESTER_API_KEY'] })
-      add_record_stats(record_id, status)
-    rescue StandardError => e
-      Sidekiq.logger.warn("Record not found when updating status in LinkChecking. Ignoring.")
-    end
+    RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", record: { status: status }, api_key: ENV['HARVESTER_API_KEY'])
+    add_record_stats(record_id, status)
+  rescue StandardError => e
+    Sidekiq.logger.warn('Record not found when updating status in LinkChecking. Ignoring.')
   end
 end

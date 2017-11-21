@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'resolv-replace'
 
 Sidekiq.configure_server do |config|
