@@ -18,7 +18,6 @@ development:
   AIRBRAKE_API_KEY: "anc123"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
-  WORKER_KEY: workerkey
 
 test:
   API_HOST: "http://127.0.0.1:3000"
@@ -30,7 +29,6 @@ test:
   AIRBRAKE_API_KEY: "anc123"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
-  WORKER_KEY: workerkey
 
 staging:
   API_HOST: "http://api.harvester.org"
@@ -46,7 +44,6 @@ staging:
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
   API_MONGOID_HOSTS: "localhost:27017"
-  WORKER_KEY: workerkey
 
 production:
   API_HOST: "http://api.harvester.org"
@@ -62,4 +59,3 @@ production:
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
   API_MONGOID_HOSTS: "localhost:27017"
-  WORKER_KEY: workerkey
