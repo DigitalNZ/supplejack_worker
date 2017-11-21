@@ -45,7 +45,7 @@ class AbstractJob
   scope :disposable, -> { lt(created_at: Time.now - 3.months) }
 
   def self.search(params)
-    search_params = params.to_h.try(:symbolize_keys) || {}
+    search_params = params.try(:dup).try(:symbolize_keys) || {}
     valid_fields = %i[status environment parser_id]
 
     page = search_params.delete(:page) || 1
@@ -118,7 +118,7 @@ class AbstractJob
         self.end_time = Time.now
         calculate_throughput
         calculate_errors_count
-        save!
+        save
       end
 
       transitions to: :finished
@@ -129,7 +129,7 @@ class AbstractJob
         self.start_time = Time.now if start_time.blank?
         self.end_time = Time.now
         calculate_errors_count
-        save!
+        save
       end
 
       transitions to: :failed
@@ -140,7 +140,7 @@ class AbstractJob
         self.start_time = Time.now if start_time.blank?
         self.end_time = Time.now
         calculate_errors_count
-        save!
+        save
       end
 
       transitions to: :stopped
@@ -194,11 +194,11 @@ class AbstractJob
 
   def increment_records_count!
     self.records_count += 1
-    self.save!
+    save!
   end
 
   def increment_processed_count!
     self.processed_count += 1
-    self.save!
+    save!
   end
 end

@@ -8,7 +8,6 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 class AbstractJobsController < ApplicationController
-
   before_action :authenticate_user!
 
   def index

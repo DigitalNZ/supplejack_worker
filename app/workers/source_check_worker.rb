@@ -26,11 +26,11 @@ class SourceCheckWorker
   private
 
   def source_records
-    JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }))
+    JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/sources/#{source._id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }))
   end
 
   def source_active?
-    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/sources/#{source.id}", params: { api_key: ENV['HARVESTER_API_KEY'] }))
+    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/sources/#{source._id}", params: { api_key: ENV['HARVESTER_API_KEY'] }))
     collection['status'] == 'active'
   end
 
@@ -44,17 +44,17 @@ class SourceCheckWorker
     return true if landing_url.nil?
 
     if response = get(landing_url)
-      validate_link_check_rule(response, source.id)
+      validate_link_check_rule(response, source._id)
     end
   end
 
   def suppress_collection
-    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
+    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source._id}", source: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
     CollectionMailer.collection_status(source.name, 'down')
   end
 
   def activate_collection
-    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active' }, api_key: ENV['HARVESTER_API_KEY'])
+    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source._id}", source: { status: 'active' }, api_key: ENV['HARVESTER_API_KEY'])
     CollectionMailer.collection_status(source.name, 'up')
   end
 end

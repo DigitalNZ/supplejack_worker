@@ -103,7 +103,7 @@ describe EnrichmentWorker do
     end
 
     context 'record_id is set' do
-      before { job.stub(:record_id) {'abc123'} }
+      before { job.stub(:record_id) { 'abc123' } }
 
       it 'should fetch a specific record' do
         SupplejackApi::Record.should_receive(:where).with(record_id: job.record_id, 'fragments.source_id' => 'nlnzcat') { query }
@@ -111,7 +111,6 @@ describe EnrichmentWorker do
       end
 
       context 'preview environment' do
-
         before { job.stub(:preview?) { true } }
 
         it 'should fetch a specific record from the preview_records collection' do
@@ -144,7 +143,6 @@ describe EnrichmentWorker do
     end
 
     context 'enrichable' do
-
       before { enrichment.stub(:enrichable?) { true } }
 
       it 'should set the enrichment attributes' do
@@ -170,7 +168,6 @@ describe EnrichmentWorker do
     end
 
     context 'not enrichable' do
-
       before { enrichment.stub(:enrichable?) { false } }
 
       it 'should not set the enrichment attributes' do
@@ -213,7 +210,7 @@ describe EnrichmentWorker do
   end
 
   describe '#enrichment_options' do
-    let(:block) { Proc.new { 'Hi' } }
+    let(:block) { proc { 'Hi' } }
 
     before(:each) do
       parser.stub(:enrichment_definitions) { { ndha_rights: { block: block } } }
@@ -227,10 +224,10 @@ describe EnrichmentWorker do
   end
 
   describe '#enrichment_class' do
-    let(:block) { Proc.new { 'Hi' } }
+    let(:block) { proc { 'Hi' } }
 
     before(:each) do
-      parser.stub(:enrichment_definitions) { {ndha_rights: {block: block}} }
+      parser.stub(:enrichment_definitions) { { ndha_rights: { block: block } } }
       job.enrichment = 'ndha_rights'
       worker.send(:setup_parser)
     end
@@ -246,8 +243,8 @@ describe EnrichmentWorker do
 
     it 'enqueues an ApiUpdate job with record_id, attributes (including job_id) and enrichment_job_id for each enriched record' do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/2/fragments.json', {'fragment' => {'category' => 'books', 'job_id' => job.id.to_s}, 'required_fragments' => ['ndha_rights']}, job.id.to_s)
-      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', {'fragment' => {'title' => 'foo', 'job_id' => job.id.to_s}, 'required_fragments' => ['ndha_rights']}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/2/fragments.json', { 'fragment' => { 'category' => 'books', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', { 'fragment' => { 'title' => 'foo', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
     end
 
     it 'should increment the records count on the job' do
@@ -259,7 +256,7 @@ describe EnrichmentWorker do
       it 'should send the required enricments to the api' do
         job.stub(:required_enrichments) { ['ndha_rights'] }
         worker.send(:post_to_api, enrichment)
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', {'fragment' => {'title' => 'foo', 'job_id' => job.id.to_s}, 'required_fragments' => ['ndha_rights']}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', { 'fragment' => { 'title' => 'foo', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
       end
     end
   end

@@ -11,8 +11,6 @@ require 'rails_helper'
 
 describe CollectionStatisticsController do
   let(:collection_statistic) { double(:collection_statistics) }
-
-  let(:collection_statistic) { double(:collection_statistics) }
   let(:user) { mock_model(User).as_null_object }
 
   before(:each) do
@@ -29,7 +27,7 @@ describe CollectionStatisticsController do
 
     it 'should get all of the collection statistics dates' do
       CollectionStatistics.should_receive(:where).with('day' => Date.today.to_s) { [collection_statistic] }
-      get :index, params: { collection_statistics: {day: Date.today.to_s} }
+      get :index, params: { collection_statistics: { day: Date.today.to_s } }
       assigns(:collection_statistics).should eq [collection_statistic]
     end
   end

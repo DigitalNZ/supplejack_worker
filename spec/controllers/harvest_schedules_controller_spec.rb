@@ -51,7 +51,7 @@ describe HarvestSchedulesController do
     it 'creates a new harvest schedule' do
       params = ActionController::Parameters.new(cron: '* * * * *').permit!
       HarvestSchedule.should_receive(:create).with(params) { schedule }
-      post :create, params: { harvest_schedule: {cron: '* * * * *'} }
+      post :create, params: { harvest_schedule: { cron: '* * * * *' } }
       expect(assigns(:harvest_schedule)).to eq schedule
     end
   end
@@ -63,14 +63,14 @@ describe HarvestSchedulesController do
 
     it 'finds the harvest schedule' do
       HarvestSchedule.should_receive(:find).with('1') { schedule }
-      put :update, params: { id: 1 , harvest_schedule: {cron: '* * * * *'}}
+      put :update, params: { id: 1, harvest_schedule: { cron: '* * * * *' } }
       expect(assigns(:harvest_schedule)).to eq schedule
     end
 
     it 'should update the attributes' do
       params = ActionController::Parameters.new(cron: '* * * * *').permit!
       schedule.should_receive(:update_attributes).with(params)
-      put :update, params: { id: 1 , harvest_schedule: {cron: '* * * * *'}}
+      put :update, params: { id: 1, harvest_schedule: { cron: '* * * * *' } }
     end
   end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -16,7 +18,7 @@ describe EnrichmentJobsController do
 
   describe 'POST create' do
     it 'initializes a new enrichment job' do
-      post :create, params: { enrichment_job: {strategy: 'xml', file_name: 'youtube.rb'}, format: 'json' }
+      post :create, params: { enrichment_job: { strategy: 'xml', file_name: 'youtube.rb' }, format: 'json' }
       expect(assigns(:enrichment_job)).to be_a_new(EnrichmentJob)
       expect(assigns(:enrichment_job).strategy).to eq 'xml'
       expect(assigns(:enrichment_job).file_name).to eq 'youtube.rb'
@@ -24,7 +26,7 @@ describe EnrichmentJobsController do
 
     it 'should save the enrichment job' do
       EnrichmentJob.any_instance.should_receive(:save)
-      post :create, params: { enrichment_job: {strategy: 'xml', file_name: 'youtube.rb'}, format: 'json' }
+      post :create, params: { enrichment_job: { strategy: 'xml', file_name: 'youtube.rb' }, format: 'json' }
       expect(assigns(:enrichment_job).strategy).to eq 'xml'
       expect(assigns(:enrichment_job).file_name).to eq 'youtube.rb'
     end
@@ -53,10 +55,5 @@ describe EnrichmentJobsController do
       job.should_receive(:update_attributes).with(params)
       put :update, params: { id: 1, enrichment_job: { stop: true } }, format: 'json'
     end
-  end
-
-  it 'prevent access if worker_key is not provided' do
-    get :show, params: { id: 1 }, format: 'json'
-    expect(response.status).to eq(401)
   end
 end

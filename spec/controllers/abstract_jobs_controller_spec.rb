@@ -35,9 +35,4 @@ describe AbstractJobsController do
       response.headers['X-limit'].should eq '20'
     end
   end
-
-  it 'prevent access if worker_key is not provided' do
-    get :index, params: { status: 'active' }
-    expect(response.status).to eq(401)
-  end
 end

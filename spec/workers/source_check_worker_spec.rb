@@ -11,7 +11,7 @@ require 'rails_helper'
 
 describe SourceCheckWorker do
   let(:worker) { SourceCheckWorker.new }
-  let(:source) { double(:source, name: 'name', source_id: 'source_id', id: 'abc123') }
+  let(:source) { double(:source, name: 'name', source_id: 'source_id', _id: 'abc123') }
 
   before(:each) do
     worker.instance_variable_set(:@primary_collection, 'NAME')
@@ -81,7 +81,7 @@ describe SourceCheckWorker do
     end
 
     it 'should retrieve landing urls from the API to check' do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }) { response }
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }) { response }
       worker.send(:source_records)
     end
   end
@@ -92,11 +92,11 @@ describe SourceCheckWorker do
     end
 
     it 'should retrieve the collections status' do
-      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", params: { api_key: ENV['HARVESTER_API_KEY'] })
+      RestClient.should_receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}", params: { api_key: ENV['HARVESTER_API_KEY'] })
       worker.send(:source_active?)
     end
 
-    it "should return true if the collection is active" do
+    it 'should return true if the collection is active' do
       worker.send(:source_active?).should be_truthy
     end
 
@@ -123,15 +123,15 @@ describe SourceCheckWorker do
     context 'get returns nil' do
       before { worker.stub(:get) { nil } }
 
-      it "returns false" do
-        worker.send(:up?,'http://google.com').should be_falsey
+      it 'returns false' do
+        worker.send(:up?, 'http://google.com').should be_falsey
       end
     end
 
     it 'gets the url and validates it' do
       worker.should_receive(:get).with('http://blah.com') { response }
       worker.should_receive(:validate_link_check_rule).with(response, 'abc123') { true }
-      worker.send(:up?,'http://blah.com').should be_truthy
+      worker.send(:up?, 'http://blah.com').should be_truthy
     end
   end
 
@@ -142,7 +142,7 @@ describe SourceCheckWorker do
     end
 
     it 'should suppress the collection' do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}", source: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:suppress_collection)
     end
 
@@ -159,7 +159,7 @@ describe SourceCheckWorker do
     end
 
     it 'should suppress the collection' do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active' }, api_key: ENV['HARVESTER_API_KEY'])
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source._id}", source: { status: 'active' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:activate_collection)
     end
 

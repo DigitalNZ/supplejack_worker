@@ -8,8 +8,6 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 class LinkCheckRulesController < ApplicationController
-  before_action :authenticate_user!
-
   def index
     @link_check_rules = params[:link_check_rule].present? ? LinkCheckRule.where(link_check_rule_params) : LinkCheckRule.all
     render json: @link_check_rules

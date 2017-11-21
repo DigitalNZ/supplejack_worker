@@ -12,8 +12,6 @@ require 'rails_helper'
 describe AbstractJob do
   let(:job) { create(:abstract_job, parser_id: '12345', version_id: '666') }
 
-  let(:job) { create(:abstract_job, parser_id: '12345', version_id: '666') }
-
   describe '.search' do
     let!(:active_job) { create(:abstract_job, status: 'active') }
 
@@ -45,7 +43,7 @@ describe AbstractJob do
     it 'should find all harvest jobs either in staging or production' do
       job1 = create(:abstract_job, parser_id: '333', environment: 'staging', start_time: Time.now)
       job2 = create(:abstract_job, parser_id: '334', environment: 'production', start_time: Time.now + 2.seconds)
-      jobs = AbstractJob.search('environment' => ['staging', 'production']).to_a
+      jobs = AbstractJob.search('environment' => %w[staging production]).to_a
       jobs.should include(job2)
       jobs.should include(job1)
     end
@@ -82,7 +80,7 @@ describe AbstractJob do
 
     context 'with version_id' do
       it 'finds the parser by id' do
-        ParserVersion.should_receive(:find).with('666', params: {parser_id: '12345'})
+        ParserVersion.should_receive(:find).with('666', params: { parser_id: '12345' })
         job.parser
       end
     end
@@ -94,7 +92,7 @@ describe AbstractJob do
       end
 
       it 'finds the current parser version for the environment' do
-        ParserVersion.should_receive(:find).with(:one, from: :current, params: {parser_id: '12345', environment: 'staging'}) { version }
+        ParserVersion.should_receive(:find).with(:one, from: :current, params: { parser_id: '12345', environment: 'staging' }) { version }
         job.parser
       end
 
@@ -105,11 +103,11 @@ describe AbstractJob do
       end
 
       context 'the environment is preview and parser_code is present' do
-        let(:parser) {double(:parser).as_null_object}
+        let(:parser) { double(:parser).as_null_object }
         before(:each) do
           job.environment = 'preview'
           job.parser_code = 'new code'
-          Parser.stub(:find) {parser}
+          Parser.stub(:find) { parser }
         end
 
         it 'finds the parser by id' do
@@ -139,7 +137,7 @@ describe AbstractJob do
 
   describe '#required_enrichments' do
     it 'should return an array of enrichments with required: true' do
-      job.stub_chain(:parser, :enrichment_definitions).and_return({ndha_rights: {required_for_active_record: true}, thumbnails: {} })
+      job.stub_chain(:parser, :enrichment_definitions).and_return(ndha_rights: { required_for_active_record: true }, thumbnails: {})
       job.required_enrichments.should eq [:ndha_rights]
     end
   end
@@ -337,11 +335,10 @@ describe AbstractJob do
   end
 
   describe '.jobs_since' do
-
-    let!(:finished_job) { create(:abstract_job, status: 'finished', start_time: (DateTime.now - 1), environment: 'staging' ) }
+    let!(:finished_job) { create(:abstract_job, status: 'finished', start_time: (DateTime.now - 1), environment: 'staging') }
 
     it 'returns a count of harvest jobs in the last 2 days' do
-      old_finished_job = create(:abstract_job, status: 'finished', start_time: (DateTime.now - 3), environment: 'staging' )
+      old_finished_job = create(:abstract_job, status: 'finished', start_time: (DateTime.now - 3), environment: 'staging')
       since = DateTime.now - 2
       AbstractJob.jobs_since('datetime' => since.to_s, 'environment' => 'staging', 'status' => 'finished').should eq [finished_job]
     end

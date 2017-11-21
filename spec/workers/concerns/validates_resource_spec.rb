@@ -67,23 +67,23 @@ describe ValidatesResource do
     end
   end
 
-  describe "validate_response_codes" do
-    it "should return false when the response code matches the string" do
+  describe 'validate_response_codes' do
+    it 'should return false when the response code matches the string' do
       worker.send(:validate_response_codes, 300, '300').should be_falsey
     end
 
-    it "should return false when the response code matches the regex" do
+    it 'should return false when the response code matches the regex' do
       worker.send(:validate_response_codes, 201, '300, 2..').should be_falsey
       worker.send(:validate_response_codes, 300, '300, 2..').should be_falsey
     end
 
-    it "should return true if response code blacklist is nil" do
+    it 'should return true if response code blacklist is nil' do
       worker.send(:validate_response_codes, 201, nil).should be_truthy
     end
   end
 
-  describe "#validate_xpath" do
-    it "should return false when the xpath expression matches" do
+  describe '#validate_xpath' do
+    it 'should return false when the xpath expression matches' do
       worker.send(:validate_xpath, '//p[@class="error"]', '<p class="error">Page Not Found</p>').should be_falsey
     end
 
@@ -91,12 +91,12 @@ describe ValidatesResource do
       worker.send(:validate_xpath, '//p[@class="error"]', '<a class="large">Title</a>').should be_truthy
     end
 
-    it "should return true when there is no xpath" do
+    it 'should return true when there is no xpath' do
       worker.send(:validate_xpath, nil, '<a class="large">Title</a>').should be_truthy
     end
 
-    it "should return true when there is no xpath" do
-      worker.send(:validate_xpath, "", '<a class="large">Title</a>').should be_truthy
+    it 'should return true when there is no xpath' do
+      worker.send(:validate_xpath, '', '<a class="large">Title</a>').should be_truthy
     end
   end
 

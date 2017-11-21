@@ -10,7 +10,6 @@
 require 'rails_helper'
 
 describe CronGenerator do
-
   let(:cron) { CronGenerator.new('weekly') }
 
   describe '#initialize' do

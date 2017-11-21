@@ -27,7 +27,7 @@ describe EnqueueSourceChecksWorker do
 
     it 'should enqueue a source check worker for each source to check' do
       worker.perform
-      ["1", "2"].each do |source|
+      %w[1 2].each do |source|
         expect(SourceCheckWorker).to have_enqueued_sidekiq_job(source)
       end
     end

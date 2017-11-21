@@ -35,7 +35,7 @@ describe LinkCheckRulesController do
 
   describe 'POST create' do
     it 'should make a new collection rule and assign it' do
-      params = ActionController::Parameters.new('collection_title' => 'collection_title', 'status_codes' => '203,205', source_id: 'source_id' ).permit!
+      params = ActionController::Parameters.new('collection_title' => 'collection_title', 'status_codes' => '203,205', source_id: 'source_id').permit!
       LinkCheckRule.should_receive(:create!).with(params) { link_check_rule }
       post :create, params: { link_check_rule: { collection_title: 'collection_title', status_codes: '203,205', source_id: 'source_id' } }
       assigns(:link_check_rule) { link_check_rule }
@@ -51,7 +51,7 @@ describe LinkCheckRulesController do
     it 'updates all the attributes' do
       LinkCheckRule.stub(:find) { link_check_rule }
       link_check_rule.should_receive(:update_attributes).with('collection_title' => 'collection_title', 'status_codes' => '203,205')
-      put :update, params: { id: link_check_rule.id, link_check_rule: { collection_title: 'collection_title', status_codes: '203,205' }}
+      put :update, params: { id: link_check_rule.id, link_check_rule: { collection_title: 'collection_title', status_codes: '203,205' } }
     end
 
   describe 'DELETE destroy' do

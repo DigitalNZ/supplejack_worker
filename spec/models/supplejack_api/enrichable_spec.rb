@@ -10,7 +10,6 @@
 require 'rails_helper'
 
 describe SupplejackApi::Enrichable do
-
   let(:record) { SupplejackApi::Record.new }
   let!(:primary_fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 0, is_part_of: ['tap:12345'], relation: ['tap:123456'], authorities: []) }
   let(:fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 1) }
@@ -34,7 +33,7 @@ describe SupplejackApi::Enrichable do
 
   describe '#parent_tap_id' do
     it 'should extract the tap_id from the is_part_of' do
-      record.parent_tap_id.should eq 12345
+      record.parent_tap_id.should eq 12_345
     end
 
     it 'should return relation if there is no is_part_of' do
