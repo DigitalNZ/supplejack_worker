@@ -23,7 +23,7 @@ gem 'puma', '~> 3.7'
 gem 'rails', '~> 5.1.4'
 gem 'responders'
 gem 'sidekiq'
-gem 'supplejack_common', path: '../supplejack_common'
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common', branch: 'gm/rails-5.1'
 gem 'whenever', require: false
 
 group :test do
