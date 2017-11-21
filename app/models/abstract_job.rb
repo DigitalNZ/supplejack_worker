@@ -194,11 +194,11 @@ class AbstractJob
 
   def increment_records_count!
     self.records_count += 1
-    save!
+    self.save!
   end
 
   def increment_processed_count!
     self.processed_count += 1
-    save!
+    self.save!
   end
 end

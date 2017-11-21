@@ -5,44 +5,41 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-source 'https://rubygems.org'
-
-gem 'rails', '~> 5.1.4'
-gem 'puma', '~> 3.7'
-
-gem 'supplejack_common', path: '../supplejack_common'
-gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
-gem 'active_model_serializers', '~> 0.9.0'
-gem 'mongoid'
-gem 'mongoid_paranoia'
+gem 'aasm'
+gem 'active_model_serializers', '~> 0.10.7'
+gem 'activeresource', require: 'active_resource'
+gem 'airbrake'
+gem 'chronic'
 gem 'figaro'
 gem 'kaminari'
 gem 'kaminari-mongoid'
-gem 'aasm'
-gem 'airbrake'
+gem 'mongoid'
+gem 'mongoid_paranoia'
+gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
 gem 'parse-cron'
-gem 'sidekiq'
+gem 'puma', '~> 3.7'
+gem 'rails', '~> 5.1.4'
 gem 'responders'
-gem 'chronic'
-gem 'activeresource', require: 'active_resource'
+gem 'sidekiq'
+gem 'supplejack_common', path: '../supplejack_common'
 gem 'whenever', require: false
 
 group :test do
-  gem 'rspec-rails', '~> 3.6'
+  gem 'cucumber-rails'
+  gem 'database_cleaner'
+  gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'rspec-activemodel-mocks'
-  gem 'factory_bot_rails'
-  gem 'database_cleaner'
-  gem 'cucumber-rails'
-  gem 'timecop'
+  gem 'rspec-rails', '~> 3.6'
   gem 'rspec-sidekiq'
+  gem 'timecop'
 end
 
 group :development do
-  gem 'pry'
-  gem 'pry-byebug'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'pry'
+  gem 'pry-byebug'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
