@@ -1,7 +1,9 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# frozen_string_literal: true
+
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -9,7 +11,7 @@ module SupplejackApi
   module Enrichable
     extend ActiveSupport::Concern
 
-    included do 
+    included do
       include Mongoid::Document
       include Mongoid::Attributes::Dynamic
 
@@ -20,7 +22,7 @@ module SupplejackApi
     end
 
     def primary
-      self.fragments.where(priority: 0).first
+      fragments.where(priority: 0).first
     end
 
     def parent_tap_id
@@ -32,7 +34,7 @@ module SupplejackApi
     end
 
     def authority_taps(name)
-      primary.authorities.map {|authority| authority.authority_id if authority.name == name.to_s }.compact
+      primary.authorities.map { |authority| authority.authority_id if authority.name == name.to_s }.compact
     end
 
     def authorities
@@ -52,11 +54,11 @@ module SupplejackApi
     private
 
     def sorted_fragments
-      self.fragments.sort_by {|s| s.priority || Integer::INT32_MAX }
+      fragments.sort_by { |s| s.priority || Integer::INT32_MAX }
     end
 
     def extract_tap_id(field)
-      tap_id = Array(primary[field]).find {|id| id.match(/tap:/) }
+      tap_id = Array(primary[field]).find { |id| id.match(/tap:/) }
       tap_number = tap_id.to_s.match(/\d+/)
       tap_number ? tap_number[0].to_i : nil
     end

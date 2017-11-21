@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -45,11 +47,10 @@ describe CollectionStatistics do
   end
 
   describe 'add_record!' do
-
     before { collection_statistics.save }
 
     it 'should not try set the collection to an array if the collection does not exist' do
-      expect { collection_statistics.add_record!(12, 'bleh', 'http://google.gle')}.to_not raise_error
+      expect { collection_statistics.add_record!(12, 'bleh', 'http://google.gle') }.to_not raise_error
     end
   end
 
@@ -60,32 +61,31 @@ describe CollectionStatistics do
   end
 
   describe 'add_record_item' do
-
     it 'should initialize an empty array if record_ids id nil' do
-      collection_statistics.send(:add_record_item, 12345, 'activated', 'http://goog.le/')
+      collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
       collection_statistics.activated_records.should be_a Array
     end
 
     it 'should add a record_id to the array of record_ids' do
-      collection_statistics.send(:add_record_item, 12345, 'activated', 'http://goog.le')
-      collection_statistics.activated_records.should eq [{record_id: 12345, landing_url: 'http://goog.le'}]
+      collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le')
+      collection_statistics.activated_records.should eq [{ record_id: 12_345, landing_url: 'http://goog.le' }]
     end
 
     it 'should not reinitialize record_ids array after adding two values' do
-      collection_statistics.send(:add_record_item, 12345, 'activated', 'http://goog.le/')
-      collection_statistics.send(:add_record_item, 54321, 'activated', 'http://goog.le/1')
-      collection_statistics.activated_records.should eq [{record_id: 12345, landing_url: 'http://goog.le/'},{record_id: 54321, landing_url: 'http://goog.le/1'}]
+      collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
+      collection_statistics.send(:add_record_item, 54_321, 'activated', 'http://goog.le/1')
+      collection_statistics.activated_records.should eq [{ record_id: 12_345, landing_url: 'http://goog.le/' }, { record_id: 54_321, landing_url: 'http://goog.le/1' }]
     end
 
     it 'should not add duplicate items' do
-      collection_statistics.send(:add_record_item, 12345, 'activated', 'http://goog.le/')
-      collection_statistics.send(:add_record_item, 12345, 'activated', 'http://goog.le/')
-      collection_statistics.activated_records.should eq [{record_id: 12345, landing_url: 'http://goog.le/'}]
+      collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
+      collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
+      collection_statistics.activated_records.should eq [{ record_id: 12_345, landing_url: 'http://goog.le/' }]
     end
 
     it 'should incriment the suppressed_count' do
       collection_statistics.send(:add_record_item, 1234, 'suppressed', 'http://google.gle')
-      collection_statistics.suppressed_records.should eq [{record_id: 1234, landing_url: 'http://google.gle'}]
+      collection_statistics.suppressed_records.should eq [{ record_id: 1234, landing_url: 'http://google.gle' }]
       collection_statistics.suppressed_count.should eq 1
     end
 
@@ -98,9 +98,9 @@ describe CollectionStatistics do
     context 'large array of values' do
       context 'activated_records' do
         before do
-          (0..19).each { |value| collection_statistics.send(:add_record_item, value, 'activated', 'http://goog.le/')}
+          (0..19).each { |value| collection_statistics.send(:add_record_item, value, 'activated', 'http://goog.le/') }
           collection_statistics.save
-          (20..30).each { |value| collection_statistics.send(:add_record_item, value, 'activated', 'http://goog.le/')}
+          (20..30).each { |value| collection_statistics.send(:add_record_item, value, 'activated', 'http://goog.le/') }
           collection_statistics.save
         end
 
@@ -115,9 +115,9 @@ describe CollectionStatistics do
 
       context 'suppressed_records' do
         before do
-          (0..19).each { |value| collection_statistics.send(:add_record_item, value, 'suppressed', 'http://goog.le/')}
+          (0..19).each { |value| collection_statistics.send(:add_record_item, value, 'suppressed', 'http://goog.le/') }
           collection_statistics.save
-          (20..30).each { |value| collection_statistics.send(:add_record_item, value, 'suppressed', 'http://goog.le/')}
+          (20..30).each { |value| collection_statistics.send(:add_record_item, value, 'suppressed', 'http://goog.le/') }
           collection_statistics.save
         end
 
@@ -132,9 +132,9 @@ describe CollectionStatistics do
 
       context 'deleted_records' do
         before do
-          (0..19).each { |value| collection_statistics.send(:add_record_item, value, 'deleted', 'http://goog.le/')}
+          (0..19).each { |value| collection_statistics.send(:add_record_item, value, 'deleted', 'http://goog.le/') }
           collection_statistics.save
-          (20..30).each { |value| collection_statistics.send(:add_record_item, value, 'deleted', 'http://goog.le/')}
+          (20..30).each { |value| collection_statistics.send(:add_record_item, value, 'deleted', 'http://goog.le/') }
           collection_statistics.save
         end
 

@@ -1,18 +1,19 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# frozen_string_literal: true
+
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 require 'rails_helper'
 
 describe LinkCheckWorker do
-
   let(:worker) { LinkCheckWorker.new }
-  let(:link_check_job) { FactoryBot.create(:link_check_job)  }
+  let(:link_check_job) { FactoryBot.create(:link_check_job) }
   let(:response) { double(:response) }
-  let(:link_check_rule) { double(:link_check_rule, status_codes: "200, 3..", xpath: '//p', throttle: 3, active: true) }
+  let(:link_check_rule) { double(:link_check_rule, status_codes: '200, 3..', xpath: '//p', throttle: 3, active: true) }
   let(:conn) { double(:conn) }
 
   before { Sidekiq.stub(:redis).and_yield(conn) }
@@ -80,16 +81,16 @@ describe LinkCheckWorker do
         end
 
         context 'and response is invalid' do
-          before { worker.stub(:validate_link_check_rule) { false} }
+          before { worker.stub(:validate_link_check_rule) { false } }
 
           it 'suppresse the record with strike 0' do
             expect(worker).to receive(:suppress_record).with(link_check_job.id.to_s,
-                                                           link_check_job.record_id, 0)
+                                                             link_check_job.record_id, 0)
           end
         end
 
         context 'and response is valid' do
-          before { worker.stub(:validate_link_check_rule) { true} }
+          before { worker.stub(:validate_link_check_rule) { true } }
 
           context 'and strike is greated than 1' do
             after { worker.perform(link_check_job.id.to_s, 1) }
@@ -98,7 +99,7 @@ describe LinkCheckWorker do
               expect(worker).to receive(:set_record_status).with(link_check_job.record_id,
                                                                  'active')
             end
-          end      
+          end
         end
 
         context 'exceptions' do
@@ -106,10 +107,10 @@ describe LinkCheckWorker do
             worker.stub(:link_check).and_raise(ThrottleLimitError.new('ThrottleLimitError'))
             expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception
           end
-          
+
           it 'should handle networking errors' do
             worker.stub(:link_check).and_raise(StandardError.new('RestClient Exception'))
-            expect {worker.perform(link_check_job.id.to_s)}.to_not raise_exception
+            expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception
           end
         end
       end
@@ -161,7 +162,7 @@ describe LinkCheckWorker do
       before { conn.stub(:setnx) { false } }
 
       it 'raises an ThrottleLimitError' do
-         expect { worker.send(:link_check, 'http://boost.co.nz', 'some') }.to raise_error(ThrottleLimitError)
+        expect { worker.send(:link_check, 'http://boost.co.nz', 'some') }.to raise_error(ThrottleLimitError)
       end
     end
   end
@@ -172,13 +173,13 @@ describe LinkCheckWorker do
 
     it 'makes a http PUT call with restclinet to the API_HOST' do
       expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/123",
-                                               { record: { status: 'deleted' }, api_key: ENV['HARVESTER_API_KEY'] })
+                                               record: { status: 'deleted' }, api_key: ENV['HARVESTER_API_KEY'])
     end
   end
 
   describe '#link_check_job' do
     before { worker.instance_variable_set(:@link_check_job_id, link_check_job.id) }
-    
+
     it 'memoizes the link check job' do
       expect(LinkCheckJob).to receive(:find).once.with(link_check_job.id)
       worker.send(:link_check_job)
@@ -194,18 +195,18 @@ describe LinkCheckWorker do
     end
 
     it 'should add record stats for deleted' do
-      expect(collection_statistics).to receive(:add_record!).with(12345, 'deleted', 'http://google.co.nz')
-      worker.send(:add_record_stats, 12345, 'deleted')
+      expect(collection_statistics).to receive(:add_record!).with(12_345, 'deleted', 'http://google.co.nz')
+      worker.send(:add_record_stats, 12_345, 'deleted')
     end
 
     it 'should add record stats for suppressed' do
-      expect(collection_statistics).to receive(:add_record!).with(12345, 'suppressed', 'http://google.co.nz')
-      worker.send(:add_record_stats, 12345, 'suppressed')
+      expect(collection_statistics).to receive(:add_record!).with(12_345, 'suppressed', 'http://google.co.nz')
+      worker.send(:add_record_stats, 12_345, 'suppressed')
     end
 
     it 'should add record stats for active' do
-      expect(collection_statistics).to receive(:add_record!).with(12345, 'activated', 'http://google.co.nz')
-      worker.send(:add_record_stats, 12345, 'active')
+      expect(collection_statistics).to receive(:add_record!).with(12_345, 'activated', 'http://google.co.nz')
+      worker.send(:add_record_stats, 12_345, 'active')
     end
   end
 
@@ -219,7 +220,7 @@ describe LinkCheckWorker do
     end
 
     it 'should find or create a collection statistics model with the collection_title' do
-      expect(CollectionStatistics).to receive(:find_or_create_by).with({day: Date.today, source_id: link_check_job.source_id}) { collection_statistics }
+      expect(CollectionStatistics).to receive(:find_or_create_by).with(day: Date.today, source_id: link_check_job.source_id) { collection_statistics }
       worker.send(:collection_stats).should eq collection_statistics
     end
 
@@ -233,7 +234,7 @@ describe LinkCheckWorker do
     before { RestClient.stub(:put) }
 
     it 'should make a post to the api to change the status to supressed for the record' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", {record: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY']})
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", record: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:suppress_record, link_check_job.id.to_s, 'abc123', 0)
     end
 
@@ -253,7 +254,7 @@ describe LinkCheckWorker do
     end
 
     it 'should not send a request to set the record to suppressed if the strike is over 0 ' do
-      expect(worker).to_not receive(:set_record_status).with('abc123', "suppressed")
+      expect(worker).to_not receive(:set_record_status).with('abc123', 'suppressed')
       worker.send(:suppress_record, link_check_job.id.to_s, 'abc123', 1)
     end
 
@@ -288,7 +289,7 @@ describe LinkCheckWorker do
     it 'should call link_check_rule with the source_id' do
       expect(worker).to receive(:link_check_job) { link_check_job }
       expect(worker).to receive(:link_check_rule).with('abc123') { link_check_rule }
-      
+
       worker.send(:rules).should eq link_check_rule
     end
   end
