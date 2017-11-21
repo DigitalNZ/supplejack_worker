@@ -162,8 +162,8 @@ describe HarvestSchedule do
     end
   end
 
-  describe '#create_job' do
-    let(:schedule) { FactoryBot.create(:harvest_schedule, parser_id: '1234', environment: 'staging') }
+  describe "#create_job" do
+    let(:schedule) { FactoryBot.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
 
     before do
       schedule.stub(:allowed?) { true }
@@ -227,6 +227,24 @@ describe HarvestSchedule do
     before do
       Parser.stub(:find) { parser }
     end
+
+    it 'returns false if full and flush is not allowed' do
+      parser.stub(:allow_full_and_flush) { false }
+      expect(schedule.allowed?).to be_falsey
+    end
+
+    it 'returns true if full and flush is allowed' do
+      expect(schedule.allowed?).to be_truthy
+    end
+  end
+
+  describe "#allowed" do
+    let(:schedule) { FactoryBot.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
+    let(:parser) { double(:parser, parser_id: "1234", allow_full_and_flush: true) }
+
+    before {
+      Parser.stub(:find) { parser }
+    }
 
     it 'returns false if full and flush is not allowed' do
       parser.stub(:allow_full_and_flush) { false }

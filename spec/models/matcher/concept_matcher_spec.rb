@@ -1,21 +1,18 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 describe Matcher::ConceptMatcher do
+
   class TestWorker
     include Matcher::ConceptMatcher
   end
 
   let(:worker) { TestWorker.new }
 
-  let(:attributes) do
-    { priority: 0, source_id: 'mccahon_co_nz', match_concepts: :create_or_match,
-      internal_identifier: 'http://www.mccahon.co.nz/',
-      givenName: 'Colin', familyName: 'McCahon',
-      dateOfBirth: DateTime.parse('1919-01-01'), dateOfDeath: DateTime.parse('1987-01-01'),
-      sameAs: ['http://www.en.wikipedia.com/mccahon'] }
-  end
+  let(:attributes) { {priority: 0, source_id: 'mccahon_co_nz', match_concepts: :create_or_match,
+                      internal_identifier: 'http://www.mccahon.co.nz/',
+                      givenName: 'Colin', familyName: 'McCahon',
+                      dateOfBirth: DateTime.parse('1919-01-01'), dateOfDeath: DateTime.parse('1987-01-01'),
+                      sameAs: ['http://www.en.wikipedia.com/mccahon']} }
 
   let(:fragment) { SupplejackApi::ApiConcept::ConceptFragment.new(attributes) }
   let(:concept) { SupplejackApi::Concept.create(landing_url: 'http://www.mccahon.co.nz/', internal_identifier: 'http://www.mccahon.co.nz/', status: 'active') }
@@ -76,12 +73,12 @@ describe Matcher::ConceptMatcher do
       it 'should not post an update if the source is reharvested' do
         fragment.update_attribute(:source_id, 'mccahon_co_nz')
         worker.send(:lookup, attributes)
-        expect(ApiUpdateWorker).not_to have_enqueued_sidekiq_job('/harvester/concepts.json', { 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => 'http://www.mccahon.co.nz/', 'match_status' => 'strong' } }, nil)
+        expect(ApiUpdateWorker).not_to have_enqueued_sidekiq_job('/harvester/concepts.json', {'concept'=>{'internal_identifier'=>'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs'=>'http://www.mccahon.co.nz/', 'match_status'=>'strong'}}, nil)
       end
 
       it 'should post an update to the API with the sameAs and match_status fields' do
         worker.send(:lookup, attributes)
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/concepts.json', { 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => ['http://www.en.wikipedia.com/mccahon'], 'match_status' => 'strong' } }, nil)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/concepts.json', {'concept'=>{'internal_identifier'=>'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs'=>['http://www.en.wikipedia.com/mccahon'], 'match_status'=>'strong'}}, nil)
       end
     end
   end

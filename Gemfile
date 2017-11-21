@@ -1,48 +1,51 @@
-# frozen_string_literal: true
+source 'https://rubygems.org'
+
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
 
 source 'https://rubygems.org'
 
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v1.0.0'
+gem 'rails', '~> 5.1.4'
+gem 'puma', '~> 3.7'
 
-gem 'aasm'
-gem 'active_model_serializers', '~> 0.10.7'
-gem 'activeresource', require: 'active_resource'
-gem 'airbrake'
-gem 'chronic'
+gem 'supplejack_common', path: '../supplejack_common'
+gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
+gem 'active_model_serializers', '~> 0.9.0'
+gem 'mongoid'
+gem 'mongoid_paranoia'
 gem 'figaro'
 gem 'kaminari'
 gem 'kaminari-mongoid'
-gem 'mongoid'
-gem 'mongoid_paranoia'
-gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
+gem 'aasm'
+gem 'airbrake'
 gem 'parse-cron'
-gem 'puma', '~> 3.7'
-gem 'rails', '~> 5.1.4'
+gem 'sidekiq'
 gem 'responders'
-gem 'sidekiq', '= 4.1.1'
-gem 'sinatra', :require => nil
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common', branch: 'gm/rails-5.1'
+gem 'chronic'
+gem 'activeresource', require: 'active_resource'
 gem 'whenever', require: false
 
 group :test do
-  gem 'cucumber-rails'
-  gem 'database_cleaner'
-  gem 'factory_bot_rails'
+  gem 'rspec-rails', '~> 3.6'
   gem 'rails-controller-testing'
   gem 'rspec-activemodel-mocks'
-  gem 'rspec-rails', '~> 3.6'
-  gem 'rspec-sidekiq'
+  gem 'factory_bot_rails'
+  gem 'database_cleaner'
+  gem 'cucumber-rails'
   gem 'timecop'
+  gem 'rspec-sidekiq'
 end
 
 group :development do
-  gem 'byebug', platforms: %i[mri mingw x64_mingw]
-  gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'pry'
   gem 'pry-byebug'
+  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

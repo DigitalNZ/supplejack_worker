@@ -16,7 +16,7 @@ describe AbstractWorker do
   before { AbstractJob.stub(:find) { job } }
 
   describe '#stop_harvest?' do
-    before { job.stub(:enqueue_enrichment_jobs) { nil } }
+    before { job.stub(:enqueue_enrichment_jobs) { nil }  }
 
     context 'status is stopped' do
       let(:job) { FactoryBot.create(:harvest_job, status: 'stopped') }
@@ -64,6 +64,7 @@ describe AbstractWorker do
   end
 
   describe '#api_update_finished?' do
+
     it 'should return true if the api update is finished' do
       job.stub(:posted_records_count) { 100 }
       job.stub(:records_count) { 100 }
@@ -88,7 +89,7 @@ describe AbstractWorker do
     end
 
     it 'it accepts serialized object_ids and returns the id string' do
-      worker.send(:sanitize_id, '$oid' => 'preview123').should eq 'preview123'
+      worker.send(:sanitize_id, {'$oid' => 'preview123'}).should eq 'preview123'
     end
   end
 

@@ -14,22 +14,31 @@ describe Preview do
   let(:job) { HarvestJob.new(environment: 'preview', index: 1, harvest_failure: {}) }
   let(:preview) { FactoryBot.build(:preview, id: 'abc123') }
 
-  describe '.spawn_preview_worker' do
-    before do
-      HarvestJob.stub(:create) { job }
-      job.stub(:valid?) { true }
-      Preview.stub(:create) { preview }
-    end
+	let(:preview_attributes) { { harvest_job: {user_id: 20, environment: "preview", index: 150, parser_id: "abc123", parser_code: "code"} } }
+	let(:job) { HarvestJob.new(environment: "preview", index: 1, harvest_failure: {}) }
+	let(:preview) { FactoryBot.build(:preview, id: "abc123") }
+
+	describe ".spawn_preview_worker" do
+		before do
+			HarvestJob.stub(:create) { job }
+			job.stub(:valid?) { true }
+			Preview.stub(:create) { preview }
+		end
+
+		it "should create a preview object" do
+			Preview.should_receive(:create)
+		  Preview.spawn_preview_worker(preview_attributes)
+		end
 
     it 'should create a preview object' do
       Preview.should_receive(:create)
       Preview.spawn_preview_worker(preview_attributes)
     end
 
-    it 'should create a harvest job' do
-      HarvestJob.should_receive(:create).with(preview_attributes[:harvest_job]) { job }
-      Preview.spawn_preview_worker(preview_attributes)
-    end
+		it "should enqueue the job" do
+		  Preview.spawn_preview_worker(preview_attributes)
+		  expect(PreviewWorker).to have_enqueued_sidekiq_job(job.id.to_s, preview.id )
+		end
 
     it 'should enqueue the job' do
       Preview.spawn_preview_worker(preview_attributes)

@@ -96,7 +96,7 @@ describe SourceCheckWorker do
       worker.send(:source_active?)
     end
 
-    it 'should return true if the collection is active' do
+    it "should return true if the collection is active" do
       worker.send(:source_active?).should be_truthy
     end
 
@@ -123,15 +123,15 @@ describe SourceCheckWorker do
     context 'get returns nil' do
       before { worker.stub(:get) { nil } }
 
-      it 'returns false' do
-        worker.send(:up?, 'http://google.com').should be_falsey
+      it "returns false" do
+        worker.send(:up?,'http://google.com').should be_falsey
       end
     end
 
     it 'gets the url and validates it' do
       worker.should_receive(:get).with('http://blah.com') { response }
       worker.should_receive(:validate_link_check_rule).with(response, 'abc123') { true }
-      worker.send(:up?, 'http://blah.com').should be_truthy
+      worker.send(:up?,'http://blah.com').should be_truthy
     end
   end
 

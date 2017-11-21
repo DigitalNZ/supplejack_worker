@@ -8,6 +8,7 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 class EnrichmentJobsController < ApplicationController
+
   before_action :authenticate_user!
 
   respond_to :json

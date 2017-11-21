@@ -11,7 +11,7 @@ require 'rails_helper'
 
 describe LinkCheckWorker do
   let(:worker) { LinkCheckWorker.new }
-  let(:link_check_job) { FactoryBot.create(:link_check_job) }
+  let(:link_check_job) { FactoryBot.create(:link_check_job)  }
   let(:response) { double(:response) }
   let(:link_check_rule) { double(:link_check_rule, status_codes: '200, 3..', xpath: '//p', throttle: 3, active: true) }
   let(:conn) { double(:conn) }

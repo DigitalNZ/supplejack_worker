@@ -1,15 +1,13 @@
-# frozen_string_literal: true
-
 require_relative 'boot'
 
-require 'rails'
+require "rails"
 # Pick the frameworks you want:
-require 'active_model/railtie'
-require 'active_job/railtie'
+require "active_model/railtie"
+require "active_job/railtie"
 # require "active_record/railtie"
-require 'action_controller/railtie'
-require 'action_mailer/railtie'
-require 'action_view/railtie'
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "action_view/railtie"
 # require "action_cable/engine"
 # require "sprockets/railtie"
 # require "rails/test_unit/railtie"
@@ -22,9 +20,7 @@ module HarvesterWorker
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
-    config.eager_load_paths += %W[#{Rails.root}/lib]
-
-    config.time_zone = 'Wellington'
+    config.autoload_paths += %W(#{config.root}/lib #{config.root}/app/workers/concerns #{config.root}/lib/supplejack)
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

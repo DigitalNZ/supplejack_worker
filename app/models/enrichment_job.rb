@@ -8,6 +8,7 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 class EnrichmentJob < AbstractJob
+  
   belongs_to :harvest_job, optional: true
 
   after_create :enqueue, unless: :preview?

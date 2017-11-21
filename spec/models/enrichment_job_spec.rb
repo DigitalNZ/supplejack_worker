@@ -12,6 +12,8 @@ require 'rails_helper'
 describe EnrichmentJob do
   let(:job) { FactoryBot.create(:harvest_job, parser_id: '12345', version_id: '666', user_id: '1', environment: 'staging') }
 
+  let(:job) { FactoryBot.create(:harvest_job, parser_id: '12345', version_id: '666', user_id: '1', environment: 'staging') }
+
   context 'validations' do
     it 'should not be possible to have 2 active jobs for the same enrichment/parser/environment' do
       job1 = FactoryBot.create(:enrichment_job, enrichment: 'duplicate_enrichment', parser_id: '333', environment: 'staging', status: 'active')
@@ -33,6 +35,7 @@ describe EnrichmentJob do
   end
 
   describe '.create_from_harvest_job' do
+
     subject { EnrichmentJob.create_from_harvest_job(job, :ndha_rights) }
 
     it 'inherits values from harvest job' do
@@ -53,7 +56,8 @@ describe EnrichmentJob do
   end
 
   context 'preview environment' do
-    before { job.environment = 'preview' }
+
+    before {job.environment = 'preview'}
 
     it 'does not enque a job after create' do
       EnrichmentWorker.should_not_receive(:perform_async)

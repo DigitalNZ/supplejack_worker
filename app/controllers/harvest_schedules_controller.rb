@@ -8,6 +8,7 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 class HarvestSchedulesController < ApplicationController
+
   before_action :authenticate_user!
 
   def index
@@ -16,7 +17,7 @@ class HarvestSchedulesController < ApplicationController
                          else
                            HarvestSchedule.all
                          end
-    render json: @harvest_schedules
+    render json: @harvest_schedules, serializer: ActiveModel::ArraySerializer
   end
 
   def next

@@ -8,14 +8,15 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 class AbstractJobsController < ApplicationController
+
   before_action :authenticate_user!
 
   def index
-    @abstract_jobs = AbstractJob.search(search_params)
+    @abstract_jobs = AbstractJob.search(params)
     response.headers['X-total'] = @abstract_jobs.total_count.to_s
     response.headers['X-offset'] = @abstract_jobs.offset_value.to_s
     response.headers['X-limit'] = @abstract_jobs.limit_value.to_s
-    render json: @abstract_jobs
+    render json: @abstract_jobs, serializer: ActiveModel::ArraySerializer
   end
 
   def jobs_since
