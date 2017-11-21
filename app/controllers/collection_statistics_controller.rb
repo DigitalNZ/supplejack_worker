@@ -8,6 +8,8 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 class CollectionStatisticsController < ApplicationController
+  before_action :authenticate_user!
+
   def index
     if params[:collection_statistics]
       @collection_statistics = CollectionStatistics.where(collection_statistics_params)
