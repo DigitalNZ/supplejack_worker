@@ -15,7 +15,7 @@ class HarvestSchedulesController < ApplicationController
                          else
                            HarvestSchedule.all
                          end
-    render json: @harvest_schedules, serializer: ActiveModel::ArraySerializer
+    render json: @harvest_schedules
   end
 
   def next

@@ -172,7 +172,7 @@ describe PreviewWorker do
     end
 
     it "should save the preview object" do
-      preview.should_receive(:save)
+      preview.should_receive(:save!)
       worker.send(:process_record, record1)
     end
   end

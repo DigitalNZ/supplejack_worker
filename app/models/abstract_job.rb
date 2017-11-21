@@ -11,8 +11,6 @@ class AbstractJob
   include Mongoid::Attributes::Dynamic
   include AASM
 
-  include ActiveModel::SerializerSupport
-
   index status: 1
 
   field :start_time,            type: DateTime
@@ -107,7 +105,7 @@ class AbstractJob
         self.start_time = Time.now
         self.records_count = 0
         self.processed_count = 0
-        save
+        save!
       end
 
       transitions :from => :ready, :to => :active
@@ -197,11 +195,11 @@ class AbstractJob
 
   def increment_records_count!
     self.records_count += 1
-    self.save
+    self.save!
   end
 
   def increment_processed_count!
     self.processed_count += 1
-    self.save
+    self.save!
   end
 end
