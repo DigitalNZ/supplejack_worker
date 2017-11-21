@@ -5,11 +5,11 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'rails_helper'
 
 describe HarvestWorker do
   let(:worker) { HarvestWorker.new }
-  let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < SupplejackCommon::Xml::Base; end", file_name: "natlib_pages.rb") }
+  let(:parser) { Parser.new(strategy: "xml", name: "Natlib Pages", content: "class NatlibPages < SupplejackCommon::Xml::Base; end", file_name: "natlib_pages.rb", source: { source_id: 'source_id' }) }
   let(:job) { HarvestJob.new(environment: "staging", parser_id: "abc123") }
 
   before(:each) do
@@ -28,7 +28,6 @@ describe HarvestWorker do
       LoadedParser::Staging::NatlibPages.stub(:records) { [record] }
       worker.stub(:api_update_finished?) { true }
       worker.stub(:process_record)
-      job.stub_chain(:parser, :source, :source_id) { 'source_id' }
     end
 
     it 'is a default priority job' do
@@ -157,7 +156,7 @@ describe HarvestWorker do
 
     it "should post to the API" do
       worker.post_to_api(attributes)
-      expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
     end
 
     it "should not post the data_type attribute to the API" do
@@ -179,17 +178,17 @@ describe HarvestWorker do
     context "data_type" do
       it "should post to the (imaginary) Widget API with a widget data_type" do
         worker.post_to_api({title: "Hi", data_type: 'widget'})
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/widgets.json", {"widget" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job("/harvester/widgets.json", {"widget" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
       end
 
       it "should post to the Records API with no data_type" do
         worker.post_to_api({title: "Hi"})
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
       end
 
       it "should post to the Records API with an invalid data_type" do
         worker.post_to_api({title: "Hi", data_type: nil})
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => nil}, job.id.to_s)
       end
     end
 
@@ -209,7 +208,7 @@ describe HarvestWorker do
       it "should send the required enricments to the api" do
         job.stub(:required_enrichments) { [:ndha_rights] }
         worker.post_to_api(attributes)
-        expect(ApiUpdateWorker).to have_enqueued_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job("/harvester/records.json", {"record" => {"title" => "Hi"}, "required_fragments" => ["ndha_rights"]}, job.id.to_s)
       end
     end
   end
@@ -217,7 +216,7 @@ describe HarvestWorker do
   describe "#delete_from_api" do
     it "should send a delete to the api" do
       worker.delete_from_api(["abc123"])
-      expect(ApiDeleteWorker).to have_enqueued_job("abc123", job.id.to_s)
+      expect(ApiDeleteWorker).to have_enqueued_sidekiq_job("abc123", job.id.to_s)
     end
   end
 end

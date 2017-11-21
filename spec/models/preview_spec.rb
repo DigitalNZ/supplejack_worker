@@ -5,13 +5,13 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe Preview do
 
 	let(:preview_attributes) { { harvest_job: {user_id: 20, environment: "preview", index: 150, parser_id: "abc123", parser_code: "code"} } }
 	let(:job) { HarvestJob.new(environment: "preview", index: 1, harvest_failure: {}) }
-	let(:preview) { FactoryGirl.build(:preview, id: "abc123") }
+	let(:preview) { FactoryBot.build(:preview, id: "abc123") }
 
 	describe ".spawn_preview_worker" do
 		before do
@@ -32,7 +32,7 @@ describe Preview do
 
 		it "should enqueue the job" do
 		  Preview.spawn_preview_worker(preview_attributes)
-		  expect(PreviewWorker).to have_enqueued_job(job.id.to_s, preview.id )
+		  expect(PreviewWorker).to have_enqueued_sidekiq_job(job.id.to_s, preview.id )
 		end
 
 		it "should return the preview_id" do

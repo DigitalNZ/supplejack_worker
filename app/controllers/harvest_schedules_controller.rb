@@ -7,14 +7,14 @@
 
 class HarvestSchedulesController < ApplicationController
 
-  before_filter :authenticate_user!
+  before_action :authenticate_user!
 
   def index
-    if params[:harvest_schedule]
-      @harvest_schedules = HarvestSchedule.where(params[:harvest_schedule])
-    else
-      @harvest_schedules = HarvestSchedule.all
-    end
+    @harvest_schedules = if params[:harvest_schedule]
+                           HarvestSchedule.where(harvest_schedule_params)
+                         else
+                           HarvestSchedule.all
+                         end
     render json: @harvest_schedules, serializer: ActiveModel::ArraySerializer
   end
 
@@ -28,7 +28,7 @@ class HarvestSchedulesController < ApplicationController
   end
 
   def create
-    @harvest_schedule = HarvestSchedule.create(params[:harvest_schedule])
+    @harvest_schedule = HarvestSchedule.create(harvest_schedule_params)
 
     if @harvest_schedule.save
       render json: @harvest_schedule
@@ -40,7 +40,7 @@ class HarvestSchedulesController < ApplicationController
   def update
     @harvest_schedule = HarvestSchedule.find(params[:id])
 
-    @harvest_schedule.update_attributes(params[:harvest_schedule])
+    @harvest_schedule.update_attributes(harvest_schedule_params)
     render json: @harvest_schedule
   end
 
@@ -48,5 +48,11 @@ class HarvestSchedulesController < ApplicationController
     @harvest_schedule = HarvestSchedule.find(params[:id])
     @harvest_schedule.destroy
     render json: @harvest_schedule
+  end
+
+  private
+
+  def harvest_schedule_params
+    params.require(:harvest_schedule).permit!
   end
 end

@@ -1,66 +1,51 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
-# and is licensed under the GNU General Public License, version 3.
-# See https://github.com/DigitalNZ/supplejack_worker for details.
-#
-# Supplejack was created by DigitalNZ at the National Library of NZ
-# and the Department of Internal Affairs. http://digitalnz.org/supplejack
+source 'https://rubygems.org'
 
-if RUBY_VERSION =~ /1.9/
-  Encoding.default_external = Encoding::UTF_8
-  Encoding.default_internal = Encoding::UTF_8
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
 end
 
 source 'https://rubygems.org'
 
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v1.0.0'
+gem 'rails', '~> 5.1.4'
+gem 'puma', '~> 3.7'
 
-gem 'rails', '4.1.4'
-gem 'protected_attributes'
+gem 'supplejack_common', path: '../supplejack_common'
 gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
 gem 'active_model_serializers', '~> 0.9.0'
-gem 'thin',         '>= 1.5.0'
-gem 'mongoid',      '~> 4.0.0'
+gem 'mongoid'
 gem 'mongoid_paranoia'
-gem 'figaro',       '>= 0.7.0'
-gem 'devise',       '~> 3.0.4'
-gem 'kaminari',     '~> 0.14.1'
+gem 'figaro'
+gem 'kaminari'
+gem 'kaminari-mongoid'
+gem 'aasm'
 gem 'airbrake'
-gem 'aasm',         '~> 3.3.3'
-gem 'sidekiq', '~> 4.1', '>= 4.1.1'
-# if you require 'sinatra' you get the DSL extended to Object
-gem 'sinatra', :require => nil
-gem 'activeresource', require: 'active_resource'
-gem 'chronic', '~> 0.10.2'
-gem 'whenever', :require => false
 gem 'parse-cron'
-gem 'jquery-rails'
-gem 'lograge'
-
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'sass-rails',   '~> 4.0.3'
-  gem 'coffee-rails', '~> 4.0.1'
-  gem 'uglifier', '>= 1.0.3'
-end
-
-group :development do
-  gem 'quiet_assets',       '>= 1.0.1'
-  gem 'better_errors',      '~> 1.1.0 '
-  gem 'guard-rspec'
-  gem 'rb-fsevent',         '~> 0.9.1'
-end
-
-group :development, :test do
-  gem 'rspec', '~> 2.14.0'
-  gem 'rspec-rails', '~> 2.14.0'
-  gem 'factory_girl_rails', '>= 4.1.0'
-  gem 'pry-rails'
-end
+gem 'sidekiq'
+gem 'responders'
+gem 'chronic'
+gem 'activeresource', require: 'active_resource'
+gem 'whenever', require: false
 
 group :test do
-  gem 'database_cleaner',   '~> 1.6.0'
-  gem 'cucumber-rails',     '>= 1.4.1', :require => false
+  gem 'rspec-rails', '~> 3.6'
+  gem 'rails-controller-testing'
+  gem 'rspec-activemodel-mocks'
+  gem 'factory_bot_rails'
+  gem 'database_cleaner'
+  gem 'cucumber-rails'
   gem 'timecop'
   gem 'rspec-sidekiq'
 end
+
+group :development do
+  gem 'pry'
+  gem 'pry-byebug'
+  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'spring'
+  gem 'spring-watcher-listen', '~> 2.0.0'
+end
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

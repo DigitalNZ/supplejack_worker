@@ -5,7 +5,7 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'rails_helper'
 
 describe ParserVersion do
 
@@ -16,8 +16,8 @@ describe ParserVersion do
 
   describe "#last_harvested_at" do
     let!(:time) { Time.now }
-    let!(:job1) { FactoryGirl.create(:harvest_job, start_time: time - 1.day, parser_id: "12", status: "finished") }
-    let!(:job2) { FactoryGirl.create(:harvest_job, start_time: time - 2.day, parser_id: "12", status: "finished") }
+    let!(:job1) { FactoryBot.create(:harvest_job, start_time: time - 1.day, parser_id: "12", status: "finished") }
+    let!(:job2) { FactoryBot.create(:harvest_job, start_time: time - 2.day, parser_id: "12", status: "finished") }
 
     it "should return the last date a harvest job was run" do
       Timecop.freeze(time) do
@@ -43,16 +43,4 @@ describe ParserVersion do
       parser_version.harvest_jobs('finished')
     end
   end
-
-  describe "#source" do
-    before do
-      parser.stub(:source) { source }
-    end
-
-    it "finds the parser" do
-      Parser.should_receive(:find).with("123") { parser }
-      parser_version.source
-    end
-  end
-
 end

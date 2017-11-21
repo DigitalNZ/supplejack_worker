@@ -5,7 +5,7 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'rails_helper'
 
 describe ValidatesResource do
 
@@ -21,7 +21,6 @@ describe ValidatesResource do
 
     before do
       LinkCheckRule.stub(:find_by) { link_check_rule }
-      worker.stub(:link_check_job) { link_check_job }
     end
 
     it "should validate the response codes" do
@@ -38,7 +37,7 @@ describe ValidatesResource do
       it "should return true" do
         worker.stub(:validate_response_codes) { true }
         worker.stub(:validate_xpath) { true }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_true
+        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_truthy
       end
     end
 
@@ -46,7 +45,7 @@ describe ValidatesResource do
       it "should return false" do
         worker.stub(:validate_response_codes) { false }
         worker.stub(:validate_xpath) { true }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_false
+        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_falsey
       end
     end
 
@@ -54,7 +53,7 @@ describe ValidatesResource do
       it "should return false" do
         worker.stub(:validate_response_codes) { true }
         worker.stub(:validate_xpath) { false }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_false
+        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_falsey
       end
     end
 
@@ -62,41 +61,41 @@ describe ValidatesResource do
       it "should return true" do
         worker.stub(:validate_response_codes) { false }
         worker.stub(:validate_xpath) { false }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_false
+        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_falsey
       end
     end
   end
 
   describe "validate_response_codes" do
     it "should return false when the response code matches the string" do
-      worker.send(:validate_response_codes, 300, '300').should be_false
+      worker.send(:validate_response_codes, 300, '300').should be_falsey
     end
 
     it "should return false when the response code matches the regex" do
-      worker.send(:validate_response_codes, 201, '300, 2..').should be_false
-      worker.send(:validate_response_codes, 300, '300, 2..').should be_false
+      worker.send(:validate_response_codes, 201, '300, 2..').should be_falsey
+      worker.send(:validate_response_codes, 300, '300, 2..').should be_falsey
     end
 
     it "should return true if response code blacklist is nil" do
-      worker.send(:validate_response_codes, 201, nil).should be_true
+      worker.send(:validate_response_codes, 201, nil).should be_truthy
     end
   end
 
   describe "#validate_xpath" do
     it "should return false when the xpath expression matches" do
-      worker.send(:validate_xpath, '//p[@class="error"]', '<p class="error">Page Not Found</p>').should be_false
+      worker.send(:validate_xpath, '//p[@class="error"]', '<p class="error">Page Not Found</p>').should be_falsey
     end
 
     it "should return true when the xpath expression doesn't match" do
-      worker.send(:validate_xpath, '//p[@class="error"]', '<a class="large">Title</a>').should be_true
+      worker.send(:validate_xpath, '//p[@class="error"]', '<a class="large">Title</a>').should be_truthy
     end
 
     it "should return true when there is no xpath" do
-      worker.send(:validate_xpath, nil, '<a class="large">Title</a>').should be_true
+      worker.send(:validate_xpath, nil, '<a class="large">Title</a>').should be_truthy
     end
 
     it "should return true when there is no xpath" do
-      worker.send(:validate_xpath, "", '<a class="large">Title</a>').should be_true
+      worker.send(:validate_xpath, "", '<a class="large">Title</a>').should be_truthy
     end
   end
 

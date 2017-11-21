@@ -6,9 +6,6 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 HarvesterWorker::Application.routes.draw do
-
-  devise_for :users, skip: :sessions
-
   resources :abstract_jobs, only: [:index] do
     get :jobs_since, on: :collection
   end
@@ -18,11 +15,11 @@ HarvesterWorker::Application.routes.draw do
     get :next, on: :collection
   end
   resources :previews, only: [:create, :show]
-  
+
   resources :link_check_jobs, only: [:create, :show]
   resources :link_check_rules
   resources :collection_statistics, only: [:index]
-  
+
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
 end

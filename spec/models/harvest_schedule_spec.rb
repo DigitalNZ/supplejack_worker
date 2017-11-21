@@ -5,7 +5,7 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe HarvestSchedule do
 
@@ -162,7 +162,7 @@ describe HarvestSchedule do
   end
 
   describe "#create_job" do
-    let(:schedule) { FactoryGirl.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
+    let(:schedule) { FactoryBot.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
 
     before {
       schedule.stub(:allowed?) { true }
@@ -207,7 +207,7 @@ describe HarvestSchedule do
       schedule.create_job
       schedule.reload
       job = schedule.harvest_jobs.last
-      job.incremental?.should be_true
+      job.incremental?.should be_truthy
     end
 
     it "should create a new harvest job with enrichments" do
@@ -216,6 +216,24 @@ describe HarvestSchedule do
       schedule.reload
       job = schedule.harvest_jobs.last
       job.enrichments.should eq ["ndha_rights"]
+    end
+  end
+
+  describe "#allowed" do
+    let(:schedule) { FactoryBot.create(:harvest_schedule, parser_id: "1234", environment: "staging") }
+    let(:parser) { double(:parser, parser_id: "1234", allow_full_and_flush: true) }
+
+    before {
+      Parser.stub(:find) { parser }
+    }
+
+    it 'returns false if full and flush is not allowed' do
+      parser.stub(:allow_full_and_flush) { false }
+      expect(schedule.allowed?).to be_falsey
+    end
+
+    it 'returns true if full and flush is allowed' do
+      expect(schedule.allowed?).to be_truthy
     end
   end
 end
