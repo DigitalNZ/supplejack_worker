@@ -5,10 +5,10 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe LinkCheckRule do
-  let(:rule) { FactoryGirl.build(:link_check_rule) }
+  let(:rule) { FactoryBot.build(:link_check_rule) }
 
   describe "validations" do
     it "should not be valid without a source" do
@@ -18,7 +18,7 @@ describe LinkCheckRule do
 
     it "should not be valid without a unique source" do
       rule.save!
-      same_rule = FactoryGirl.build(:link_check_rule, source_id: rule.source_id)
+      same_rule = FactoryBot.build(:link_check_rule, source_id: rule.source_id)
       same_rule.should_not be_valid
     end
   end

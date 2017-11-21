@@ -13,7 +13,7 @@ module SupplejackApi
       include Mongoid::Document
       include Mongoid::Attributes::Dynamic
 
-      store_in session: 'api'
+      store_in client: 'api'
 
       embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiRecord::RecordFragment'
       delegate :title, :shelf_location, :relation, to: :primary

@@ -5,7 +5,7 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :enrichment_job do
     start_time    Time.now
     environment   "test"
@@ -16,5 +16,8 @@ FactoryGirl.define do
     sequence(:parser_id)  {|n| "abc#{n}" }
     sequence(:version_id) {|n| "abc#{n}" }
     sequence(:user_id)    {|n| "abc#{n}" }
+
+    association :harvest_schedule, factory: :harvest_schedule
+    association :harvest_job, factory: :harvest_job
   end
 end

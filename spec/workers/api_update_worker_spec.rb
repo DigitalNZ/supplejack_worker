@@ -5,16 +5,15 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe ApiUpdateWorker do
   let(:worker) { ApiUpdateWorker.new }
-  let(:job) { FactoryGirl.create(:harvest_job) }
+  let(:job) { FactoryBot.create(:harvest_job) }
 
   it 'is retryable' do
     expect(described_class).to be_retryable 5
   end
-
 
   describe '#perform' do
     let(:success_response) do

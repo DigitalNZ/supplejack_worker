@@ -88,6 +88,6 @@ class HarvestSchedule
       self.status = 'inactive' unless recurrent
     end
 
-    save
+    save!
   end
 end

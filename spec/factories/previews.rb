@@ -7,7 +7,7 @@
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
-FactoryGirl.define do
-  factory :user do
+FactoryBot.define do
+  factory :preview do
   end
 end

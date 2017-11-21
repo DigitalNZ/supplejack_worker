@@ -38,7 +38,7 @@ class AbstractJob
   embeds_many :failed_records
   embeds_one :harvest_failure
 
-  belongs_to :harvest_schedule
+  belongs_to :harvest_schedule, optional: true
 
   validates_presence_of   :parser_id, :environment
 
