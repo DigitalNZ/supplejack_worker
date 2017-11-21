@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -31,25 +33,34 @@ class HarvestSchedule
   before_save :generate_cron
   before_save :generate_next_run_at
 
-  default_scope -> { where(:status.in => %w(active paused)) }
+  default_scope -> { where(:status.in => %w[active paused]) }
 
   scope :one_off, -> { where(recurrent: false).exists(last_run_at: false) }
   scope :recurrent, -> { where(recurrent: true) }
 
+  def allowed?
+    parser = begin
+               Parser.find(parser_id)
+             rescue
+               nil
+             end
+    !!parser&.allow_full_and_flush
+  end
+
   def self.one_offs_to_be_run
-    self.one_off.lte(start_time: Time.now).gte(start_time: Time.now - 6.minutes)
+    one_off.lte(start_time: Time.now).gte(start_time: Time.now - 6.minutes)
   end
 
   def self.create_one_off_jobs
-    self.one_offs_to_be_run.each(&:create_job)
+    one_offs_to_be_run.each(&:create_job)
   end
 
   def self.recurrents_to_be_run
-    self.recurrent.lte(next_run_at: Time.now).lte(start_time: Time.now)
+    recurrent.lte(next_run_at: Time.now).lte(start_time: Time.now)
   end
 
   def self.create_recurrent_jobs
-    self.recurrents_to_be_run.each(&:create_job)
+    recurrents_to_be_run.each(&:create_job)
   end
 
   def self.next
@@ -68,7 +79,7 @@ class HarvestSchedule
   end
 
   def generate_cron
-    if self.frequency.present?
+    if frequency.present?
       self.cron = CronGenerator.new(frequency, at_hour, at_minutes, offset).output
     end
   end

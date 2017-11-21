@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -8,7 +10,6 @@
 require 'rails_helper'
 
 describe EnrichmentJobsController do
-
   let(:job) { double(:enrichment_job, save: true, update_attributes: true) }
 
   before(:each) do
@@ -17,7 +18,7 @@ describe EnrichmentJobsController do
 
   describe 'POST create' do
     it 'initializes a new enrichment job' do
-      post :create, params: { enrichment_job: {strategy: 'xml', file_name: 'youtube.rb'}, format: 'json' }
+      post :create, params: { enrichment_job: { strategy: 'xml', file_name: 'youtube.rb' }, format: 'json' }
       expect(assigns(:enrichment_job)).to be_a_new(EnrichmentJob)
       expect(assigns(:enrichment_job).strategy).to eq 'xml'
       expect(assigns(:enrichment_job).file_name).to eq 'youtube.rb'
@@ -25,7 +26,7 @@ describe EnrichmentJobsController do
 
     it 'should save the enrichment job' do
       EnrichmentJob.any_instance.should_receive(:save)
-      post :create, params: { enrichment_job: {strategy: 'xml', file_name: 'youtube.rb'}, format: 'json' }
+      post :create, params: { enrichment_job: { strategy: 'xml', file_name: 'youtube.rb' }, format: 'json' }
       expect(assigns(:enrichment_job).strategy).to eq 'xml'
       expect(assigns(:enrichment_job).file_name).to eq 'youtube.rb'
     end

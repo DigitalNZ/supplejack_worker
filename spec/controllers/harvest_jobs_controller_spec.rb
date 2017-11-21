@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -8,7 +10,6 @@
 require 'rails_helper'
 
 describe HarvestJobsController do
-
   let(:job) { double(:harvest_job, save: true, update_attributes: true) }
 
   before(:each) do
@@ -23,13 +24,13 @@ describe HarvestJobsController do
     it 'initializes a new harvest job' do
       params = ActionController::Parameters.new(strategy: 'xml', file_name: 'youtube.rb').permit!
       HarvestJob.should_receive(:new).with(params) { job }
-      post :create, params: { harvest_job: {strategy: 'xml', file_name: 'youtube.rb'} }, format: 'js'
+      post :create, params: { harvest_job: { strategy: 'xml', file_name: 'youtube.rb' } }, format: 'js'
       expect(assigns(:harvest_job)).to eq job
     end
 
     it 'should save the harvest job' do
       job.should_receive(:save)
-      post :create, params: { harvest_job: {strategy: 'xml', file_name: 'youtube.rb'} }, format: 'js'
+      post :create, params: { harvest_job: { strategy: 'xml', file_name: 'youtube.rb' } }, format: 'js'
     end
   end
 

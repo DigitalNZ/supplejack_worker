@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -10,7 +12,7 @@ if ENV['AIRBRAKE_PROJECT_ID']
     config.project_key = ENV['AIRBRAKE_PROJECT_API_KEY']
     config.project_id = ENV['AIRBRAKE_PROJECT_ID']
     config.environment = Rails.env
-    config.ignore_environments = %w(development test)
+    config.ignore_environments = %w[development test]
   end
 
   Airbrake.add_filter do |notice|

@@ -1,14 +1,15 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# frozen_string_literal: true
+
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 require 'rails_helper'
 
 describe SupplejackApi::Enrichable do
-
   let(:record) { SupplejackApi::Record.new }
   let!(:primary_fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 0, is_part_of: ['tap:12345'], relation: ['tap:123456'], authorities: []) }
   let(:fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 1) }
@@ -32,12 +33,12 @@ describe SupplejackApi::Enrichable do
 
   describe '#parent_tap_id' do
     it 'should extract the tap_id from the is_part_of' do
-      record.parent_tap_id.should eq 12345
+      record.parent_tap_id.should eq 12_345
     end
 
     it 'should return relation if there is no is_part_of' do
       primary_fragment.is_part_of = nil
-      record.parent_tap_id.should eq 123456
+      record.parent_tap_id.should eq 123_456
     end
 
     it 'should return nil if there is no is_part_of or relation' do
@@ -97,7 +98,7 @@ describe SupplejackApi::Enrichable do
       record.fragments.build(priority: -1)
       record.fragments.build(priority: 5)
 
-      record.send(:sorted_fragments).map(&:priority).should eq [-1,0,5,10] 
+      record.send(:sorted_fragments).map(&:priority).should eq [-1, 0, 5, 10]
     end
   end
 end
