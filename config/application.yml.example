@@ -1,0 +1,61 @@
+# Add account credentials and API keys here.
+# See http://railsapps.github.com/rails-environment-variables.html
+# This file should be listed in .gitignore to keep your settings secret!
+# Each entry sets a local environment variable and overrides ENV variables in the Unix shell.
+# For example, setting:
+# GMAIL_USERNAME: Your_Gmail_Username
+# makes 'Your_Gmail_Username' available as ENV["GMAIL_USERNAME"]
+# Add application configuration variables here, as shown below.
+#
+
+development:
+  API_HOST: "http://127.0.0.1:3000"
+  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
+  API_MONGOID_HOSTS: "localhost:27017"
+  MANAGER_HOST: "http://127.0.0.1:3001"
+  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
+  HARVESTER_CACHING_ENABLED: true
+  AIRBRAKE_API_KEY: "anc123"
+  LINK_CHECKING_ENABLED: "true"
+  LINKCHECKER_RECIPIENTS: "test@test.com"
+
+test:
+  API_HOST: "http://127.0.0.1:3000"
+  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
+  API_MONGOID_HOSTS: "localhost:27017"
+  MANAGER_HOST: "http://127.0.0.1:3001"
+  MANAGER_API_KEY: "12345"
+  HARVESTER_CACHING_ENABLED: false
+  AIRBRAKE_API_KEY: "anc123"
+  LINK_CHECKING_ENABLED: "true"
+  LINKCHECKER_RECIPIENTS: "test@test.com"
+
+staging:
+  API_HOST: "http://api.harvester.org"
+  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
+  MANAGER_HOST: "http://harvester.org"
+  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
+  HARVESTER_CACHING_ENABLED: true
+  AIRBRAKE_API_KEY: "anc123"
+  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
+  LINK_CHECKING_ENABLED: "true"
+  HOST: 'worker.harvester.org'
+  SECRET_TOKEN: 'some long hash value'
+  DEVISE_MAILER: "info@harvester.org"
+  LINKCHECKER_RECIPIENTS: "bill@harvester.org"
+  API_MONGOID_HOSTS: "localhost:27017"
+
+production:
+  API_HOST: "http://api.harvester.org"
+  MANAGER_HOST: "http://harvester.org"
+  MANAGER_API_KEY: "abc123"
+  HARVESTER_CACHING_ENABLED: true
+  AIRBRAKE_API_KEY: "anc123"
+  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
+  LINK_CHECKING_ENABLED: "true"
+  SMTP_ADDRESS: "your SMTP address"
+  HOST: "worker.harvester.org"
+  SECRET_TOKEN: 'some long hash value'
+  DEVISE_MAILER: "info@harvester.org"
+  LINKCHECKER_RECIPIENTS: "bill@harvester.org"
+  API_MONGOID_HOSTS: "localhost:27017"
