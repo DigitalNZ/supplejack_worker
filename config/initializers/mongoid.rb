@@ -1,8 +1,6 @@
-# frozen_string_literal: true
-
 module Mongoid
   module Document
-    def as_json(options = {})
+    def as_json(options={})
       attrs = super(options)
       attrs['id'] = attrs['_id'].to_s
       attrs
@@ -12,11 +10,11 @@ end
 
 module BSON
   class ObjectId
-    def to_json(*_args)
+    def to_json(*args)
       to_s.to_json
     end
 
-    def as_json(*_args)
+    def as_json(*args)
       to_s.as_json
     end
   end
