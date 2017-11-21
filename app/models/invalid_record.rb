@@ -10,8 +10,6 @@ class InvalidRecord
   include Mongoid::Timestamps
   include Mongoid::Attributes::Dynamic
 
-  include ActiveModel::SerializerSupport
-
   field :raw_data,        type: String
   field :error_messages,  type: Array
 

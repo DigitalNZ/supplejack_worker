@@ -14,7 +14,7 @@ class AbstractJobsController < ApplicationController
     response.headers['X-total'] = @abstract_jobs.total_count.to_s
     response.headers['X-offset'] = @abstract_jobs.offset_value.to_s
     response.headers['X-limit'] = @abstract_jobs.limit_value.to_s
-    render json: @abstract_jobs, serializer: ActiveModel::ArraySerializer
+    render json: @abstract_jobs
   end
 
   def jobs_since

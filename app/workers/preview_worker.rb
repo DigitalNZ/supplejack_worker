@@ -83,7 +83,7 @@ class PreviewWorker < HarvestWorker
     preview.deletable = record.deletable?
     preview.field_errors = record.field_errors.to_json
     preview.validation_errors = validation_errors(record).to_json unless record.valid?
-    preview.save
+    preview.save!
 
     preview.update_attribute(:status, "Raw data parsing complete.")
   end

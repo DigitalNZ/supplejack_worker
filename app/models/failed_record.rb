@@ -10,8 +10,6 @@ class FailedRecord
   include Mongoid::Timestamps
   include Mongoid::Attributes::Dynamic
 
-  include ActiveModel::SerializerSupport
-
   field :exception_class, type: String
   field :message,         type: String
   field :backtrace,       type: Array
