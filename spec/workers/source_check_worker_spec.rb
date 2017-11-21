@@ -5,7 +5,7 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'rails_helper'
 
 describe SourceCheckWorker do
 
@@ -97,12 +97,12 @@ describe SourceCheckWorker do
     end
 
     it "should return true if the collection is active" do
-      worker.send(:source_active?).should be_true
+      worker.send(:source_active?).should be_truthy
     end
 
     it "should return false if the collection is suppressed" do
       RestClient.stub(:get) { '{"status":"suppressed"}' }
-      worker.send(:source_active?).should be_false
+      worker.send(:source_active?).should be_falsey
     end
   end
 
@@ -125,14 +125,14 @@ describe SourceCheckWorker do
       before { worker.stub(:get) { nil } }
 
       it "returns false" do
-        worker.send(:up?,'http://google.com').should be_false
+        worker.send(:up?,'http://google.com').should be_falsey
       end
     end
 
     it "gets the url and validates it" do
       worker.should_receive(:get).with('http://blah.com') { response }
       worker.should_receive(:validate_link_check_rule).with(response, 'abc123') { true }
-      worker.send(:up?,'http://blah.com').should be_true
+      worker.send(:up?,'http://blah.com').should be_truthy
     end
   end
 

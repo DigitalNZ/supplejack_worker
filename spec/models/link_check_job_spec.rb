@@ -5,10 +5,10 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require 'spec_helper'
+require 'rails_helper'
 
 describe LinkCheckJob do
-  let(:link_check_job) { FactoryGirl.build(:link_check_job, url: "http://google.co.nz") }
+  let(:link_check_job) { FactoryBot.build(:link_check_job, url: "http://google.co.nz") }
 
   before { ENV['LINK_CHECKING_ENABLED'] = "true" }
   

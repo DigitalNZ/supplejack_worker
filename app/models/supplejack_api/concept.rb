@@ -10,7 +10,7 @@ module SupplejackApi
     include Mongoid::Document
     include Mongoid::Attributes::Dynamic
 
-    store_in session: 'api', collection: 'concepts'
+    store_in client: 'api', collection: 'concepts'
 
     embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiConcept::ConceptFragment'
 

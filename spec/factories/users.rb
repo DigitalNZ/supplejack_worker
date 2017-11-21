@@ -5,5 +5,9 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-module ApplicationHelper
+# Read about factories at https://github.com/thoughtbot/factory_girl
+
+FactoryBot.define do
+  factory :user do
+  end
 end

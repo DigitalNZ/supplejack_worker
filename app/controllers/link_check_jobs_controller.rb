@@ -8,13 +8,13 @@
 class LinkCheckJobsController < ApplicationController
 
   def create
-    @link_check = LinkCheckJob.create(link_check_params)
+    @link_check = LinkCheckJob.create!(link_check_params)
     render json: @link_check
   end
 
   private
 
   def link_check_params
-    params.require(:link_check).permit(:url, :record_id, :source_id)
+    params.require(:link_check).permit(:url, :source_id, :record_id)
   end
 end

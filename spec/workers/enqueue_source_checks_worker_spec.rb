@@ -5,7 +5,7 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'rails_helper'
 
 describe EnqueueSourceChecksWorker do
 
@@ -25,7 +25,7 @@ describe EnqueueSourceChecksWorker do
     it "should enqueue a source check worker for each source to check" do
       worker.perform
       ["1", "2"].each do |source|
-        expect(SourceCheckWorker).to have_enqueued_job(source)
+        expect(SourceCheckWorker).to have_enqueued_sidekiq_job(source)
       end
     end    
   end
