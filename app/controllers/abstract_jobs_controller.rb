@@ -11,7 +11,7 @@ class AbstractJobsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @abstract_jobs = AbstractJob.search(params)
+    @abstract_jobs = AbstractJob.search(search_params)
     response.headers['X-total'] = @abstract_jobs.total_count.to_s
     response.headers['X-offset'] = @abstract_jobs.offset_value.to_s
     response.headers['X-limit'] = @abstract_jobs.limit_value.to_s
@@ -25,6 +25,6 @@ class AbstractJobsController < ApplicationController
   private
 
   def search_params
-    params.permit(:status, :environment, :parser_id, :datetime, :page)
+    params.permit(:status, :environment, :parser_id, :datetime)
   end
 end
