@@ -1,9 +1,21 @@
+module Mongoid
+  module Document
+    def as_json(options={})
+      attrs = super(options)
+      attrs['id'] = attrs['_id'].to_s
+      attrs
+    end
+  end
+end
+
 module BSON
   class ObjectId
-    def as_json(*args)
-      to_s
+    def to_json(*args)
+      to_s.to_json
     end
 
-    alias :to_json :as_json
+    def as_json(*args)
+      to_s.as_json
+    end
   end
 end
