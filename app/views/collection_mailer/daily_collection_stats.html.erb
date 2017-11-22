@@ -1,0 +1,46 @@
+<%#
+The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
+and is licensed under the GNU General Public License, version 3. 
+See https://github.com/DigitalNZ/supplejack_worker for details. 
+
+Supplejack was created by DigitalNZ at the National Library of NZ
+and the Department of Internal Affairs. http://digitalnz.org/supplejack
+%>
+
+<p>--- Daily Link Checker Collection Report For <%= (Date.today - 1.day) %> - <%= Rails.env.try(:capitalize) %> ---</p>
+<% if @statistics_collections.empty? %>
+  <p> No activations, suppressions or deletions </p>
+<% end %>
+
+<% @statistics_collections.each do |collection| %>
+<p><%= collection.source_id %></p>
+  <% if collection.activated_records.present? %>
+    <p>Activations:(<%= collection.activated_records.size %>): </p>
+    <% collection.activated_records.each do |record| %>
+      <p> 
+        <span><%= record["record_id"] %>: </span> 
+        <span><%= link_to truncate(record["landing_url"], length: 50), record["landing_url"] %> </span>
+      </p>
+    <% end %>
+  <% end %>
+  <% if collection.suppressed_records.present? %>
+    <p>Suppressions (<%= collection.suppressed_records.size %>): </p>
+    <% collection.suppressed_records.each do |record| %>
+      <p> 
+        <span><%= record["record_id"] %>: </span>
+        <span><%= link_to truncate(record["landing_url"], length: 50), record["landing_url"] %> </span>
+      </p>
+    <% end %>
+  <% end %>
+  <% if collection.deleted_records.present? %>
+    <p>Deletions (<%= collection.deleted_records.size %>): </p>
+    <% collection.deleted_records.each do |record| %>
+      <p> 
+        <span><%= record["record_id"] %>: </span>
+        <span><%= link_to truncate(record["landing_url"], length: 50), record["landing_url"] %> </span>
+      </p>
+    <% end %>
+  <% end %>
+<% end %>
+
+<p>--- End of Daily Link Checker Collection Report ---</p>
