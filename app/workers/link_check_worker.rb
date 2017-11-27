@@ -27,8 +27,8 @@ class LinkCheckWorker
         end
 
         if rules.active
-          response = link_check(link_check_job.url, link_check_job.source._id)
-          if response && validate_link_check_rule(response, link_check_job.source._id)
+          response = link_check(link_check_job.url, link_check_job.source.id)
+          if response && validate_link_check_rule(response, link_check_job.source.id)
             Sidekiq.logger.info "Unsuppressing Record for landing_url #{link_check_job.url}"
             set_record_status(link_check_job.record_id, 'active') if strike > 0
           else
@@ -64,7 +64,7 @@ class LinkCheckWorker
   end
 
   def rules
-    link_check_rule(link_check_job.source._id)
+    link_check_rule(link_check_job.source.id)
   end
 
   def link_check(url, collection)
