@@ -28,7 +28,7 @@ describe LinkCheckWorker do
     context 'job and source exist for worker' do
       before do
         worker.stub(:link_check_job) { link_check_job }
-        link_check_job.stub_chain(:source, :_id) { 'abc123' }
+        link_check_job.stub_chain(:source, :id) { 'abc123' }
         worker.stub(:rules) { link_check_rule }
         worker.stub(:link_check) { response }
       end
@@ -60,7 +60,7 @@ describe LinkCheckWorker do
       end
 
       it 'calls the link check method' do
-        expect(worker).to receive(:link_check).with(link_check_job.url, link_check_job.source._id)
+        expect(worker).to receive(:link_check).with(link_check_job.url, link_check_job.source.id)
       end
 
       context 'when response is nil' do
@@ -77,7 +77,7 @@ describe LinkCheckWorker do
 
         it 'validates the response' do
           expect(worker).to receive(:validate_link_check_rule).with(response,
-                                                                    link_check_job.source._id)
+                                                                    link_check_job.source.id)
         end
 
         context 'and response is invalid' do
@@ -284,7 +284,7 @@ describe LinkCheckWorker do
   end
 
   describe '#rules' do
-    before { link_check_job.stub_chain(:source, :_id) { 'abc123' } }
+    before { link_check_job.stub_chain(:source, :id) { 'abc123' } }
 
     it 'should call link_check_rule with the source_id' do
       expect(worker).to receive(:link_check_job) { link_check_job }
