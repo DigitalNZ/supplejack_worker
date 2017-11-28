@@ -98,7 +98,7 @@ describe HarvestWorker do
       end
 
       it 'saves the job' do
-        job.should_receive(:save)
+        job.should_receive(:save!)
         worker.process_record(record, job)
       end
 
