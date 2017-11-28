@@ -71,7 +71,7 @@ class HarvestWorker < AbstractWorker
       Airbrake.notify(e)
     end
 
-    job.save
+    job.save!
   end
 
   def post_to_api(attributes, async = true)
