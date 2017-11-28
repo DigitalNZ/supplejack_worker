@@ -118,7 +118,7 @@ class AbstractJob
         self.end_time = Time.now
         calculate_throughput
         calculate_errors_count
-        save
+        save!
       end
 
       transitions to: :finished
@@ -129,7 +129,7 @@ class AbstractJob
         self.start_time = Time.now if start_time.blank?
         self.end_time = Time.now
         calculate_errors_count
-        save
+        save!
       end
 
       transitions to: :failed
@@ -140,7 +140,7 @@ class AbstractJob
         self.start_time = Time.now if start_time.blank?
         self.end_time = Time.now
         calculate_errors_count
-        save
+        save!
       end
 
       transitions to: :stopped
