@@ -22,7 +22,7 @@ gem 'parse-cron'
 gem 'puma', '~> 3.7'
 gem 'rails', '~> 5.1.4'
 gem 'responders'
-gem 'sidekiq', '4.1.1'
+gem 'sidekiq'
 gem 'sinatra', :require => nil
 gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common', branch: 'gm/rails-5.1'
 gem 'whenever', require: false
