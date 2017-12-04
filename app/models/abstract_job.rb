@@ -45,7 +45,7 @@ class AbstractJob
   scope :disposable, -> { lt(created_at: Time.now - 3.months) }
 
   def self.search(params)
-    search_params = params.to_h.try(:dup).try(:symbolize_keys) || {}
+    search_params = params.to_h.try(:symbolize_keys) || {}
     valid_fields = %i[status environment parser_id]
 
     page = search_params.delete(:page) || 1
