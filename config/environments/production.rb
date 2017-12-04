@@ -73,4 +73,14 @@ Rails.application.configure do
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
+
+  ActionMailer::Base.delivery_method = :smtp
+  # Include your app's configuration here:
+  ActionMailer::Base.smtp_settings = {
+    address: ENV['SMTP_ADDRESS'],
+    enable_starttls_auto: ENV['ENABLE_STARTTLS_AUTO'] == 'true',
+    port: 25
+  }
+
+  config.action_mailer.default_url_options = { host: ENV['HOST'] }
 end
