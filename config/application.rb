@@ -24,6 +24,8 @@ module HarvesterWorker
     config.load_defaults 5.1
     config.eager_load_paths += %W[#{Rails.root}/lib]
 
+    config.time_zone = 'Wellington'
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
