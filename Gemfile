@@ -2,10 +2,7 @@
 
 source 'https://rubygems.org'
 
-git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')
-  "https://github.com/#{repo_name}.git"
-end
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v1.0.0'
 
 gem 'aasm'
 gem 'active_model_serializers', '~> 0.10.7'
