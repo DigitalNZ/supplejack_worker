@@ -1,7 +1,7 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -18,8 +18,8 @@ development:
       hosts:
         <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
-        mode:
-          read: :nearest
+        read:
+          mode: :nearest
   options:
 
 test:
@@ -29,8 +29,8 @@ test:
       hosts:
         - localhost:27017
       options:
-        mode:
-          read: :nearest
+        read:
+          mode: :nearest
         max_retries: 1
         retry_interval: 0
     api:
@@ -38,8 +38,8 @@ test:
       hosts:
         <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
-        mode:
-          read: :nearest
+        read:
+          mode: :nearest
 
 staging:
   clients:
@@ -48,16 +48,16 @@ staging:
       hosts:
         - localhost:27017
       options:
-        mode:
-          read: :primary
+        read:
+          mode: :primary
         pool_size: 500
     api:
       database: dnz_api_staging
       hosts:
         <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
-        mode:
-          read: :primary
+        read:
+          mode: :primary
         pool_size: 500
 
 production:
@@ -67,15 +67,15 @@ production:
       hosts:
         <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
-        mode:
-          read: :primary
+        read:
+          mode: :primary
         pool_size: 500
     api:
       database: dnz_api_production
       hosts:
         <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
       options:
-        mode:
-          read: :primary_preferred
+        read:
+          mode: :primary_preferred
         pool_size: 500
 
