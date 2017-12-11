@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
 # and is licensed under the GNU General Public License, version 3.
 # See https://github.com/DigitalNZ/supplejack_worker for details.
@@ -10,8 +12,6 @@ class AbstractJob
   include Mongoid::Timestamps
   include Mongoid::Attributes::Dynamic
   include AASM
-
-  include ActiveModel::SerializerSupport
 
   index status: 1
 
@@ -38,20 +38,20 @@ class AbstractJob
   embeds_many :failed_records
   embeds_one :harvest_failure
 
-  belongs_to :harvest_schedule
+  belongs_to :harvest_schedule, optional: true
 
   validates_presence_of   :parser_id, :environment
 
   scope :disposable, -> { lt(created_at: Time.now - 3.months) }
 
   def self.search(params)
-    search_params = params.try(:dup).try(:symbolize_keys) || {}
-    valid_fields = [:status, :environment, :parser_id]
+    search_params = params.to_h.try(:symbolize_keys) || {}
+    valid_fields = %i[status environment parser_id]
 
     page = search_params.delete(:page) || 1
     amount = search_params.delete(:limit) || nil
 
-    search_params.delete_if {|key, value| !valid_fields.include?(key) }
+    search_params.delete_if { |key, _value| !valid_fields.include?(key) }
 
     scope = self.page(page.to_i).desc(:start_time)
 
@@ -68,31 +68,31 @@ class AbstractJob
   end
 
   def self.clear_raw_data
-    self.disposable.each(&:clear_raw_data)
+    disposable.each(&:clear_raw_data)
   end
 
   def enqueue
-    raise NotImplementedError.new("All subclasses of AbstractJob must define a #enqueue method.")
+    raise NotImplementedError, 'All subclasses of AbstractJob must define a #enqueue method.'
   end
 
   def parser
     return @parser if @parser.present?
     if version_id.present?
-      @parser = ParserVersion.find(self.version_id, params: {parser_id: self.parser_id})
-    elsif environment.present? and not preview?
-      version = ParserVersion.find(:one, from: :current, params: {parser_id: self.parser_id, environment: self.environment})
-      version.parser_id = self.parser_id
+      @parser = ParserVersion.find(version_id, params: { parser_id: parser_id })
+    elsif environment.present? && !preview?
+      version = ParserVersion.find(:one, from: :current, params: { parser_id: parser_id, environment: environment })
+      version.parser_id = parser_id
       self.version_id = version.id if version.present?
       @parser = version
     else
-      parser = Parser.find(self.parser_id)
-      parser.content = self.parser_code if self.parser_code.present?
+      parser = Parser.find(parser_id)
+      parser.content = parser_code if parser_code.present?
       @parser = parser
     end
   end
 
   def required_enrichments
-    self.parser.enrichment_definitions(environment).dup.keep_if {|name, options| options[:required_for_active_record] }.keys
+    parser.enrichment_definitions(environment).dup.keep_if { |_name, options| options[:required_for_active_record] }.keys
   end
 
   aasm column: 'status' do
@@ -107,101 +107,98 @@ class AbstractJob
         self.start_time = Time.now
         self.records_count = 0
         self.processed_count = 0
-        save
+        save!
       end
 
-      transitions :from => :ready, :to => :active
+      transitions from: :ready, to: :active
     end
 
     event :finish do
       after do
         self.end_time = Time.now
-        self.calculate_throughput
-        self.calculate_errors_count
-        save
+        calculate_throughput
+        calculate_errors_count
+        save!
       end
 
-      transitions :to => :finished
+      transitions to: :finished
     end
 
     event :error do
       after do
-        self.start_time = Time.now if self.start_time.blank?
+        self.start_time = Time.now if start_time.blank?
         self.end_time = Time.now
-        self.calculate_errors_count
-        save
+        calculate_errors_count
+        save!
       end
 
-      transitions :to => :failed
+      transitions to: :failed
     end
 
     event :stop do
       after do
-        self.start_time = Time.now if self.start_time.blank?
+        self.start_time = Time.now if start_time.blank?
         self.end_time = Time.now
-        self.calculate_errors_count
-        save
+        calculate_errors_count
+        save!
       end
 
-      transitions :to => :stopped
+      transitions to: :stopped
     end
-
   end
 
-  def fail_job(status_message=nil)
-    self.update_attribute(:status_message, status_message) if status_message.present?
-    self.error!
+  def fail_job(status_message = nil)
+    update_attribute(:status_message, status_message) if status_message.present?
+    error!
   end
 
   def test?
-    self.environment == "test"
+    environment == 'test'
   end
 
   def preview?
-    self.environment == "preview"
+    environment == 'preview'
   end
 
   def calculate_throughput
-    if self.duration.to_f > 0
-      self.throughput = self.records_count.to_f / self.duration.to_f
-    end
+    self.throughput = records_count.to_f / duration.to_f if duration.to_f > 0
   end
 
   def self.jobs_since(params)
-      datetime = DateTime.parse( params['datetime'] )
-      AbstractJob.where(:start_time.gte => datetime.getutc, environment: params["environment"], status: params["status"] )
+    datetime = DateTime.parse(params['datetime'])
+    AbstractJob.where(:start_time.gte => datetime.getutc, environment: params['environment'], status: params['status'])
   end
 
   def duration
-    return nil unless self.start_time && self.end_time
-    self.end_time.to_i - self.start_time.to_i
+    return nil unless start_time && end_time
+    end_time.to_i - start_time.to_i
   end
 
   def calculate_errors_count
-    self.invalid_records_count = self.invalid_records.count
-    self.failed_records_count = self.failed_records.count
+    self.invalid_records_count = invalid_records.count
+    self.failed_records_count = failed_records.count
   end
 
   def total_errors_count
-    self.invalid_records.count + self.failed_records.count
+    invalid_records.count + failed_records.count
   end
 
   def errors_over_limit?
-    self.total_errors_count > 100
+    total_errors_count > 100
   end
 
   def clear_raw_data
-    self.invalid_records.destroy_all
-    self.failed_records.destroy_all
+    invalid_records.destroy_all
+    failed_records.destroy_all
   end
 
   def increment_records_count!
     self.records_count += 1
-    self.save
+    save!
   end
 
   def increment_processed_count!
     self.processed_count += 1
-    self.save
+    save!
   end
 end

@@ -1,105 +1,105 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# frozen_string_literal: true
+
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-require "spec_helper"
+require 'rails_helper'
 
 describe AbstractWorker do
-
   let(:worker) { AbstractWorker.new }
-  let(:job) { FactoryGirl.create(:harvest_job) }
+  let(:job) { FactoryBot.create(:harvest_job) }
 
   before { AbstractJob.stub(:find) { job } }
 
-  describe "#stop_harvest?" do
-    before { job.stub(:enqueue_enrichment_jobs) { nil }  }
-    
-    context "status is stopped" do
-      let(:job) { FactoryGirl.create(:harvest_job, status: "stopped") }
+  describe '#stop_harvest?' do
+    before { job.stub(:enqueue_enrichment_jobs) { nil } }
 
-      it "returns true" do
-        worker.stop_harvest?.should be_true
+    context 'status is stopped' do
+      let(:job) { FactoryBot.create(:harvest_job, status: 'stopped') }
+
+      it 'returns true' do
+        worker.stop_harvest?.should be_truthy
       end
 
-      it "updates the job with the end time" do
+      it 'updates the job with the end time' do
         job.should_receive(:finish!)
         worker.stop_harvest?
       end
 
-      it "returns true true when errors over limit" do
+      it 'returns true true when errors over limit' do
         job.stub(:errors_over_limit?) { true }
-        worker.stop_harvest?.should be_true
+        worker.stop_harvest?.should be_truthy
       end
     end
 
-    context "status is finished" do
-      let(:job) { FactoryGirl.create(:harvest_job, status: "finished") }
+    context 'status is finished' do
+      let(:job) { FactoryBot.create(:harvest_job, status: 'finished') }
 
-      it "returns true" do
-        worker.stop_harvest?.should be_true
+      it 'returns true' do
+        worker.stop_harvest?.should be_truthy
       end
 
-      it "should not finsihed the job (again)" do
+      it 'should not finsihed the job (again)' do
         job.should_not_receive(:finish!)
         worker.stop_harvest?
       end
     end
 
-    context "status is active" do
-      let(:job) { FactoryGirl.create(:harvest_job, status: "active") }
+    context 'status is active' do
+      let(:job) { FactoryBot.create(:harvest_job, status: 'active') }
 
-      it "returns true when errors over limit" do
+      it 'returns true when errors over limit' do
         job.stub(:errors_over_limit?) { true }
-        worker.stop_harvest?.should be_true
+        worker.stop_harvest?.should be_truthy
       end
 
-      it "returns false" do
-        worker.stop_harvest?.should be_false
+      it 'returns false' do
+        worker.stop_harvest?.should be_falsey
       end
     end
   end
 
-  describe "#api_update_finished?" do
-    
-    it "should return true if the api update is finished" do
+  describe '#api_update_finished?' do
+    it 'should return true if the api update is finished' do
       job.stub(:posted_records_count) { 100 }
       job.stub(:records_count) { 100 }
-      worker.send(:api_update_finished?).should be_true
+      worker.send(:api_update_finished?).should be_truthy
     end
 
-    it "should return false if the api update is not finished" do
+    it 'should return false if the api update is not finished' do
       job.stub(:posted_records_count) { 10 }
       job.stub(:records_count) { 100 }
-      worker.send(:api_update_finished?).should be_false
+      worker.send(:api_update_finished?).should be_falsey
     end
 
-    it "should reload the enrichment job" do
+    it 'should reload the enrichment job' do
       job.should_receive(:reload)
       worker.send(:api_update_finished?)
     end
   end
 
-  describe "#sanitize_id" do
-    it "accepts strings and returns the string" do
-      worker.send(:sanitize_id, "abc").should eq "abc"
+  describe '#sanitize_id' do
+    it 'accepts strings and returns the string' do
+      worker.send(:sanitize_id, 'abc').should eq 'abc'
     end
 
-    it "it accepts serialized object_ids and returns the id string" do
-      worker.send(:sanitize_id, {"$oid" => "preview123"}).should eq "preview123"
+    it 'it accepts serialized object_ids and returns the id string' do
+      worker.send(:sanitize_id, '$oid' => 'preview123').should eq 'preview123'
     end
   end
 
-  describe "#job" do
-    it "should find the job" do
+  describe '#job' do
+    it 'should find the job' do
       worker.instance_variable_set(:@job_id, 123)
-      AbstractJob.should_receive(:find).with("123") { job }
+      AbstractJob.should_receive(:find).with('123') { job }
       worker.job.should eq job
     end
 
-    it "memoizes the result" do
+    it 'memoizes the result' do
       AbstractJob.should_receive(:find).once
       worker.job
       worker.job

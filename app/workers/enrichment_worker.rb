@@ -1,7 +1,9 @@
-# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government, 
-# and is licensed under the GNU General Public License, version 3. 
-# See https://github.com/DigitalNZ/supplejack_worker for details. 
-# 
+# frozen_string_literal: true
+
+# The Supplejack Worker code is Crown copyright (C) 2014, New Zealand Government,
+# and is licensed under the GNU General Public License, version 3.
+# See https://github.com/DigitalNZ/supplejack_worker for details.
+#
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
@@ -34,7 +36,7 @@ class EnrichmentWorker < AbstractWorker
       process_record(record)
     end
 
-    while not api_update_finished?
+    until api_update_finished?
       break if stop_harvest?
       sleep(2)
     end
@@ -47,13 +49,13 @@ class EnrichmentWorker < AbstractWorker
   def records
     if job.record_id.nil?
       if job.harvest_job.present?
-        SupplejackApi::Record.where("fragments.job_id" => job.harvest_job.id.to_s).no_timeout
+        SupplejackApi::Record.where('fragments.job_id' => job.harvest_job.id.to_s).no_timeout
       else
-        SupplejackApi::Record.where("fragments.source_id" => job.parser.source.source_id).no_timeout
+        SupplejackApi::Record.where('fragments.source_id' => job.parser.source.source_id).no_timeout
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.where(record_id: job.record_id, "fragments.source_id" => job.parser.source.source_id).no_timeout
+      klass.where(record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id).no_timeout
     end
   end
 
@@ -66,13 +68,12 @@ class EnrichmentWorker < AbstractWorker
         return unless enrichment.enrichable?
 
         enrichment.set_attribute_values
-        unless enrichment.errors.any?
-          post_to_api(enrichment) unless job.test?
-        else
+        if enrichment.errors.any?
           Airbrake.notify(StandardError.new("Enrichment Errors: #{enrichment.errors.inspect}"))
           Sidekiq.logger.error "Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n PARSER CLASS: #{@parser_class.inspect}"
+        else
+          post_to_api(enrichment) unless job.test?
         end
-
       rescue RestClient::ResourceNotFound => e
         Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}")
       rescue StandardError => e
@@ -103,9 +104,8 @@ class EnrichmentWorker < AbstractWorker
   def post_to_api(enrichment)
     enrichment.record_attributes.as_json.each do |record_id, attributes|
       attrs = attributes.merge(job_id: job.id.to_s)
-      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/fragments.json", {fragment: attrs, required_fragments: job.required_enrichments}, job.id.to_s)
+      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
       job.increment_records_count!
     end
   end
-
 end
