@@ -9,6 +9,7 @@
 
 class Snippet < ActiveResource::Base
   self.site = ENV['MANAGER_HOST']
+  headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
 
   def self.find_by_name(name, environment)
     snippet = find(:one, from: :current_version, params: { name: name, environment: environment })
