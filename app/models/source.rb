@@ -7,8 +7,10 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
+# app/models/source.rb
 class Source < ActiveResource::Base
   self.site = ENV['MANAGER_HOST']
+  headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
 
   schema do
     attribute :name,        				:string

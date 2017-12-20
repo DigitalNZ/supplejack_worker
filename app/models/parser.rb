@@ -11,6 +11,7 @@ class Parser < ActiveResource::Base
   include ParserLoaderHelpers
 
   self.site = ENV['MANAGER_HOST']
+  headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
 
   def last_harvested_at
     job = harvest_jobs.first

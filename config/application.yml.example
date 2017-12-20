@@ -6,37 +6,33 @@
 # GMAIL_USERNAME: Your_Gmail_Username
 # makes 'Your_Gmail_Username' available as ENV["GMAIL_USERNAME"]
 # Add application configuration variables here, as shown below.
-#
 
 development:
   API_HOST: "http://127.0.0.1:3000"
-  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
+  HARVESTER_API_KEY: <YOUR_HARVESTER_API_KEY>
   API_MONGOID_HOSTS: "localhost:27017"
   MANAGER_HOST: "http://127.0.0.1:3001"
-  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
   AIRBRAKE_API_KEY: "anc123"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
-  WORKER_KEY: workerkey
+  WORKER_KEY: <YOUR_WORKER_KEY>
 
 test:
   API_HOST: "http://127.0.0.1:3000"
-  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
+  HARVESTER_API_KEY: <YOUR_HARVESTER_API_KEY>
   API_MONGOID_HOSTS: "localhost:27017"
   MANAGER_HOST: "http://127.0.0.1:3001"
-  MANAGER_API_KEY: "12345"
   HARVESTER_CACHING_ENABLED: false
   AIRBRAKE_API_KEY: "anc123"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
-  WORKER_KEY: workerkey
+  WORKER_KEY: <YOUR_WORKER_KEY>
 
 staging:
   API_HOST: "http://api.harvester.org"
-  HARVESTER_API_KEY: "provide Supplejack API TOKEN with HARVESTER previleges"
+  HARVESTER_API_KEY: <YOUR_HARVESTER_API_KEY>
   MANAGER_HOST: "http://harvester.org"
-  MANAGER_API_KEY: "jRvU4MV5FGmhSoxpKrXz"
   HARVESTER_CACHING_ENABLED: true
   AIRBRAKE_API_KEY: "anc123"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
@@ -46,12 +42,11 @@ staging:
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
   API_MONGOID_HOSTS: "localhost:27017"
-  WORKER_KEY: workerkey
+  WORKER_KEY: <YOUR_WORKER_KEY>
 
 production:
   API_HOST: "http://api.harvester.org"
   MANAGER_HOST: "http://harvester.org"
-  MANAGER_API_KEY: "abc123"
   HARVESTER_CACHING_ENABLED: true
   AIRBRAKE_API_KEY: "anc123"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
@@ -62,4 +57,5 @@ production:
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
   API_MONGOID_HOSTS: "localhost:27017"
-  WORKER_KEY: workerkey
+  HARVESTER_API_KEY: <YOUR_HARVESTER_API_KEY>
+  WORKER_KEY: <YOUR_WORKER_KEY>

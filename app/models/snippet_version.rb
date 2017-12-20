@@ -7,9 +7,12 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
+# app/models/snippet_version.rb
 class SnippetVersion < ActiveResource::Base
   self.site = ENV['MANAGER_HOST'] + '/snippets/:snippet_id/'
   self.element_name = 'version'
+  headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
+
 
   def snippet_id
     @attributes[:snippet_id] || @prefix_options[:snippet_id]

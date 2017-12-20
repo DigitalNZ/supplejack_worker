@@ -7,10 +7,13 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
+# app/models/parser_version.rb
 class ParserVersion < ActiveResource::Base
   include ParserLoaderHelpers
 
   self.site = ENV['MANAGER_HOST'] + '/parsers/:parser_id/'
+  headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
+
   self.element_name = 'version'
 
   def last_harvested_at
