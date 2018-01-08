@@ -11,10 +11,14 @@ require 'rails_helper'
 
 describe Snippet do
   let(:snippet) { Snippet.new(name: 'Copyright') }
+  RSpec.configure { |c| c.include ActiveResourceMockHelper }
 
   describe '.find_by_name' do
     it 'finds the snippet' do
-      Snippet.should_receive(:find).with(:one, from: :current_version, params: { name: 'Copyright', environment: :staging }) { snippet }
+      ActiveResource::HttpMock.respond_to do |mock|
+        mock.get '/snippets/current_version.json?environment=staging&name=Copyright', required_headers, snippet.to_json
+      end
+
       Snippet.find_by_name('Copyright', :staging).should eq snippet
     end
 

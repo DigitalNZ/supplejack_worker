@@ -14,6 +14,7 @@ class Snippet < ActiveResource::Base
   def self.find_by_name(name, environment)
     snippet = find(:one, from: :current_version, params: { name: name, environment: environment })
   rescue StandardError => e
+    # TODO: Rescue a specific exception
     Rails.logger.error "Snippet with name: #{name} was not found"
     Airbrake.notify(e)
     return nil
