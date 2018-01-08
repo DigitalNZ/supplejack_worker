@@ -10,10 +10,10 @@
 require 'rails_helper'
 
 describe ParserVersion do
-  let(:parser) { Parser.new(name: 'Europeana', id: '123', data_type: 'Record') }
+  let(:parser) { Parser.new(name: 'Europeana', id: '123', data_type: 'Record', source: source) }
   let(:parser_version) { ParserVersion.new(parser_id: '123') }
   let(:job) { mock_model(HarvestJob).as_null_object }
-  let(:source) { Source.new }
+  let(:source) { Source.new(name: 'source_name') }
 
   describe '#last_harvested_at' do
     let!(:time) { Time.now }
@@ -42,6 +42,17 @@ describe ParserVersion do
     it 'finds all the harvest jobs with specified status' do
       HarvestJob.should_receive(:where).with(parser_id: parser_version.parser_id, status: 'finished') { job }
       parser_version.harvest_jobs('finished')
+    end
+  end
+
+  describe '#source' do
+    RSpec.configure { |c| c.include ActiveResourceMockHelper }
+
+    it 'finds parser thru active resource and return its source' do
+      ActiveResource::HttpMock.respond_to do |mock|
+        mock.get '/parsers/123.json', required_headers, parser.to_json
+      end
+      expect(parser_version.source).to eq parser.source
     end
   end
 end
