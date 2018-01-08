@@ -12,6 +12,8 @@ class EnrichmentJobSerializer < ActiveModel::Serializer
   attributes :created_at, :duration, :status, :status_message, :user_id, :parser_id, :version_id, :environment, :enrichment
   attributes :posted_records_count, :processed_count, :record_id
 
+  # attribute starting with _ does not get serialized via attributes eg :_type
+  # that's why we had to explicity define the attribute here
   attribute :_type do
     object._type
   end

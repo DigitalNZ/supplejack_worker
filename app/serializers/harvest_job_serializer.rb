@@ -12,6 +12,8 @@ class HarvestJobSerializer < ActiveModel::Serializer
   attributes :created_at, :duration, :status, :status_message, :user_id, :parser_id, :version_id, :environment
   attributes :failed_records_count, :invalid_records_count, :harvest_schedule_id, :mode, :posted_records_count, :retried_records_count
 
+  # attribute starting with _ does not get serialized via attributes eg :_type
+  # that's why we had to explicity define the attribute here
   attribute :_type do
     object._type
   end
