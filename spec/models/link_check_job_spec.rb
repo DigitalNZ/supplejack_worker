@@ -10,7 +10,7 @@
 require 'rails_helper'
 
 describe LinkCheckJob do
-  let(:link_check_job) { FactoryBot.build(:link_check_job, url: 'http://google.co.nz') }
+  let(:link_check_job) { build(:link_check_job, url: 'http://google.co.nz') }
 
   before { ENV['LINK_CHECKING_ENABLED'] = 'true' }
 

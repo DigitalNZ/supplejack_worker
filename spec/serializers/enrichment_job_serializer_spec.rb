@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe EnrichmentJobSerializer do
-  let!(:enrichment_job) { FactoryBot.create(:enrichment_job) }
+  let!(:enrichment_job) { create(:enrichment_job) }
   let(:serialized) { described_class.new(enrichment_job) }
 
   it 'renders _type attribute with proper value' do
