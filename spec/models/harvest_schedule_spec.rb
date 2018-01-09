@@ -163,7 +163,7 @@ describe HarvestSchedule do
   end
 
   describe '#create_job' do
-    let(:schedule) { FactoryBot.create(:harvest_schedule, parser_id: '1234', environment: 'staging') }
+    let(:schedule) { create(:harvest_schedule, parser_id: '1234', environment: 'staging') }
 
     before do
       schedule.stub(:allowed?) { true }
@@ -221,7 +221,7 @@ describe HarvestSchedule do
   end
 
   describe '#allowed' do
-    let(:schedule) { FactoryBot.create(:harvest_schedule, parser_id: '1234', environment: 'staging') }
+    let(:schedule) { create(:harvest_schedule, parser_id: '1234', environment: 'staging') }
     let(:parser) { double(:parser, parser_id: '1234', allow_full_and_flush: true) }
 
     before do

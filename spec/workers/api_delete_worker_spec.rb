@@ -11,7 +11,7 @@ require 'rails_helper'
 
 describe ApiDeleteWorker do
   let(:worker) { ApiDeleteWorker.new }
-  let(:job) { FactoryBot.create(:harvest_job) }
+  let(:job) { create(:harvest_job) }
 
   describe '#perform' do
     let(:success_response) do

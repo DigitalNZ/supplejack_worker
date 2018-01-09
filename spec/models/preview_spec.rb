@@ -12,7 +12,7 @@ require 'rails_helper'
 describe Preview do
   let(:preview_attributes) { { harvest_job: { user_id: 20, environment: 'preview', index: 150, parser_id: 'abc123', parser_code: 'code' } } }
   let(:job) { HarvestJob.new(environment: 'preview', index: 1, harvest_failure: {}) }
-  let(:preview) { FactoryBot.build(:preview, id: 'abc123') }
+  let(:preview) { build(:preview, id: 'abc123') }
 
   describe '.spawn_preview_worker' do
     before do

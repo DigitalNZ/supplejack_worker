@@ -7,6 +7,7 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
+# FIXME: This class is ONLY used by SupplejackCommon
 class Snippet < ActiveResource::Base
   self.site = ENV['MANAGER_HOST']
   headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
@@ -14,6 +15,7 @@ class Snippet < ActiveResource::Base
   def self.find_by_name(name, environment)
     snippet = find(:one, from: :current_version, params: { name: name, environment: environment })
   rescue StandardError => e
+    # TODO: Rescue a specific exception
     Rails.logger.error "Snippet with name: #{name} was not found"
     Airbrake.notify(e)
     return nil

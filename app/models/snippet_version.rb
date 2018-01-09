@@ -8,6 +8,9 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 # app/models/snippet_version.rb
+#
+# FIXME: This model doesn't seems to be used.
+# Maybe we are just using the lastest version of snippets.
 class SnippetVersion < ActiveResource::Base
   self.site = ENV['MANAGER_HOST'] + '/snippets/:snippet_id/'
   self.element_name = 'version'
