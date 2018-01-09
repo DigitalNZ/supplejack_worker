@@ -10,28 +10,28 @@
 require 'rails_helper'
 
 describe CollectionStatistics do
-  let(:collection_statistics) { FactoryBot.build(:collection_statistics, source_id: 'source_id', day: Date.today) }
+  let(:collection_statistics) { build(:collection_statistics, source_id: 'source_id', day: Date.today) }
 
   context 'validations' do
     it 'should validate uniqueness of collection name' do
       collection_statistics.save
-      collection_stats = FactoryBot.build(:collection_statistics, source_id: 'source_id')
+      collection_stats = build(:collection_statistics, source_id: 'source_id')
       collection_stats.should_not be_valid
     end
 
     it 'should validate the uniqueness of day' do
       collection_statistics.save
-      collection_stats = FactoryBot.build(:collection_statistics, source_id: 'source_id', day: Date.today)
+      collection_stats = build(:collection_statistics, source_id: 'source_id', day: Date.today)
       collection_stats.should_not be_valid
     end
 
     it 'should validate presence of collection name' do
-      collection_stats = FactoryBot.build(:collection_statistics)
+      collection_stats = build(:collection_statistics)
       collection_stats.should_not be_valid
     end
 
     it 'should validate the presence of day' do
-      collection_stats = FactoryBot.build(:collection_statistics, source_id: 'source_id')
+      collection_stats = build(:collection_statistics, source_id: 'source_id')
       collection_stats.should_not be_valid
     end
   end

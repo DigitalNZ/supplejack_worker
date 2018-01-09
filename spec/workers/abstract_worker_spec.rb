@@ -11,7 +11,7 @@ require 'rails_helper'
 
 describe AbstractWorker do
   let(:worker) { AbstractWorker.new }
-  let(:job) { FactoryBot.create(:harvest_job) }
+  let(:job) { create(:harvest_job) }
 
   before { AbstractJob.stub(:find) { job } }
 
@@ -19,7 +19,7 @@ describe AbstractWorker do
     before { job.stub(:enqueue_enrichment_jobs) { nil } }
 
     context 'status is stopped' do
-      let(:job) { FactoryBot.create(:harvest_job, status: 'stopped') }
+      let(:job) { create(:harvest_job, status: 'stopped') }
 
       it 'returns true' do
         worker.stop_harvest?.should be_truthy
@@ -37,7 +37,7 @@ describe AbstractWorker do
     end
 
     context 'status is finished' do
-      let(:job) { FactoryBot.create(:harvest_job, status: 'finished') }
+      let(:job) { create(:harvest_job, status: 'finished') }
 
       it 'returns true' do
         worker.stop_harvest?.should be_truthy
@@ -50,7 +50,7 @@ describe AbstractWorker do
     end
 
     context 'status is active' do
-      let(:job) { FactoryBot.create(:harvest_job, status: 'active') }
+      let(:job) { create(:harvest_job, status: 'active') }
 
       it 'returns true when errors over limit' do
         job.stub(:errors_over_limit?) { true }

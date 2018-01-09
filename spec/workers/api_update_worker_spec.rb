@@ -11,7 +11,7 @@ require 'rails_helper'
 
 describe ApiUpdateWorker do
   let(:worker) { ApiUpdateWorker.new }
-  let(:job) { FactoryBot.create(:harvest_job) }
+  let(:job) { create(:harvest_job) }
 
   it 'is retryable' do
     expect(described_class).to be_retryable 5

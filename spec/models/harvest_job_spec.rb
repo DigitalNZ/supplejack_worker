@@ -12,31 +12,31 @@ require 'rails_helper'
 describe HarvestJob do
   context 'validations' do
     it 'should not be possible to have 2 active jobs for the same parser/environment' do
-      job1 = FactoryBot.create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
-      job2 = FactoryBot.build(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
+      job1 = create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
+      job2 = build(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
       job2.should_not be_valid
     end
 
     it 'should be possible to have 2 finished jobs for the same parser/environment' do
-      job1 = FactoryBot.create(:harvest_job, parser_id: '333', environment: 'staging', status: 'finished')
-      job2 = FactoryBot.build(:harvest_job, parser_id: '333', environment: 'staging', status: 'finished')
+      job1 = create(:harvest_job, parser_id: '333', environment: 'staging', status: 'finished')
+      job2 = build(:harvest_job, parser_id: '333', environment: 'staging', status: 'finished')
       job2.should be_valid
     end
 
     it 'should be possible to enqueue a harvest and enrichment jobs simultaneously' do
-      job = FactoryBot.create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
-      enrichment = FactoryBot.build(:enrichment_job, parser_id: '333', environment: 'staging', status: 'active')
+      job = create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
+      enrichment = build(:enrichment_job, parser_id: '333', environment: 'staging', status: 'active')
       enrichment.should be_valid
     end
 
     it "should not be possible to have a mode other then 'normal', 'full_and_flush' or 'incremental'" do
-      job1 = FactoryBot.build(:harvest_job, parser_id: '333', mode: 'ya')
+      job1 = build(:harvest_job, parser_id: '333', mode: 'ya')
       job1.should_not be_valid
     end
 
     %w[normal full_and_flush incremental].each do |mode|
       it "should be valid with mode of '#{mode}'" do
-        job1 = FactoryBot.build(:harvest_job, parser_id: '333', mode: mode)
+        job1 = build(:harvest_job, parser_id: '333', mode: mode)
         job1.should be_valid
       end
     end
@@ -44,17 +44,17 @@ describe HarvestJob do
 
   it 'enqueues a job after_create' do
     HarvestWorker.should_receive(:perform_async)
-    FactoryBot.create(:harvest_job)
+    create(:harvest_job)
   end
 
   context 'preview environment' do
     it 'does not enque a job after create' do
       HarvestWorker.should_not_receive(:perform_async)
-      FactoryBot.create(:harvest_job, environment: 'preview')
+      create(:harvest_job, environment: 'preview')
     end
   end
 
-  let(:job) { FactoryBot.create(:harvest_job, parser_id: '12345', version_id: '666') }
+  let(:job) { create(:harvest_job, parser_id: '12345', version_id: '666') }
 
   describe '#enqueue_enrichment_jobs' do
     let(:parser) { double(:parser, enrichment_definitions: { ndha_rights: proc {} }).as_null_object }
