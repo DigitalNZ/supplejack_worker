@@ -65,7 +65,7 @@ class HarvestJob < AbstractJob
   end
 
   def finish!
-    flush_old_records if full_and_flush? && (limit.to_i == 0) && !harvest_failure? && !stopped?
+    flush_old_records if full_and_flush_available?
     super
   end
 
@@ -75,5 +75,9 @@ class HarvestJob < AbstractJob
 
   def incremental?
     mode == 'incremental'
+  end
+
+  def full_and_flush_available?
+    full_and_flush? && limit.to_i.zero? && !harvest_failure? && !stopped? && records_count > 0
   end
 end
