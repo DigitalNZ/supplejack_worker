@@ -24,7 +24,8 @@ gem 'rails', '~> 5.1.4'
 gem 'responders'
 gem 'sidekiq', '= 4.1.1'
 gem 'sinatra', :require => nil
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common', tag: 'v2.0.0'
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common'
+# gem 'supplejack_common', path: '../supplejack_common'
 gem 'whenever', require: false
 
 group :test do
