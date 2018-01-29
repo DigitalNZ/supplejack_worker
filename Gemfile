@@ -36,6 +36,7 @@ group :test do
   gem 'rspec-rails', '~> 3.6'
   gem 'rspec-sidekiq'
   gem 'timecop'
+  gem 'pry-byebug'
 end
 
 group :development do

@@ -129,6 +129,7 @@ describe HarvestJob do
     end
 
     it 'flushes old records if full_and_flush is true' do
+      job.records_count = 1
       job.should_receive(:flush_old_records)
       job.finish!
     end
@@ -155,6 +156,19 @@ describe HarvestJob do
       job.status = 'stopped'
       job.should_not_receive(:flush_old_records)
       job.finish!
+    end
+  end
+
+  describe '#full_and_flush_available?' do
+    let(:full_and_flush_job) { create(:harvest_job, parser_id: '12345', version_id: '666', records_count: 1, limit: 0, status: 'running', mode: 'full_and_flush') }
+    let(:full_and_flush_job_with_no_records) { create(:harvest_job, parser_id: '12345', version_id: '666', records_count: 0, limit: 0, status: 'running', mode: 'full_and_flush') }
+
+    it 'returns true when the requirements for a full and flush are valid' do
+      expect(full_and_flush_job.full_and_flush_available?).to eq true
+    end
+
+    it 'returns false when the requirements for a full and flush are invalid' do
+      expect(full_and_flush_job_with_no_records.full_and_flush_available?).to eq false
     end
   end
 end
