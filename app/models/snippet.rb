@@ -7,7 +7,9 @@
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
-# FIXME: This class is ONLY used by SupplejackCommon
+# This class is ONLY used by SupplejackCommon,
+# however we have 2 different implementations
+# one for Manager and one for Worker
 class Snippet < ActiveResource::Base
   self.site = ENV['MANAGER_HOST']
   headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
