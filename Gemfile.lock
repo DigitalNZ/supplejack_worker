@@ -1,7 +1,7 @@
 GIT
-  remote: https://github.com/DigitalNZ/supplejack_common
-  revision: a561b874d6a0799b234b551b471972db968bebea
-  tag: v2.1.0
+  remote: https://github.com/DigitalNZ/supplejack_common.git
+  revision: c859abf103cbf331eee3f4f58d74b3cd98914556
+  tag: v2.1.1
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -201,7 +201,7 @@ GEM
     nio4r (2.1.0)
     nokogiri (1.8.1)
       mini_portile2 (~> 2.3.0)
-    nokogumbo (1.4.13)
+    nokogumbo (1.5.0)
       nokogiri
     parse-cron (0.1.4)
     pry (0.11.3)
@@ -280,10 +280,10 @@ GEM
       sidekiq (>= 2.4.0)
     rspec-support (3.7.0)
     ruby_dep (1.5.0)
-    sanitize (4.5.0)
+    sanitize (4.6.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.4.4)
-      nokogumbo (~> 1.4.1)
+      nokogumbo (~> 1.4)
     sidekiq (4.1.1)
       concurrent-ruby (~> 1.0)
       connection_pool (~> 2.2, >= 2.2.0)
