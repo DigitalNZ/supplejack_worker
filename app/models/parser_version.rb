@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # app/models/parser_version.rb
 class ParserVersion < ActiveResource::Base
   include ParserLoaderHelpers
