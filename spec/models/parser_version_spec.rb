@@ -38,12 +38,8 @@ describe ParserVersion do
   end
 
   describe '#source' do
-    RSpec.configure { |c| c.include ActiveResourceMockHelper }
-
-    it 'finds parser thru active resource and return its source' do
-      ActiveResource::HttpMock.respond_to do |mock|
-        mock.get '/parsers/123.json', required_headers, parser.to_json
-      end
+    it 'finds parser through active resource and return its source' do
+      allow(Parser).to receive(:find).and_return(parser)
       expect(parser_version.source).to eq parser.source
     end
   end
