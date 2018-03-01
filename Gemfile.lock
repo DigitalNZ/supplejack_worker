@@ -1,7 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: b41d248186290ab4309ac6b402b4941128c81b6d
-  branch: rm/upgrade-restclient
+  revision: 8ca5ebf56e321a6f26eb288ead2c1e03ecfb70a0
   specs:
     supplejack_common (0.0.2)
       actionpack

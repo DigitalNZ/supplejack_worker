@@ -24,7 +24,7 @@ gem 'rails', '~> 5.1.4'
 gem 'responders'
 gem 'sidekiq', '= 4.1.1'
 gem 'sinatra', :require => nil
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', branch: 'rm/upgrade-restclient'
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git'
 gem 'whenever', require: false
 
 group :test do
