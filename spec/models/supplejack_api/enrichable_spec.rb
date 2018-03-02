@@ -2,9 +2,9 @@
 require 'rails_helper'
 
 describe SupplejackApi::Enrichable do
-  let(:record) { SupplejackApi::Record.new }
-  let!(:primary_fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 0, is_part_of: ['tap:12345'], relation: ['tap:123456'], authorities: []) }
-  let(:fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 1) }
+  # let(:record) { SupplejackApi::Record.new }
+  # let!(:primary_fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 0, is_part_of: ['tap:12345'], relation: ['tap:123456'], authorities: []) }
+  # let(:fragment) { record.fragments.build(dc_identifier: ['tap:1234'], priority: 1) }
 
   describe '#primary' do
     it 'returns the primary fragment' do
@@ -91,6 +91,16 @@ describe SupplejackApi::Enrichable do
       record.fragments.build(priority: 5)
 
       record.send(:sorted_fragments).map(&:priority).should eq [-1, 0, 5, 10]
+    end
+  end
+
+  describe '#where' do
+    it 'makes a rest client request with the correct parameters' do
+      search_params = { 'fragments.job_id' => '555'}
+
+      expect(RestClient).to receive(:get).with(search_params)
+      binding.pry
+      SupplejackApi::Record.where(search_params)
     end
   end
 end
