@@ -5,15 +5,18 @@ module SupplejackApi
   module Enrichable
     extend ActiveSupport::Concern
 
-    included do
-      include Mongoid::Document
-      include Mongoid::Attributes::Dynamic
+    # included do
+    #   include Mongoid::Document
+    #   include Mongoid::Attributes::Dynamic
 
-      store_in client: 'api'
+    #   store_in client: 'api'
 
-      embeds_many :fragments, cascade_callbacks: true,
-                              class_name: 'SupplejackApi::ApiRecord::RecordFragment'
-      delegate :title, :shelf_location, :relation, to: :primary
+    #   embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiRecord::RecordFragment'
+    #   delegate :title, :shelf_location, :relation, to: :primary
+    # end
+
+    def where(search_params)
+      JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/records", params: { api_key: ENV['HARVESTER_API_KEY'], search: search_params.to_json }))
     end
 
     def primary
