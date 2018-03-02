@@ -94,13 +94,11 @@ describe SupplejackApi::Enrichable do
     end
   end
 
-  describe '#where' do
-    it 'makes a rest client request with the correct parameters' do
-      search_params = { 'fragments.job_id' => '555'}
+  describe '#find' do
+    it 'should pass the api_key as a parameter' do
+      expect(ActiveResource::Base).to receive(:find).with(:all, params: {search: {'fragments.source_id' => 'digitalnz-sets' }, api_key: ENV['HARVESTER_API_KEY']})
 
-      expect(RestClient).to receive(:get).with(search_params)
-      binding.pry
-      SupplejackApi::Record.where(search_params)
+      SupplejackApi::Record.find('fragments.source_id' => 'digitalnz-sets')
     end
   end
 end

@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 module SupplejackApi
-  class Record
+  class Record < ActiveResource::Base
+    self.site = 'http://192.168.0.204:3000/harvester'
     include Enrichable
 
-    # store_in collection: 'records'
-
-    # embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiRecord::RecordFragment'
-
-    # default_scope -> { where(:status.in => %w[active partial]) }
+    def self.find(query)
+      super(:all, params: { search: query, api_key: ENV['HARVESTER_API_KEY']})
+    end
   end
 end
