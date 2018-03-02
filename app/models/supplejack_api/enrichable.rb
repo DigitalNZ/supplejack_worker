@@ -15,10 +15,6 @@ module SupplejackApi
     #   delegate :title, :shelf_location, :relation, to: :primary
     # end
 
-    def where(search_params)
-      JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/records", params: { api_key: ENV['HARVESTER_API_KEY'], search: search_params.to_json }))
-    end
-
     def primary
       fragments.where(priority: 0).first
     end
