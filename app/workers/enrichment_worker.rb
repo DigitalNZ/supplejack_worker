@@ -41,13 +41,13 @@ class EnrichmentWorker < AbstractWorker
   def records
     if job.record_id.nil?
       if job.harvest_job.present?
-        SupplejackApi::Record.where('fragments.job_id' => job.harvest_job.id.to_s).no_timeout
+        SupplejackApi::Record.find('fragments.job_id' => job.harvest_job.id.to_s)
       else
-        SupplejackApi::Record.where('fragments.source_id' => job.parser.source.source_id).no_timeout
+        SupplejackApi::Record.find('fragments.source_id' => job.parser.source.source_id)
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.where(record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id).no_timeout
+      klass.where(record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id)
     end
   end
 

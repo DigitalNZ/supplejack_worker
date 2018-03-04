@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module SupplejackApi
   class Record < ActiveResource::Base
-    self.site = 'http://192.168.0.204:3000/harvester'
+    self.site = "#{ENV['API_HOST']}/harvester"
     include Enrichable
 
     def self.find(query)
