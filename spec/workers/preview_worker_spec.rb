@@ -34,36 +34,36 @@ describe PreviewWorker do
 
     it 'sets @job_id to the harvest_job_id' do
       worker.perform('abc123', 'preview123')
-      worker.job_id.should eq 'abc123'
+      expect(worker.job_id).to eq 'abc123'
     end
 
     it 'sets @job_id' do
       worker.perform({ '$oid' => 'abc123' }, 'preview123')
-      worker.job_id.should eq 'abc123'
+      expect(worker.job_id).to eq 'abc123'
     end
 
     it 'iterates through each of the jobs records' do
-      job.should_receive(:records).and_yield(record1, 0).and_yield(record1, 1)
+      expect(job).to receive(:records).and_yield(record1, 0).and_yield(record1, 1)
       worker.perform('abc123', 'preview123')
     end
 
     it 'should only process 1 record that is at the given index' do
-      worker.should_receive(:process_record).with(record2)
+      expect(worker).to receive(:process_record).with(record2)
       worker.perform('abc123', 'preview123')
     end
 
     it 'should only process 1 record that is at the given index' do
-      worker.should_receive(:process_record).once
+      expect(worker).to receive(:process_record).once
       worker.perform('abc123', 'preview123')
     end
 
     it 'should enrich the record' do
-      worker.should_receive(:enrich_record).once
+      expect(worker).to receive(:enrich_record).once
       worker.perform('abc123', 'preview123')
     end
 
     it 'calls finish!' do
-      job.should_receive(:finish!)
+      expect(job).to receive(:finish!)
       worker.perform('abc123', 'preview123')
     end
 
@@ -71,7 +71,7 @@ describe PreviewWorker do
       before { job.stub(:harvest_failure) { '{"error":"message"}' } }
 
       it 'should update the preview object with validation errors' do
-        preview.should_receive(:update_attribute).with(:harvest_failure, job.harvest_failure.to_json)
+        expect(preview).to receive(:update_attribute).with(:harvest_failure, job.harvest_failure.to_json)
         worker.perform('abc123', 'preview123')
       end
     end
@@ -85,14 +85,14 @@ describe PreviewWorker do
                                          '_id' => '12',
                                          'authorities' => [{ '_id' => 'ab12' }, 'blah']
                                        })
-      result.should_not include('_id' => '123')
-      result['fragments'].should_not include('_id' => '12')
-      result['fragments']['authorities'][0].should_not include('_id' => 'ab12')
-      result.should include('blah' => 'blah')
+      expect(result).to_not include('_id' => '123')
+      expect(result['fragments']).to_not include('_id' => '12')
+      expect(result['fragments']['authorities'][0]).to_not include('_id' => 'ab12')
+      expect(result).to include('blah' => 'blah')
     end
 
     it 'returns nil if nil is passed' do
-      worker.send(:strip_ids, nil).should eq nil
+      expect(worker.send(:strip_ids, nil)).to eq nil
     end
   end
 
@@ -103,12 +103,12 @@ describe PreviewWorker do
     end
 
     it 'should find the preview object' do
-      Preview.should_receive(:find).with('123') { preview }
+      expect(Preview).to receive(:find).with('123') { preview }
       worker.send(:preview)
     end
 
     it 'should memoize the find' do
-      Preview.should_receive(:find).with('123').once { preview }
+      expect(Preview).to receive(:find).with('123').once { preview }
       worker.send(:preview)
       worker.send(:preview)
     end
@@ -125,28 +125,28 @@ describe PreviewWorker do
     end
 
     it "should update the attribute status to: 'harvesting record'" do
-      preview.should_receive(:update_attribute).with(:status, 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
+      expect(preview).to receive(:update_attribute).with(:status, 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
       worker.send(:process_record, record1)
     end
 
     it 'should update the preview object with the raw data' do
-      preview.should_receive(:raw_data=).with(record1.raw_data)
+      expect(preview).to receive(:raw_data=).with(record1.raw_data)
       worker.send(:process_record, record1)
     end
 
     it 'should update the preview object with the harvested_attributes' do
       record1.attributes[:source_id] = 'tahpuhi'
-      preview.should_receive(:harvested_attributes=).with(record1.attributes.to_json)
+      expect(preview).to receive(:harvested_attributes=).with(record1.attributes.to_json)
       worker.send(:process_record, record1)
     end
 
     it 'should update the preview object with whether it is deletable or not' do
-      preview.should_receive(:deletable=).with(false)
+      expect(preview).to receive(:deletable=).with(false)
       worker.send(:process_record, record1)
     end
 
     it 'should update the preview object with field errors' do
-      preview.should_receive(:field_errors=).with(record1.field_errors.to_json)
+      expect(preview).to receive(:field_errors=).with(record1.field_errors.to_json)
       worker.send(:process_record, record1)
     end
 
@@ -154,13 +154,13 @@ describe PreviewWorker do
       before { record1.stub(:valid?) { false } }
 
       it 'should update the preview object with validation errors' do
-        preview.should_receive(:validation_errors=).with([].to_json)
+        expect(preview).to receive(:validation_errors=).with([].to_json)
         worker.send(:process_record, record1)
       end
     end
 
     it 'should save the preview object' do
-      preview.should_receive(:save!)
+      expect(preview).to receive(:save!)
       worker.send(:process_record, record1)
     end
   end
@@ -168,8 +168,8 @@ describe PreviewWorker do
   describe '#current_record_id' do
     before { worker.unstub(:current_record_id) }
     it 'should reload the job and return the last last_posted_record_id' do
-      job.should_receive(:reload) { job }
-      worker.send(:current_record_id).should eq '1234'
+      expect(job).to receive(:reload) { job }
+      expect(worker.send(:current_record_id)).to eq '1234'
     end
   end
 
@@ -177,6 +177,10 @@ describe PreviewWorker do
     let(:record) { double(:record, attributes: { title: 'Hello' }) }
 
     before do
+      ActiveResource::HttpMock.respond_to do |mock|
+        mock.get "/harvester/preview_records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Brecord_id%5D=1234", {'Accept'=>'application/json'}, [record].to_json, 201
+      end
+
       record1.stub(:valid?) { true }
       record1.stub(:deletable?) { false }
       job.stub_chain(:parser, :enrichment_definitions) { {} }
@@ -189,22 +193,28 @@ describe PreviewWorker do
       before { record1.stub(:valid?) { false } }
 
       it 'should not post to API if the record is not valid' do
-        worker.should_not_receive(:post_to_api)
+        expect(worker).to_not receive(:post_to_api)
         worker.send(:enrich_record, record1)
       end
     end
 
     context 'record is a deletion' do
-      before { record1.stub(:deletable?) { true } }
+      before do
+        ActiveResource::HttpMock.respond_to do |mock|
+          mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.id.to_s}", {'Accept'=>'application/json'}, [].to_json, 201
+        end
+
+        record1.stub(:deletable?) { true }
+      end
 
       it 'should not post to API if the record is not valid' do
-        worker.should_not_receive(:post_to_api)
+        expect(worker).to_not receive(:post_to_api)
         worker.send(:enrich_record, record1)
       end
     end
 
     it 'should post the record to the API' do
-      worker.should_receive(:post_to_api).with(record1.attributes, false)
+      expect(worker).to receive(:post_to_api).with(record1.attributes, false)
       worker.send(:enrich_record, record1)
     end
 
@@ -219,29 +229,29 @@ describe PreviewWorker do
       end
 
       it 'should create a enrichment job' do
-        EnrichmentJob.should_receive(:create_from_harvest_job).with(job, :ndha)
+        expect(EnrichmentJob).to receive(:create_from_harvest_job).with(job, :ndha)
         worker.send(:enrich_record, record1)
       end
 
       it 'should update the enrichment jobs record_id using current_record_id' do
         worker.send(:enrich_record, record1)
-        enrichment_job.record_id.should eq 1234
+        expect(enrichment_job.record_id).to eq 1234
       end
 
       it 'should enqueue a job for the EnrichmentWorker' do
-        EnrichmentWorker.should_receive(:new) { enrichment_worker }
-        enrichment_worker.should_receive(:perform).with(enrichment_job.id)
+        expect(EnrichmentWorker).to receive(:new) { enrichment_worker }
+        expect(enrichment_worker).to receive(:perform).with(enrichment_job.id)
         worker.send(:enrich_record, record1)
       end
     end
 
     it 'should find the preview record' do
-      SupplejackApi::PreviewRecord.should_receive(:where).with(record_id: 1234) { [record] }
+      expect(SupplejackApi::PreviewRecord).to receive(:find).with(record_id: 1234) { [record] }
       worker.send(:enrich_record, record1)
     end
 
     it 'should set the previews api_record' do
-      preview.should_receive(:update_attribute).with(:api_record, record.attributes.to_json)
+      expect(preview).to receive(:update_attribute).with(:api_record, record.attributes.to_json)
       worker.send(:enrich_record, record1)
     end
   end
@@ -251,7 +261,7 @@ describe PreviewWorker do
 
     it 'returns the validation errors' do
       record.stub(:errors) { { title: 'WRONG!' } }
-      worker.send(:validation_errors, record).should eq([{ title: 'WRONG!' }])
+      expect(worker.send(:validation_errors, record)).to eq([{ title: 'WRONG!' }])
     end
 
     it 'returns an empty hash if there is no @last_processed_record ' do
