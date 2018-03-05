@@ -12,8 +12,12 @@ describe EnrichmentWorker do
   let(:worker) { EnrichmentWorker.new }
   let(:job) { create(:enrichment_job, environment: 'production', enrichment: 'ndha_rights') }
   let(:parser) { double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } }, loader: double(:loader, parser_class: TestClass)).as_null_object }
-
+  let(:records_response) { [{id: '5a81fa176a694240d94c9592',fragments: [{ priority: 1, locations: %w[a b] },{ priority: 0, locations: %w[c d] }]}].to_json }
   before(:each) do
+    ActiveResource::HttpMock.respond_to do |mock|
+      mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id.to_s}", {'Accept'=>'application/json'}, records_response, 201
+    end
+
     job.stub(:parser) { parser }
     worker.stub(:job) { job }
     worker.stub(:api_update_finished?) { true }
@@ -70,16 +74,22 @@ describe EnrichmentWorker do
   end
 
   describe '#records' do
-    let(:query) { double(:query).as_null_object }
-
     before(:each) do
+      ActiveResource::HttpMock.respond_to do |mock|
+        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=nlnzcat", {'Accept'=>'application/json'}, records_response, 201
+      end
+
+      ActiveResource::HttpMock.respond_to do |mock|
+        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123", {'Accept'=>'application/json'}, records_response, 201
+      end
+
       worker.send(:setup_parser)
       job.stub_chain(:parser, :source, :source_id) { 'nlnzcat' }
     end
 
     it 'should fetch records based on the source_id' do
       worker.job.harvest_job = nil
-      SupplejackApi::Record.should_receive(:where).with('fragments.source_id' => 'nlnzcat') { query }
+      expect(SupplejackApi::Record).to receive(:find).with('fragments.source_id' => 'nlnzcat')
       worker.records
     end
 
@@ -89,7 +99,7 @@ describe EnrichmentWorker do
       end
 
       it 'only returns records with a fragment containing harvest job\'s id' do
-        SupplejackApi::Record.should_receive(:where).with('fragments.job_id' => 'abc123') { query }
+        expect(SupplejackApi::Record).to receive(:find).with('fragments.job_id' => 'abc123')
         worker.records
       end
     end
@@ -98,7 +108,7 @@ describe EnrichmentWorker do
       before { job.stub(:record_id) { 'abc123' } }
 
       it 'should fetch a specific record' do
-        SupplejackApi::Record.should_receive(:where).with(record_id: job.record_id, 'fragments.source_id' => 'nlnzcat') { query }
+        expect(SupplejackApi::Record).to receive(:find).with({record_id: job.record_id, 'fragments.source_id' => 'nlnzcat'})
         worker.records
       end
 
