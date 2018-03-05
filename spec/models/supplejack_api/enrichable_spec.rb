@@ -14,7 +14,7 @@ describe SupplejackApi::Enrichable do
     }].to_json
 
     ActiveResource::HttpMock.respond_to do |mock|
-      mock.get '/harvester/records.json?api_key=AS4wGKGRVgEszC_iyEUc&search%5Bfragments.source_id%5D=digitalnz-sets', {'Accept'=>'application/json'}, records_response, 201
+      mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=digitalnz-sets", {'Accept'=>'application/json'}, records_response, 201
     end
   end
 
