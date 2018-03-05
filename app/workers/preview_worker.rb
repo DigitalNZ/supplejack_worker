@@ -102,7 +102,7 @@ class PreviewWorker < HarvestWorker
     preview.update_attribute(:status, 'All enrichments complete.')
     preview.update_attribute(:status, 'Fetching final preview record from API...')
 
-    preview_record = SupplejackApi::PreviewRecord.where(record_id: current_record_id.to_i).first
+    preview_record = SupplejackApi::PreviewRecord.find(record_id: current_record_id.to_i).first
 
     unless preview_record.nil?
       preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json)
