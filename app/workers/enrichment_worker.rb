@@ -49,7 +49,7 @@ class EnrichmentWorker < AbstractWorker
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.where(record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id)
+      klass.find({record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id})
     end
   end
 
