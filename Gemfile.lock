@@ -1,6 +1,14 @@
 GIT
-  remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 8ca5ebf56e321a6f26eb288ead2c1e03ecfb70a0
+  remote: https://github.com/boost/ruby-oai.git
+  revision: a6642907e0571e9ae7341970eb43e844e3d8c039
+  specs:
+    oai (0.3.1)
+      builder (>= 2.0.0)
+      faraday
+      faraday_middleware
+
+PATH
+  remote: ../supplejack_common
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -19,15 +27,6 @@ GIT
       retriable
       sanitize
       tzinfo
-
-GIT
-  remote: https://github.com/boost/ruby-oai.git
-  revision: a6642907e0571e9ae7341970eb43e844e3d8c039
-  specs:
-    oai (0.3.1)
-      builder (>= 2.0.0)
-      faraday
-      faraday_middleware
 
 GEM
   remote: https://rubygems.org/
@@ -384,4 +383,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   1.16.0
+   1.16.1
