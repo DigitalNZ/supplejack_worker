@@ -178,7 +178,8 @@ describe PreviewWorker do
 
     before do
       ActiveResource::HttpMock.respond_to do |mock|
-        mock.get "/harvester/preview_records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Brecord_id%5D=1234", {'Accept'=>'application/json'}, [record].to_json, 201
+        url = "/harvester/preview_records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Brecord_id%5D=1234"
+        mock.get url, {'Accept'=>'application/json'}, [record].to_json, 201
       end
 
       record1.stub(:valid?) { true }
@@ -201,7 +202,8 @@ describe PreviewWorker do
     context 'record is a deletion' do
       before do
         ActiveResource::HttpMock.respond_to do |mock|
-          mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.id.to_s}", {'Accept'=>'application/json'}, [].to_json, 201
+          url = "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.id.to_s}"
+          mock.get url, {'Accept'=>'application/json'}, [].to_json, 201
         end
 
         record1.stub(:deletable?) { true }
