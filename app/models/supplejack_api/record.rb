@@ -2,7 +2,7 @@
 module SupplejackApi
   class Record < ActiveResource::Base
     self.site = "#{ENV['API_HOST']}/harvester"
-    self.collection_parser = PaginatedCollection
+    self.collection_parser = EnrichmentRecordCollection
     include Enrichable
 
     def self.find(query)
