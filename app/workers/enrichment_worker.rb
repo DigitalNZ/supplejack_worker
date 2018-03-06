@@ -40,16 +40,16 @@ class EnrichmentWorker < AbstractWorker
     job.finish!
   end
 
-  def records
+  def records(page = 0)
     if job.record_id.nil?
       if job.harvest_job.present?
-        SupplejackApi::Record.find('fragments.job_id' => job.harvest_job.id.to_s)
+        SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
       else
-        SupplejackApi::Record.find('fragments.source_id' => job.parser.source.source_id)
+        SupplejackApi::Record.find({ 'fragments.source_id' => job.parser.source.source_id }, page: page)
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.find({record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id})
+      klass.find({ record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id }, page:)
     end
   end
 

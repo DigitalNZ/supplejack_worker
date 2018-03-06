@@ -76,11 +76,11 @@ describe EnrichmentWorker do
   describe '#records' do
     before(:each) do
       ActiveResource::HttpMock.respond_to do |mock|
-        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=nlnzcat", {'Accept'=>'application/json'}, records_response, 201
+        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=nlnzcat&search_options", {'Accept'=>'application/json'}, records_response, 201
       end
 
       ActiveResource::HttpMock.respond_to do |mock|
-        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123", {'Accept'=>'application/json'}, records_response, 201
+        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123&search_options", {'Accept'=>'application/json'}, records_response, 201
       end
 
       worker.send(:setup_parser)
@@ -89,8 +89,8 @@ describe EnrichmentWorker do
 
     it 'should fetch records based on the source_id' do
       worker.job.harvest_job = nil
-      expect(SupplejackApi::Record).to receive(:find).with('fragments.source_id' => 'nlnzcat')
-      worker.records
+      expect(SupplejackApi::Record).to receive(:find).with({ 'fragments.source_id' => 'nlnzcat' }, page: 1)
+      worker.records(1)
     end
 
     context 'enrichment job has a relationship to a harvest job' do
@@ -99,8 +99,8 @@ describe EnrichmentWorker do
       end
 
       it 'only returns records with a fragment containing harvest job\'s id' do
-        expect(SupplejackApi::Record).to receive(:find).with('fragments.job_id' => 'abc123')
-        worker.records
+        expect(SupplejackApi::Record).to receive(:find).with({ 'fragments.job_id' => 'abc123' }, page: 1)
+        worker.records(1)
       end
     end
 
@@ -108,15 +108,15 @@ describe EnrichmentWorker do
       before { job.stub(:record_id) { 'abc123' } }
 
       it 'should fetch a specific record' do
-        expect(SupplejackApi::Record).to receive(:find).with({record_id: job.record_id, 'fragments.source_id' => 'nlnzcat'})
-        worker.records
+        expect(SupplejackApi::Record).to receive(:find).with({ record_id: job.record_id, 'fragments.source_id' => 'nlnzcat' }, page: 1)
+        worker.records(1)
       end
 
       context 'preview environment' do
         before { job.stub(:preview?) { true } }
 
         it 'should fetch a specific record from the preview_records collection' do
-          expect(SupplejackApi::PreviewRecord).to receive(:find).with({record_id: job.record_id, 'fragments.source_id' => 'nlnzcat'})
+          expect(SupplejackApi::PreviewRecord).to receive(:find).with({record_id: job.record_id, 'fragments.source_id' => 'nlnzcat'}, page: 0)
           worker.records
         end
       end
