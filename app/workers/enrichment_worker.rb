@@ -25,9 +25,18 @@ class EnrichmentWorker < AbstractWorker
 
     enrichment_class.before(job.enrichment)
 
-    records.each do |record|
-      break if stop_harvest?
-      process_record(record)
+    records = fetch_records(1)
+
+    while more_records?(records.pagination) do
+      records.each do |record|
+        break if stop_harvest?
+
+        process_record(record)
+      end
+
+      break if last_page_records?(records.pagination)
+
+      records = fetch_records(records.pagination['page'] + 1)
     end
 
     until api_update_finished?
@@ -40,16 +49,25 @@ class EnrichmentWorker < AbstractWorker
     job.finish!
   end
 
-  def records(page = 0)
+  def more_records?(pagination)
+    pagination['page'] <= pagination['total_pages']
+  end
+
+  def last_page_records?(pagination)
+    pagination['page'] == pagination['total_pages']
+  end
+
+  def fetch_records(page = 0)
     if job.record_id.nil?
       if job.harvest_job.present?
         SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
+
       else
         SupplejackApi::Record.find({ 'fragments.source_id' => job.parser.source.source_id }, page: page)
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.find({ record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id }, page:)
+      klass.find({ record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id }, page: page)
     end
   end
 
