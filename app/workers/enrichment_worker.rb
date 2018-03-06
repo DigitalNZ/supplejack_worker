@@ -27,14 +27,14 @@ class EnrichmentWorker < AbstractWorker
 
     records = fetch_records(1)
 
-    while more_records?(records.pagination) do
+    while more_records?(records) do
       records.each do |record|
         break if stop_harvest?
 
         process_record(record)
       end
 
-      break if last_page_records?(records.pagination)
+      break if last_page_records?(records)
 
       records = fetch_records(records.pagination['page'] + 1)
     end
@@ -49,12 +49,14 @@ class EnrichmentWorker < AbstractWorker
     job.finish!
   end
 
-  def more_records?(pagination)
-    pagination['page'] <= pagination['total_pages']
+  def more_records?(records)
+    return true if job.preview?
+    records.pagination['page'] <= records.pagination['total_pages']
   end
 
-  def last_page_records?(pagination)
-    pagination['page'] == pagination['total_pages']
+  def last_page_records?(records)
+    return true if job.preview?
+    records.pagination['page'] == records.pagination['total_pages']
   end
 
   def fetch_records(page = 0)
@@ -116,11 +118,9 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def post_to_api(enrichment)
-    enrichment.record_attributes.as_json.each do |record_id, attributes|
+    enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
       attrs = attributes.merge(job_id: job.id.to_s)
-      # rubocop:disable Metrics/LineLength
-      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
-      # rubocop:enable Metrics/LineLength
+      ApiUpdateWorker.perform_async("/harvester/records/#{mongo_record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
       job.increment_records_count!
     end
   end
