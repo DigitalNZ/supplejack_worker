@@ -42,12 +42,12 @@ class SourceCheckWorker
   end
 
   def suppress_collection
-    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
+    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
     CollectionMailer.collection_status(source.name, 'down')
   end
 
   def activate_collection
-    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active' }, api_key: ENV['HARVESTER_API_KEY'])
+    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
     CollectionMailer.collection_status(source.name, 'up')
   end
 end
