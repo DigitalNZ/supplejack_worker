@@ -86,9 +86,9 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    airbrake (7.1.0)
+    airbrake (7.2.1)
       airbrake-ruby (~> 2.5)
-    airbrake-ruby (2.6.0)
+    airbrake-ruby (2.8.2)
     arel (8.0.0)
     backports (3.10.3)
     bson (4.2.2)
@@ -335,7 +335,7 @@ DEPENDENCIES
   aasm
   active_model_serializers (~> 0.10.7)
   activeresource
-  airbrake
+  airbrake (~> 7.2)
   byebug
   chronic
   cucumber-rails
