@@ -40,7 +40,7 @@ module SupplejackApi
 
     end
 
-    factory :record_fragment, class: SupplejackApi::ApiRecord::RecordFragment do
+    factory :record_fragment do
       title           'title'
       content_partner  ['content partner']
       source_id       'source_name'
