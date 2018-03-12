@@ -152,7 +152,7 @@ describe SourceCheckWorker do
     end
 
     it 'should activate the collection and set the status_updated_by as LINK CHECKER' do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:activate_collection)
     end
 
