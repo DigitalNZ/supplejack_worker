@@ -36,10 +36,9 @@ class SourceCheckWorker
 
   def up?(landing_url)
     return true if landing_url.nil?
+    return unless (response = get(landing_url))
 
-    if (response = get(landing_url))
-      validate_link_check_rule(response, source.id)
-    end
+    validate_link_check_rule(response, source.id)
   end
 
   def suppress_collection

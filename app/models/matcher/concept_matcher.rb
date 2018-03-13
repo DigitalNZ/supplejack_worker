@@ -45,21 +45,20 @@ module Matcher
               .where(:'fragments.dateOfDeath'.gte => args[:dateOfDeath].beginning_of_year)
               .where(:'fragments.dateOfDeath'.lt => args[:dateOfDeath].end_of_year)
 
-      if (concept = query.first)
-        if concept.primary.source_id != args[:source_id]
-          Sidekiq.logger.info "ConceptMatcher found match for #{args[:givenName]} #{args[:familyName]}"
+      return unless (concept = query.first)
+      return unless concept.primary.source_id != args[:source_id]
 
-          post_attributes = {
-            internal_identifier: concept.internal_identifier,
-            source_id: args[:source_id],
-            sameAs: args[:sameAs],
-            match_status: 'strong'
-          }
+      Sidekiq.logger.info "ConceptMatcher found match for #{args[:givenName]} #{args[:familyName]}"
 
-          ApiUpdateWorker.perform_async('/harvester/concepts.json', { concept: post_attributes }, args[:job_id])
-          return true
-        end
-      end
+      post_attributes = {
+        internal_identifier: concept.internal_identifier,
+        source_id: args[:source_id],
+        sameAs: args[:sameAs],
+        match_status: 'strong'
+      }
+
+      ApiUpdateWorker.perform_async('/harvester/concepts.json', { concept: post_attributes }, args[:job_id])
+      true
     end
   end
 end

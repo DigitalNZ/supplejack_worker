@@ -12,7 +12,7 @@ class HarvestJob < AbstractJob
   validates_uniqueness_of :parser_id, scope: %i[environment status _type],
                                       message: I18n.t('job.already_running', type: 'Harvest'),
                                       if: :active?
-                                        
+
   validates :mode, inclusion: %w[normal full_and_flush incremental]
 
   def enqueue
