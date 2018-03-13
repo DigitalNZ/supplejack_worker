@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/workers/enrichment_worker.rb
 class EnrichmentWorker < AbstractWorker
   include Sidekiq::Worker
   sidekiq_options retry: 1, queue: 'default'

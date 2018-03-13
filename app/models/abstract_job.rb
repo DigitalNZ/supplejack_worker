@@ -36,7 +36,7 @@ class AbstractJob
 
   validates_presence_of   :parser_id, :environment
 
-  scope :disposable, -> { lt(created_at: Time.now - 3.months) }
+  scope :disposable, -> { lt(created_at: Time.zone.now - 3.months) }
 
   def self.search(params)
     search_params = params.to_h.try(:symbolize_keys) || {}
@@ -100,7 +100,7 @@ class AbstractJob
 
     event :start do
       after do
-        self.start_time = Time.now
+        self.start_time = Time.zone.now
         self.records_count = 0
         self.processed_count = 0
         save!
@@ -111,7 +111,7 @@ class AbstractJob
 
     event :finish do
       after do
-        self.end_time = Time.now
+        self.end_time = Time.zone.now
         calculate_throughput
         calculate_errors_count
         save!
@@ -122,8 +122,8 @@ class AbstractJob
 
     event :error do
       after do
-        self.start_time = Time.now if start_time.blank?
-        self.end_time = Time.now
+        self.start_time = Time.zone.now if start_time.blank?
+        self.end_time = Time.zone.now
         calculate_errors_count
         save!
       end
@@ -133,8 +133,8 @@ class AbstractJob
 
     event :stop do
       after do
-        self.start_time = Time.now if start_time.blank?
-        self.end_time = Time.now
+        self.start_time = Time.zone.now if start_time.blank?
+        self.end_time = Time.zone.now
         calculate_errors_count
         save!
       end
@@ -160,9 +160,9 @@ class AbstractJob
     return unless duration.to_f.positive?
     self.throughput = records_count.to_f / duration.to_f
   end
-  
+
   def self.jobs_since(params)
-    datetime = DateTime.parse(params['datetime'])
+    datetime = Time.zone.parse(params['datetime'])
     AbstractJob.where(:start_time.gte => datetime.getutc,
                       environment: params['environment'],
                       status: params['status'])

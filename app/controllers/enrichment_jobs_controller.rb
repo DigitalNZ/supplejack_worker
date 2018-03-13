@@ -22,7 +22,7 @@ class EnrichmentJobsController < ApplicationController
 
   def update
     @enrichment_job = EnrichmentJob.find(params[:id])
-    @enrichment_job.update_attributes(enrichment_job_params)
+    @enrichment_job.update(enrichment_job_params)
     respond_with @enrichment_job
   end
 

@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/workers/source_check_worker.rb
 class SourceCheckWorker
   include Sidekiq::Worker
   include ValidatesResource
@@ -28,14 +30,14 @@ class SourceCheckWorker
 
   def get(landing_url)
     RestClient.get(landing_url)
-  rescue
+  rescue StandardError
     nil
   end
 
   def up?(landing_url)
     return true if landing_url.nil?
 
-    if response = get(landing_url)
+    if (response = get(landing_url))
       validate_link_check_rule(response, source.id)
     end
   end

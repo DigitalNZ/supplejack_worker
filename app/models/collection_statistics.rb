@@ -26,7 +26,7 @@ class CollectionStatistics
             length: { maximum: 20 }
 
   def self.email_daily_stats
-    scope = CollectionStatistics.where(day: (Date.today - 1.day)).to_a
+    scope = CollectionStatistics.where(day: (Time.zone.today - 1.day)).to_a
     CollectionMailer.daily_collection_stats(scope).deliver
   end
 
