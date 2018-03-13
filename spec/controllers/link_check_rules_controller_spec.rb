@@ -49,7 +49,7 @@ describe LinkCheckRulesController do
 
       it 'updates all the attributes' do
         LinkCheckRule.stub(:find) { link_check_rule }
-        link_check_rule.should_receive(:update_attributes).with('collection_title' => 'collection_title', 'status_codes' => '203,205')
+        link_check_rule.should_receive(:update).with('collection_title' => 'collection_title', 'status_codes' => '203,205')
         put :update, params: { id: link_check_rule.id, link_check_rule: { collection_title: 'collection_title', status_codes: '203,205' } }
       end
     end

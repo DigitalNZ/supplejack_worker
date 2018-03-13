@@ -32,26 +32,18 @@ Style/RegexpLiteral:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/**/*'
-RSpec/DescribeClass:
-  Exclude:
-    - 'spec/views/**/*'
-RSpec/ExampleLength:
-  Exclude:
-    - 'spec/features/**/*'
 Rails/OutputSafety:
   Enabled: false
 Metrics/ModuleLength:
   Exclude:
     - 'app/helpers/records_helper.rb'
     - 'spec/**/*'
-RSpec/VerifiedDoubles:
-  Enabled: false
 Rails/SkipsModelValidations:
   Enabled: false
-RSpec/MessageSpies:
+Rails/FindBy:
   Enabled: false
-RSpec/MultipleExpectations:
-  Exclude:
-    - 'spec/**/**/*'
-RSpec/AnyInstance:
+Rails/Validation:
   Enabled: false
+Metrics/LineLength:
+  Max: 150
+  IgnoredPatterns: ['\A#']

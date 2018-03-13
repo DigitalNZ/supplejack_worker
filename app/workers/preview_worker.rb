@@ -1,6 +1,8 @@
 # frozen_string_literal: true
+
 require 'snippet'
 
+# app/workers/preview_worker.rb
 class PreviewWorker < HarvestWorker
   sidekiq_options retry: 1, queue: 'critical'
   sidekiq_retry_in { 1 }
@@ -46,10 +48,10 @@ class PreviewWorker < HarvestWorker
     hash.delete('record_id')
     hash.each do |_key, value|
       if value.class == Hash
-        value = strip_ids(value)
+        strip_ids(value)
       elsif value.class == Array
         value.each do |array_value|
-          array_value = strip_ids(array_value) if array_value.class == Hash
+          strip_ids(array_value) if array_value.class == Hash
         end
       end
     end
@@ -104,9 +106,8 @@ class PreviewWorker < HarvestWorker
 
     preview_record = SupplejackApi::PreviewRecord.where(record_id: current_record_id.to_i).first
 
-    unless preview_record.nil?
-      preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json)
-      preview.update_attribute(:status, 'Preview complete.')
-    end
+    return if preview_record.nil?
+    preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json)
+    preview.update_attribute(:status, 'Preview complete.')
   end
 end

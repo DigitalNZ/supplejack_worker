@@ -34,7 +34,7 @@ describe LinkCheckWorker do
       end
 
       it 'checks if rule is present' do
-        expect(link_check_rule).to receive(:present?)
+        expect(link_check_rule).to receive(:blank?)
       end
 
       it 'checks if rule is active' do
@@ -42,7 +42,7 @@ describe LinkCheckWorker do
       end
 
       it 'notifies an airbrake error when rule not present' do
-        link_check_rule.stub(:present?) { false }
+        link_check_rule.stub(:blank?) { true }
         expect(Airbrake).to receive(:notify).with(MissingLinkCheckRuleError.new(link_check_job.source_id))
       end
 
@@ -212,7 +212,7 @@ describe LinkCheckWorker do
     end
 
     it 'should find or create a collection statistics model with the collection_title' do
-      expect(CollectionStatistics).to receive(:find_or_create_by).with(day: Date.today, source_id: link_check_job.source_id) { collection_statistics }
+      expect(CollectionStatistics).to receive(:find_or_create_by).with(day: Time.zone.today, source_id: link_check_job.source_id) { collection_statistics }
       worker.send(:collection_stats).should eq collection_statistics
     end
 

@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/workers/link_check_worker.rb
 class LinkCheckWorker
   include Sidekiq::Worker
   include ValidatesResource
@@ -12,7 +14,7 @@ class LinkCheckWorker
     @link_check_job_id = link_check_job_id
     begin
       if link_check_job.present? && link_check_job.source.present?
-        unless rules.present?
+        if rules.blank?
           Sidekiq.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
           Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
           return
@@ -22,14 +24,14 @@ class LinkCheckWorker
           response = link_check(link_check_job.url, link_check_job.source.id)
           if response && validate_link_check_rule(response, link_check_job.source.id)
             Sidekiq.logger.info "Unsuppressing Record for landing_url #{link_check_job.url}"
-            set_record_status(link_check_job.record_id, 'active') if strike > 0
+            set_record_status(link_check_job.record_id, 'active') if strike.positive?
           else
             Sidekiq.logger.info "Suppressing Record for landing_url #{link_check_job.url}"
             suppress_record(link_check_job_id, link_check_job.record_id, strike)
           end
         end
       end
-    rescue ThrottleLimitError => e
+    rescue ThrottleLimitError
       # No operation here. Prevents Airbrake from notifying ThrottleLimitError.
     rescue StandardError => e
       Airbrake.notify(e, error_message: "There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
@@ -44,13 +46,13 @@ class LinkCheckWorker
   end
 
   def collection_stats
-    @collection_stats ||= CollectionStatistics.find_or_create_by(day: Date.today, source_id: link_check_job.source_id)
+    @collection_stats ||= CollectionStatistics.find_or_create_by(day: Time.zone.today, source_id: link_check_job.source_id)
   end
 
   def link_check_job
     @link_check_job ||= begin
                           LinkCheckJob.find(@link_check_job_id)
-                        rescue
+                        rescue StandardError
                           nil
                         end
   end
@@ -65,7 +67,7 @@ class LinkCheckWorker
         conn.expire(collection, rules.try(:throttle) || 2)
         begin
           RestClient.get(url)
-        rescue => e
+        rescue StandardError => e
           Sidekiq.logger.info "ResctClient get failed for #{url}. Error: #{e.message}"
           # This return will make the record to be suppressed
           return nil
@@ -78,12 +80,12 @@ class LinkCheckWorker
   end
 
   def suppress_record(link_check_job_id, record_id, strike)
-    timings = [1.hours, 5.hours, 72.hours]
+    timings = [1.hour, 5.hours, 72.hours]
 
     if strike >= 3
       set_record_status(record_id, 'deleted')
     else
-      set_record_status(record_id, 'suppressed') unless strike > 0
+      set_record_status(record_id, 'suppressed') unless strike.positive?
       LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
     end
   end
@@ -91,7 +93,7 @@ class LinkCheckWorker
   def set_record_status(record_id, status)
     RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", record: { status: status }, api_key: ENV['HARVESTER_API_KEY'])
     add_record_stats(record_id, status)
-  rescue StandardError => e
+  rescue StandardError
     Sidekiq.logger.warn('Record not found when updating status in LinkChecking. Ignoring.')
   end
 end

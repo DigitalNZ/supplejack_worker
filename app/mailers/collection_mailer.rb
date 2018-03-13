@@ -7,7 +7,7 @@ class CollectionMailer < ActionMailer::Base
 
   def daily_collection_stats(statistics_collections)
     @statistics_collections = statistics_collections
-    mail(subject: "Daily Link Checker Collection Report For #{Date.today - 1.day} - #{Rails.env.try(:capitalize)}")
+    mail(subject: "Daily Link Checker Collection Report For #{Time.zone.today - 1.day} - #{Rails.env.try(:capitalize)}")
   end
 
   def collection_status(collection, status)

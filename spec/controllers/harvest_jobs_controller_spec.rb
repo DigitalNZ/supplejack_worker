@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 describe HarvestJobsController do
-  let(:job) { double(:harvest_job, save: true, update_attributes: true) }
+  let(:job) { double(:harvest_job, save: true, update: true) }
 
   describe 'authorized requests' do
     before(:each) do
@@ -48,7 +48,7 @@ describe HarvestJobsController do
 
       it 'should update the attributes' do
         params = ActionController::Parameters.new(stop: 'true').permit!
-        job.should_receive(:update_attributes).with(params)
+        job.should_receive(:update).with(params)
         put :update, params: { id: 1, harvest_job: { stop: true } }, format: 'js'
       end
     end
