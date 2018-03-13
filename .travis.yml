@@ -5,6 +5,9 @@ services:
   - mongodb
 before_script:
   - cp config/application.yml.example config/application.yml
+script:
+  - bundle exec rspec
+  - bundle exec rubocop
 cache: bundler
 bundler_args: --without production
 sudo: false
