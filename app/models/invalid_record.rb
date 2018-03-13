@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/models/invalid_record.rb
 class InvalidRecord
   include Mongoid::Document
   include Mongoid::Timestamps

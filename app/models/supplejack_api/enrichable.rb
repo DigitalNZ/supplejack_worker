@@ -1,5 +1,7 @@
 # frozen_string_literal: true
+
 module SupplejackApi
+  # :nodoc:
   module Enrichable
     extend ActiveSupport::Concern
 
@@ -9,7 +11,8 @@ module SupplejackApi
 
       store_in client: 'api'
 
-      embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiRecord::RecordFragment'
+      embeds_many :fragments, cascade_callbacks: true,
+                              class_name: 'SupplejackApi::ApiRecord::RecordFragment'
       delegate :title, :shelf_location, :relation, to: :primary
     end
 
@@ -26,7 +29,9 @@ module SupplejackApi
     end
 
     def authority_taps(name)
-      primary.authorities.map { |authority| authority.authority_id if authority.name == name.to_s }.compact
+      primary.authorities.map do |authority|
+        authority.authority_id if authority.name == name.to_s
+      end.compact
     end
 
     def authorities
