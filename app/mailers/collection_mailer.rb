@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/mailers/collection_mailer.rb
 class CollectionMailer < ActionMailer::Base
   default from: ENV['LINKCHECKER_EMAIL']
   default to: ENV['LINKCHECKER_RECIPIENTS']
