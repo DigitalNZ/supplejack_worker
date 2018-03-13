@@ -26,6 +26,7 @@ gem 'sidekiq', '= 4.1.1'
 gem 'sinatra', :require => nil
 gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git'
 gem 'whenever', require: false
+gem 'rubocop'
 
 group :test do
   gem 'cucumber-rails'
