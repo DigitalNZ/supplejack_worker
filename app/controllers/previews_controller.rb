@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/controllers/previews_controller.rb
 class PreviewsController < ApplicationController
   def create
     @preview = Preview.spawn_preview_worker(preview_params)
