@@ -64,7 +64,9 @@ class EnrichmentWorker < AbstractWorker
         enrichment.set_attribute_values
         if enrichment.errors.any?
           Airbrake.notify(StandardError.new("Enrichment Errors: #{enrichment.errors.inspect}"))
+          # rubocop:disable Metrics/LineLength
           Sidekiq.logger.error "Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n PARSER CLASS: #{@parser_class.inspect}"
+          # rubocop:enable Metrics/LineLength
         else
           post_to_api(enrichment) unless job.test?
         end
@@ -98,7 +100,9 @@ class EnrichmentWorker < AbstractWorker
   def post_to_api(enrichment)
     enrichment.record_attributes.as_json.each do |record_id, attributes|
       attrs = attributes.merge(job_id: job.id.to_s)
+      # rubocop:disable Metrics/LineLength
       ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
+      # rubocop:enable Metrics/LineLength
       job.increment_records_count!
     end
   end

@@ -34,7 +34,9 @@ class LinkCheckWorker
     rescue ThrottleLimitError
       # No operation here. Prevents Airbrake from notifying ThrottleLimitError.
     rescue StandardError => e
+      # rubocop:disable Metrics/LineLength
       Airbrake.notify(e, error_message: "There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
+      # rubocop:enable Metrics/LineLength
     end
   end
 
