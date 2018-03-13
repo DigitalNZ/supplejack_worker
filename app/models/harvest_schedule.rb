@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/models/harvest_schedule.rb
 class HarvestSchedule
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -71,9 +73,8 @@ class HarvestSchedule
   end
 
   def generate_cron
-    if frequency.present?
-      self.cron = CronGenerator.new(frequency, at_hour, at_minutes, offset).output
-    end
+    return unless frequency.present?
+    self.cron = CronGenerator.new(frequency, at_hour, at_minutes, offset).output
   end
 
   def generate_next_run_at

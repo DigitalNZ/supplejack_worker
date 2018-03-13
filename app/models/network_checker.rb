@@ -1,9 +1,11 @@
 # frozen_string_literal: true
+
+# app/models/network_checker.rb
 class NetworkChecker
   def self.check
-    response = RestClient.get('http://google.com')
+    RestClient.get('http://google.com')
     ENV['LINK_CHECKING_ENABLED'] = 'true'
-  rescue
+  rescue StandardError
     ENV['LINK_CHECKING_ENABLED'] = nil
   end
 end

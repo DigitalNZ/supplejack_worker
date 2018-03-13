@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/models/abstract_job.rb
 class AbstractJob
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -84,7 +86,9 @@ class AbstractJob
   end
 
   def required_enrichments
-    parser.enrichment_definitions(environment).dup.keep_if { |_name, options| options[:required_for_active_record] }.keys
+    parser.enrichment_definitions(environment).dup.keep_if do |_name, options|
+      options[:required_for_active_record]
+    end.keys
   end
 
   aasm column: 'status' do
@@ -153,12 +157,15 @@ class AbstractJob
   end
 
   def calculate_throughput
-    self.throughput = records_count.to_f / duration.to_f if duration.to_f > 0
+    return unless duration.to_f.positive?
+    self.throughput = records_count.to_f / duration.to_f
   end
-
+  
   def self.jobs_since(params)
     datetime = DateTime.parse(params['datetime'])
-    AbstractJob.where(:start_time.gte => datetime.getutc, environment: params['environment'], status: params['status'])
+    AbstractJob.where(:start_time.gte => datetime.getutc,
+                      environment: params['environment'],
+                      status: params['status'])
   end
 
   def duration
