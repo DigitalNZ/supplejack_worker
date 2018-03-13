@@ -1,0 +1,57 @@
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'config/**/*'
+    - 'bin/*'
+    - 'spec/**/**/*'
+    - 'tmp/**/**/*'
+    - 'lib/**/*'
+    - '**/Gemfile'
+    - '**/Guardfile'
+  DisplayStyleGuide: true
+  DisplayCopNames: true
+Rails:
+  Enabled: true
+Metrics/LineLength:
+  Exclude:
+    - 'lib/capistrano/**/**/*'
+  Max: 120
+Metrics/MethodLength:
+  Max: 25
+# https://github.com/bbatsov/rubocop/issues/1633
+Rails/InverseOf:
+  Enabled: false
+Layout/MultilineOperationIndentation:
+  Enabled: false
+Layout/IndentHash:
+  EnforcedStyle: consistent
+Layout/IndentArray:
+  EnforcedStyle: consistent
+Style/RegexpLiteral:
+  EnforcedStyle: slashes
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/**/*'
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/views/**/*'
+RSpec/ExampleLength:
+  Exclude:
+    - 'spec/features/**/*'
+Rails/OutputSafety:
+  Enabled: false
+Metrics/ModuleLength:
+  Exclude:
+    - 'app/helpers/records_helper.rb'
+    - 'spec/**/*'
+RSpec/VerifiedDoubles:
+  Enabled: false
+Rails/SkipsModelValidations:
+  Enabled: false
+RSpec/MessageSpies:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Exclude:
+    - 'spec/**/**/*'
+RSpec/AnyInstance:
+  Enabled: false
