@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/controllers/harvest_jobs_controller.rb
 class HarvestJobsController < ApplicationController
   before_action :authenticate_user!
 

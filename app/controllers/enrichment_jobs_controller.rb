@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/controllers/enrichment_jobs_controller.rb
 class EnrichmentJobsController < ApplicationController
   before_action :authenticate_user!
 
