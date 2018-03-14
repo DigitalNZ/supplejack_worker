@@ -1,7 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 68bd218bad29d4fa36de2fa69b1dfc13dfa0ad9d
-  branch: rm/fix-sj-tokenised-harvest-error
+  revision: 333f56a01c429792a2c311be32530684174308c9
   specs:
     supplejack_common (0.0.2)
       actionpack
