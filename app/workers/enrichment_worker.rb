@@ -23,9 +23,18 @@ class EnrichmentWorker < AbstractWorker
 
     enrichment_class.before(job.enrichment)
 
-    records.each do |record|
-      break if stop_harvest?
-      process_record(record)
+    records = fetch_records(1)
+
+    while more_records?(records) do
+      records.each do |record|
+        break if stop_harvest?
+
+        process_record(record)
+      end
+
+      break if last_page_records?(records)
+
+      records = fetch_records(records.pagination['page'] + 1)
     end
 
     until api_update_finished?
@@ -38,16 +47,27 @@ class EnrichmentWorker < AbstractWorker
     job.finish!
   end
 
-  def records
+  def more_records?(records)
+    return true if job.preview?
+    records.pagination['page'] <= records.pagination['total_pages']
+  end
+
+  def last_page_records?(records)
+    return true if job.preview?
+    records.pagination['page'] == records.pagination['total_pages']
+  end
+
+  def fetch_records(page = 0)
     if job.record_id.nil?
       if job.harvest_job.present?
-        SupplejackApi::Record.where('fragments.job_id' => job.harvest_job.id.to_s).no_timeout
+        SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
+
       else
-        SupplejackApi::Record.where('fragments.source_id' => job.parser.source.source_id).no_timeout
+        SupplejackApi::Record.find({ 'fragments.source_id' => job.parser.source.source_id }, page: page)
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.where(record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id).no_timeout
+      klass.find({ record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id }, page: page)
     end
   end
 
@@ -94,9 +114,9 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def post_to_api(enrichment)
-    enrichment.record_attributes.as_json.each do |record_id, attributes|
+    enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
       attrs = attributes.merge(job_id: job.id.to_s)
-      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
+      ApiUpdateWorker.perform_async("/harvester/records/#{mongo_record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
       job.increment_records_count!
     end
   end

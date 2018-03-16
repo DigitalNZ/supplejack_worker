@@ -134,8 +134,8 @@ describe SourceCheckWorker do
       CollectionMailer.stub(:collection_status).with('name', 'down')
     end
 
-    it 'should suppress the collection' do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
+    it 'should suppress the collection setting the status_updated_by as LINK CHECKER' do
+      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:suppress_collection)
     end
 
@@ -151,8 +151,8 @@ describe SourceCheckWorker do
       CollectionMailer.stub(:collection_status).with('name', 'up')
     end
 
-    it 'should suppress the collection' do
-      RestClient.should_receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active' }, api_key: ENV['HARVESTER_API_KEY'])
+    it 'should activate the collection and set the status_updated_by as LINK CHECKER' do
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:activate_collection)
     end
 
