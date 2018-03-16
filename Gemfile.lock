@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: be22bc54213d85550cbee29d2f4d8cc4dd114a9c
-  branch: oliver/restful-enrichments
+  revision: d7bf6f130c826a8edcc320598cc227f6ce7b2783
+  tag: v2.3.0
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -287,7 +287,7 @@ GEM
       sidekiq (>= 2.4.0)
     rspec-support (3.7.0)
     ruby_dep (1.5.0)
-    sanitize (4.6.0)
+    sanitize (4.6.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.4.4)
       nokogumbo (~> 1.4)
