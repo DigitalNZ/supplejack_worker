@@ -1,9 +1,15 @@
 # frozen_string_literal: true
+
+# app/controllers/link_check_rules_controller.rb
 class LinkCheckRulesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @link_check_rules = params[:link_check_rule].present? ? LinkCheckRule.where(link_check_rule_params) : LinkCheckRule.all
+    @link_check_rules = if params[:link_check_rule].present?
+                          LinkCheckRule.where(link_check_rule_params)
+                        else
+                          LinkCheckRule.all
+                        end
     render json: @link_check_rules
   end
 
@@ -24,7 +30,7 @@ class LinkCheckRulesController < ApplicationController
 
   def update
     @link_check_rule = LinkCheckRule.find(params[:id])
-    @link_check_rule.update_attributes(link_check_rule_params)
+    @link_check_rule.update(link_check_rule_params)
     render json: @link_check_rule
   end
 

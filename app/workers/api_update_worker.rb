@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# app/workers/api_update_worker.rb
 class ApiUpdateWorker < AbstractWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'default', retry: 5, backtrace: true

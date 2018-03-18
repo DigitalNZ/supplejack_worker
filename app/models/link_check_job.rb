@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/models/link_check_job.rb
 class LinkCheckJob
   include ActiveModel::ForbiddenAttributesProtection
   include Mongoid::Document
@@ -19,6 +21,7 @@ class LinkCheckJob
   private
 
   def enqueue
-    LinkCheckWorker.perform_async(id.to_s) if ENV['LINK_CHECKING_ENABLED'] == 'true'
+    return unless ENV['LINK_CHECKING_ENABLED'] == 'true'
+    LinkCheckWorker.perform_async(id.to_s)
   end
 end

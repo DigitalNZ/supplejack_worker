@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/workers/api_delete_worker.rb
 class ApiDeleteWorker < AbstractWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'default', retry: 5, backtrace: true

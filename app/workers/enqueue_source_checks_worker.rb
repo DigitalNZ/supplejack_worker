@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/workers/enqueue_source_worker.rb
 class EnqueueSourceChecksWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'default'

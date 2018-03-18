@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module SupplejackApi
+  # app/models/supplejack_api/enrichment_record_collection.rb
   class EnrichmentRecordCollection < ActiveResource::Collection
     attr_accessor :pagination
 

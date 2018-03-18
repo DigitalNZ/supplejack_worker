@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # app/workers/abstract_worker.rb
 class AbstractWorker
   include Sidekiq::Worker
@@ -14,7 +15,7 @@ class AbstractWorker
     # the next time stop_harvest? is called in the loop
     return true if job.finished?
 
-    if stop = job.stopped? || job.errors_over_limit?
+    if (stop = job.stopped? || job.errors_over_limit?)
       job.finish!
     end
 

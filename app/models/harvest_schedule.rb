@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/models/harvest_schedule.rb
 class HarvestSchedule
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -33,14 +35,14 @@ class HarvestSchedule
   def allowed?
     parser = begin
                Parser.find(parser_id)
-             rescue
+             rescue StandardError
                nil
              end
     !!parser&.allow_full_and_flush
   end
 
   def self.one_offs_to_be_run
-    one_off.lte(start_time: Time.now).gte(start_time: Time.now - 6.minutes)
+    one_off.lte(start_time: Time.zone.now).gte(start_time: Time.zone.now - 6.minutes)
   end
 
   def self.create_one_off_jobs
@@ -48,7 +50,7 @@ class HarvestSchedule
   end
 
   def self.recurrents_to_be_run
-    recurrent.lte(next_run_at: Time.now).lte(start_time: Time.now)
+    recurrent.lte(next_run_at: Time.zone.now).lte(start_time: Time.zone.now)
   end
 
   def self.create_recurrent_jobs
@@ -64,16 +66,15 @@ class HarvestSchedule
   end
 
   def next_job
-    return nil unless cron.present?
+    return nil if cron.blank?
 
     parser = CronParser.new(cron)
-    parser.next(Time.now)
+    parser.next(Time.zone.now)
   end
 
   def generate_cron
-    if frequency.present?
-      self.cron = CronGenerator.new(frequency, at_hour, at_minutes, offset).output
-    end
+    return if frequency.blank?
+    self.cron = CronGenerator.new(frequency, at_hour, at_minutes, offset).output
   end
 
   def generate_next_run_at
@@ -86,7 +87,7 @@ class HarvestSchedule
                           environment: environment,
                           mode: mode, enrichments: enrichments)
 
-      self.last_run_at = Time.now
+      self.last_run_at = Time.zone.now
       self.status = 'inactive' unless recurrent
     end
 

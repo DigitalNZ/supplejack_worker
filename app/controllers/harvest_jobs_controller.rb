@@ -1,12 +1,19 @@
 # frozen_string_literal: true
+
+# app/controllers/harvest_jobs_controller.rb
 class HarvestJobsController < ApplicationController
   before_action :authenticate_user!
 
   def index
     @harvest_jobs = HarvestJob.search(params.permit!)
-    response.headers['X-total'] = @harvest_jobs.total_count.to_s
-    response.headers['X-offset'] = @harvest_jobs.offset_value.to_s
-    response.headers['X-limit'] = @harvest_jobs.limit_value.to_s
+
+    headers = ['X-total', 'X-offset', 'X-limit']
+    values = %i[total_count offset_value limit_value]
+
+    headers.zip(values) do |header, value|
+      response.headers[header] = @harvest_job.send(value).to_s
+    end
+
     render json: @harvest_jobs
   end
 
@@ -27,7 +34,7 @@ class HarvestJobsController < ApplicationController
 
   def update
     @harvest_job = HarvestJob.find(params[:id])
-    @harvest_job.update_attributes(harvest_job_params)
+    @harvest_job.update(harvest_job_params)
     render json: @harvest_job
   end
 

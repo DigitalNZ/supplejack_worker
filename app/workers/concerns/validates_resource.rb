@@ -1,11 +1,13 @@
 # frozen_string_literal: true
+
+# :nodoc:
 module ValidatesResource
   extend ActiveSupport::Concern
 
   def link_check_rule(source_id)
     @link_check_rule ||= begin
                            LinkCheckRule.find_by(source_id: source_id)
-                         rescue
+                         rescue StandardError
                            nil
                          end
   end
