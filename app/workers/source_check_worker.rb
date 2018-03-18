@@ -42,12 +42,16 @@ class SourceCheckWorker
   end
 
   def suppress_collection
+    # rubocop:disable Metrics/LineLength
     RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
+    # rubocop:enable Metrics/LineLength
     CollectionMailer.collection_status(source.name, 'down')
   end
 
   def activate_collection
+    # rubocop:disable Metrics/LineLength
     RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
+    # rubocop:enable Metrics/LineLength
     CollectionMailer.collection_status(source.name, 'up')
   end
 end
