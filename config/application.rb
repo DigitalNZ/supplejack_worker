@@ -24,8 +24,6 @@ module HarvesterWorker
     config.load_defaults 5.1
     config.eager_load_paths += %W[#{Rails.root}/lib]
 
-    config.time_zone = 'Wellington'
-
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -36,3 +34,9 @@ module HarvesterWorker
     config.api_only = true
   end
 end
+
+# Setting config.time_zone = 'Wellington'
+# within the Application < Rails::Application block
+# seems to be overriden back to the default of UTC
+# ¯\_(ツ)_/¯
+Time.zone = 'Wellington'
