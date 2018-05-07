@@ -83,17 +83,19 @@ class EnrichmentWorker < AbstractWorker
 
         enrichment.set_attribute_values
         if enrichment.errors.any?
-          Airbrake.notify(StandardError.new("Enrichment Errors: #{enrichment.errors.inspect}"))
           # rubocop:disable Metrics/LineLength
-          Sidekiq.logger.error "Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n PARSER CLASS: #{@parser_class.inspect}"
+          Airbrake.notify(StandardError.new("Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n Parser ID: #{@parser.id}"))
+          Sidekiq.logger.error "Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n PARSER CLASS: #{@parser_class.inspect} \n PARSER ID #{@parser.id}"
           # rubocop:enable Metrics/LineLength
         else
           post_to_api(enrichment) unless job.test?
         end
       rescue RestClient::ResourceNotFound => e
-        Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}")
+        Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
       rescue StandardError => e
-        Airbrake.notify(e)
+        # rubocop:disable Metrics/LineLength
+        Airbrake.notify(e, error_message: "The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}, here is the first line of the backtrace #{e.backtrace.first}")
+        # rubocop:enable Metrics/LineLength
       end
     end
     Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
