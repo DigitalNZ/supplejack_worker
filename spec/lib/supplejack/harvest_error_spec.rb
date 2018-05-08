@@ -18,7 +18,7 @@ RSpec.describe Supplejack::HarvestError do
     end
 
     it 'can be initialized with a parser id' do
-      expect(error.parser_id).to eq '1'
+      expect(error.parser_id).to eq 1
     end
   end
 end
