@@ -64,6 +64,7 @@ describe HarvestWorker do
         job.stub_chain(:parser, :source, :source_id) { 'source_id' }
         job.stub_chain(:parser, :data_type) { 'record' }
         job.stub_chain(:parser, :record?) { true }
+        job.stub_chain(:parser, :id) { 1 }
         worker.instance_variable_set(:@source_id, 'source_id')
         worker.stub(:post_to_api)
       end
