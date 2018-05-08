@@ -45,9 +45,12 @@ class AbstractWorker
       job.retried_records << response['record_id']
       job.save!
       job.set(retried_records_count: job.retried_records.uniq.count)
+      parser_id = job.parser.id
+
       raise Supplejack::HarvestError.new(response['message'],
                                          response['backtrace'],
-                                         response['raw_data'])
+                                         response['raw_data'],
+                                         parser_id)
     end
 
     job.set(last_posted_record_id: response['record_id'])
