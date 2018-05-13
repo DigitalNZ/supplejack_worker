@@ -73,6 +73,7 @@ class EnrichmentWorker < AbstractWorker
     end
   end
 
+  # rubocop:disable Metrics/MethodLength
   def process_record(record)
     job.increment_processed_count!
 
@@ -83,10 +84,16 @@ class EnrichmentWorker < AbstractWorker
 
         enrichment.set_attribute_values
         if enrichment.errors.any?
-          # rubocop:disable Metrics/LineLength
-          Airbrake.notify(StandardError.new("Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n Parser ID: #{@parser.id}"))
-          Sidekiq.logger.error "Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n PARSER CLASS: #{@parser_class.inspect} \n PARSER ID #{@parser.id}"
-          # rubocop:enable Metrics/LineLength
+          Airbrake.notify(
+            StandardError.new('Enrichment Error'),
+            error_message: "Enrichment Errors on #{enrichment_class} in Parser: #{@parser.id}",
+            backtrace: {
+              enrichment: enrichment.errors.inspect,
+              job: job.inspect,
+              options: enrichment_options.inspect,
+              record: record.inspect
+            }
+          )
         else
           post_to_api(enrichment) unless job.test?
         end
@@ -100,6 +107,7 @@ class EnrichmentWorker < AbstractWorker
     end
     Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   end
+  # rubocop:enable Metrics/MethodLength
 
   private
 
