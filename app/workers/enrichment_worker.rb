@@ -91,7 +91,8 @@ class EnrichmentWorker < AbstractWorker
               enrichment: enrichment.errors.inspect,
               job: job.inspect,
               options: enrichment_options.inspect,
-              record: record.inspect
+              record: record.inspect,
+              parser: @parser.id
             }
           )
         else
@@ -100,9 +101,7 @@ class EnrichmentWorker < AbstractWorker
       rescue RestClient::ResourceNotFound => e
         Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
       rescue StandardError => e
-        # rubocop:disable Metrics/LineLength
-        Airbrake.notify(e, error_message: "The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}, here is the first line of the backtrace #{e.backtrace.first}")
-        # rubocop:enable Metrics/LineLength
+        Airbrake.notify(e, error_message: "The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}", backtrace: e.backtrace)
       end
     end
     Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?

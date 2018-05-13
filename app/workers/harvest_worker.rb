@@ -62,7 +62,7 @@ class HarvestWorker < AbstractWorker
                                rescue StandardError
                                  nil
                                end
-      Airbrake.notify(e, error_message: "The Parser #{job.parser.id} has an error in it, the first line of the backtrace is #{e.backtrace.first}")
+      Airbrake.notify(e, error_message: "The Parser #{job.parser.id} has an error in it", backtrace: e.backtrace)
     end
 
     job.save!
