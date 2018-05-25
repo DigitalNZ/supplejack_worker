@@ -8,6 +8,8 @@ module SupplejackApi
 
     store_in client: 'api', collection: 'concepts'
 
+    index concept_id: 1
+
     embeds_many :fragments, cascade_callbacks: true,
                             class_name: 'SupplejackApi::ApiConcept::ConceptFragment'
 
