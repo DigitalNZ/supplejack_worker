@@ -7,7 +7,10 @@ module SupplejackApi
     include Enrichable
 
     def self.find(query, page)
-      super(:all, params: { search: query, search_options: page, api_key: ENV['HARVESTER_API_KEY']})
+      super(:all, params: { search: query, search_options: page, api_key: ENV['HARVESTER_API_KEY'] })
+    rescue ActiveResource::ServerError => e
+      Aibrake.notify(e, error_message: "The api request failed with: query: #{query} and page: #{page}.  #{e&.message}")
+      raise
     end
   end
 end
