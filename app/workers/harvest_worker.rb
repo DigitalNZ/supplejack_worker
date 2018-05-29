@@ -1,6 +1,8 @@
 # frozen_string_literal: true
+
 require 'snippet'
 
+# app/workers/harvest_worker.rb
 class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
   include Matcher::ConceptMatcher
@@ -23,7 +25,7 @@ class HarvestWorker < AbstractWorker
 
     job.records do |record, _i|
       process_record(record, job)
-      return if stop_harvest?
+      break if stop_harvest?
     end
 
     until api_update_finished?
@@ -51,16 +53,16 @@ class HarvestWorker < AbstractWorker
           job.records_count += 1
         end
       else
-        job.invalid_records.build(created_at: Time.now, raw_data: record.raw_data, error_messages: record.errors.full_messages)
+        job.invalid_records.build(created_at: Time.zone.now, raw_data: record.raw_data, error_messages: record.errors.full_messages)
       end
     rescue StandardError => e
-      failed_record = job.failed_records.build(created_at: Time.now, exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
+      failed_record = job.failed_records.build(created_at: Time.zone.now, exception_class: e.class, message: e.message, backtrace: e.backtrace[0..5])
       failed_record.raw_data = begin
                                  record.try(:raw_data)
-                               rescue
+                               rescue StandardError
                                  nil
                                end
-      Airbrake.notify(e)
+      Airbrake.notify(e, error_message: "The Parser #{job.parser.id} has an error in it", backtrace: e.backtrace)
     end
 
     job.save!
@@ -69,7 +71,7 @@ class HarvestWorker < AbstractWorker
   def post_to_api(attributes, async = true)
     data_type = begin
                   attributes.delete(:data_type).downcase.to_sym
-                rescue
+                rescue StandardError
                   :record
                 end
     path = "/harvester/#{data_type.to_s.pluralize}.json"

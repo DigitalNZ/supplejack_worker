@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # app/workers/abstract_worker.rb
 class AbstractWorker
   include Sidekiq::Worker
@@ -14,7 +15,7 @@ class AbstractWorker
     # the next time stop_harvest? is called in the loop
     return true if job.finished?
 
-    if stop = job.stopped? || job.errors_over_limit?
+    if (stop = job.stopped? || job.errors_over_limit?)
       job.finish!
     end
 
@@ -44,9 +45,12 @@ class AbstractWorker
       job.retried_records << response['record_id']
       job.save!
       job.set(retried_records_count: job.retried_records.uniq.count)
+      parser_id = job.parser.id
+
       raise Supplejack::HarvestError.new(response['message'],
                                          response['backtrace'],
-                                         response['raw_data'])
+                                         response['raw_data'],
+                                         parser_id)
     end
 
     job.set(last_posted_record_id: response['record_id'])

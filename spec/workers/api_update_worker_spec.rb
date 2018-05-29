@@ -4,6 +4,11 @@ require 'rails_helper'
 describe ApiUpdateWorker do
   let(:worker) { ApiUpdateWorker.new }
   let(:job) { create(:harvest_job) }
+  let(:parser) { Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb', source: { source_id: 'source_id' }, id: 1) }
+
+  before(:each) do
+    allow_any_instance_of(HarvestJob).to receive(:parser) { parser }
+  end
 
   it 'is retryable' do
     expect(described_class).to be_retryable 5
@@ -67,7 +72,6 @@ describe ApiUpdateWorker do
 
       it 'increments job.posted_records_count' do
         job.should_receive(:inc).with(posted_records_count: 1)
-
         worker.perform('/harvester/records/123/fragments.json', {}, 1)
       end
 

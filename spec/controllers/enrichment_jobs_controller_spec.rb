@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 describe EnrichmentJobsController do
-  let(:job) { double(:enrichment_job, save: true, update_attributes: true) }
+  let(:job) { double(:enrichment_job, save: true, update: true) }
 
   describe 'authorized requests' do
     before(:each) do
@@ -46,7 +46,7 @@ describe EnrichmentJobsController do
 
       it 'should update the attributes' do
         params = ActionController::Parameters.new(stop: 'true').permit!
-        job.should_receive(:update_attributes).with(params)
+        job.should_receive(:update).with(params)
         put :update, params: { id: 1, enrichment_job: { stop: true } }, format: 'json'
       end
     end

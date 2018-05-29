@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/models/harvest_failure.rb
 class HarvestFailure
   include Mongoid::Document
   include Mongoid::Timestamps

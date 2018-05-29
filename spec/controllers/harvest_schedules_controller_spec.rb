@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 describe HarvestSchedulesController do
-  let(:schedule) { double(:harvest_schedule, save: true, destroy: true, update_attributes: true) }
+  let(:schedule) { double(:harvest_schedule, save: true, destroy: true, update: true) }
 
   describe 'authorized requests' do
     before(:each) do
@@ -65,7 +65,7 @@ describe HarvestSchedulesController do
 
       it 'should update the attributes' do
         params = ActionController::Parameters.new(cron: '* * * * *').permit!
-        schedule.should_receive(:update_attributes).with(params)
+        schedule.should_receive(:update).with(params)
         put :update, params: { id: 1, harvest_schedule: { cron: '* * * * *' } }
       end
     end

@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/models/enrichment_job.rb
 class EnrichmentJob < AbstractJob
   belongs_to :harvest_job, optional: true
 
@@ -7,7 +9,9 @@ class EnrichmentJob < AbstractJob
   field :enrichment,  type: String
   field :record_id,   type: Integer
 
-  validates_uniqueness_of :enrichment, scope: %i[environment status _type parser_id], message: I18n.t('job.already_running', type: 'Enrichment'), if: :active?
+  validates_uniqueness_of :enrichment,
+                          scope: %i[environment status _type parser_id],
+                          message: I18n.t('job.already_running', type: 'Enrichment'), if: :active?
 
   def self.create_from_harvest_job(job, enrichment)
     create!(parser_id:         job.parser_id,

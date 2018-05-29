@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/controllers/harvest_schedules_controller.rb
 class HarvestSchedulesController < ApplicationController
   before_action :authenticate_user!
 
@@ -33,7 +35,7 @@ class HarvestSchedulesController < ApplicationController
   def update
     @harvest_schedule = HarvestSchedule.find(params[:id])
 
-    @harvest_schedule.update_attributes(harvest_schedule_params)
+    @harvest_schedule.update(harvest_schedule_params)
     render json: @harvest_schedule
   end
 

@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# app/workers/enrichment_worker.rb
 class EnrichmentWorker < AbstractWorker
   include Sidekiq::Worker
   sidekiq_options retry: 1, queue: 'default'
@@ -23,9 +25,18 @@ class EnrichmentWorker < AbstractWorker
 
     enrichment_class.before(job.enrichment)
 
-    records.each do |record|
-      break if stop_harvest?
-      process_record(record)
+    records = fetch_records(1)
+
+    while more_records?(records)
+      records.each do |record|
+        break if stop_harvest?
+
+        process_record(record)
+      end
+
+      break if last_page_records?(records)
+
+      records = fetch_records(records.pagination['page'] + 1)
     end
 
     until api_update_finished?
@@ -38,19 +49,31 @@ class EnrichmentWorker < AbstractWorker
     job.finish!
   end
 
-  def records
+  def more_records?(records)
+    return true if job.preview?
+    records.pagination['page'] <= records.pagination['total_pages']
+  end
+
+  def last_page_records?(records)
+    return true if job.preview?
+    records.pagination['page'] == records.pagination['total_pages']
+  end
+
+  def fetch_records(page = 0)
     if job.record_id.nil?
       if job.harvest_job.present?
-        SupplejackApi::Record.where('fragments.job_id' => job.harvest_job.id.to_s).no_timeout
+        SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
+
       else
-        SupplejackApi::Record.where('fragments.source_id' => job.parser.source.source_id).no_timeout
+        SupplejackApi::Record.find({ 'fragments.source_id' => job.parser.source.source_id }, page: page)
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.where(record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id).no_timeout
+      klass.find({ record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id }, page: page)
     end
   end
 
+  # rubocop:disable Metrics/MethodLength
   def process_record(record)
     job.increment_processed_count!
 
@@ -61,19 +84,29 @@ class EnrichmentWorker < AbstractWorker
 
         enrichment.set_attribute_values
         if enrichment.errors.any?
-          Airbrake.notify(StandardError.new("Enrichment Errors: #{enrichment.errors.inspect}"))
-          Sidekiq.logger.error "Enrichment Errors on #{enrichment_class}: #{enrichment.errors.inspect} \n JOB: #{job.inspect} \n OPTIONS: #{enrichment_options.inspect}, RECORD: #{record.inspect} \n PARSER CLASS: #{@parser_class.inspect}"
+          Airbrake.notify(
+            StandardError.new('Enrichment Error'),
+            error_message: "Enrichment Errors on #{enrichment_class} in Parser: #{@parser.id}",
+            backtrace: {
+              enrichment: enrichment.errors.inspect,
+              job: job.inspect,
+              options: enrichment_options.inspect,
+              record: record.inspect,
+              parser: @parser.id
+            }
+          )
         else
           post_to_api(enrichment) unless job.test?
         end
       rescue RestClient::ResourceNotFound => e
-        Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}")
+        Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
       rescue StandardError => e
-        Airbrake.notify(e)
+        Airbrake.notify(e, error_message: "The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}", backtrace: e.backtrace)
       end
     end
     Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   end
+  # rubocop:enable Metrics/MethodLength
 
   private
 
@@ -94,9 +127,11 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def post_to_api(enrichment)
-    enrichment.record_attributes.as_json.each do |record_id, attributes|
+    enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
       attrs = attributes.merge(job_id: job.id.to_s)
-      ApiUpdateWorker.perform_async("/harvester/records/#{record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
+      # rubocop:disable Metrics/LineLength
+      ApiUpdateWorker.perform_async("/harvester/records/#{mongo_record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
+      # rubocop:enable Metrics/LineLength
       job.increment_records_count!
     end
   end

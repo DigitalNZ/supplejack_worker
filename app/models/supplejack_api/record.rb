@@ -1,12 +1,14 @@
 # frozen_string_literal: true
+
 module SupplejackApi
-  class Record
+  # app/models/supplejack_api/record.rb
+  class Record < ActiveResource::Base
+    self.site = "#{ENV['API_HOST']}/harvester"
+    self.collection_parser = EnrichmentRecordCollection
     include Enrichable
 
-    store_in collection: 'records'
-
-    embeds_many :fragments, cascade_callbacks: true, class_name: 'SupplejackApi::ApiRecord::RecordFragment'
-
-    default_scope -> { where(:status.in => %w[active partial]) }
+    def self.find(query, page)
+      super(:all, params: { search: query, search_options: page, api_key: ENV['HARVESTER_API_KEY'] })
+    end
   end
 end
