@@ -10,7 +10,7 @@ end
 gem 'aasm'
 gem 'active_model_serializers', '~> 0.10.7'
 gem 'activeresource', require: 'active_resource'
-gem 'airbrake'
+gem 'airbrake', '~> 7.2'
 gem 'chronic'
 gem 'figaro'
 gem 'kaminari'
