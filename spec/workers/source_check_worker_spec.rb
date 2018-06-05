@@ -131,7 +131,9 @@ describe SourceCheckWorker do
   describe '#suppress_collection' do
     before do
       RestClient.stub(:put)
-      CollectionMailer.stub(:collection_status).with('name', 'down')
+      mailer = double()
+      mailer.stub(:deliver)
+      CollectionMailer.stub(:collection_status).with(source, 'suppressed').and_return(mailer)
     end
 
     it 'should suppress the collection setting the status_updated_by as LINK CHECKER' do
@@ -140,15 +142,17 @@ describe SourceCheckWorker do
     end
 
     it 'should send an email that the collection is down' do
+      expect(CollectionMailer).to receive(:collection_status).with(source, 'suppressed')
       worker.send(:suppress_collection)
-      expect(CollectionMailer).to have_received(:collection_status).with('name', 'down')
     end
   end
 
   describe '#activate_collection' do
     before do
       RestClient.stub(:put)
-      CollectionMailer.stub(:collection_status).with('name', 'up')
+      mailer = double()
+      mailer.stub(:deliver)
+      CollectionMailer.stub(:collection_status).with(source, 'activated').and_return(mailer)
     end
 
     it 'should activate the collection and set the status_updated_by as LINK CHECKER' do
@@ -157,8 +161,8 @@ describe SourceCheckWorker do
     end
 
     it 'should send an email that the collection is down' do
+      expect(CollectionMailer).to receive(:collection_status).with(source, 'activated')
       worker.send(:activate_collection)
-      expect(CollectionMailer).to have_received(:collection_status).with('name', 'up')
     end
   end
 end
