@@ -6,9 +6,7 @@ require 'snippet'
 class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
   include Matcher::ConceptMatcher
-
-  sidekiq_options retry: 1, backtrace: true, queue: 'default'
-  sidekiq_retry_in { 1 }
+  sidekiq_options retry: 5, backtrace: true, queue: 'default'
 
   sidekiq_retries_exhausted do |msg|
     job_id = msg['args'].first
