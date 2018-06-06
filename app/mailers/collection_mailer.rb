@@ -10,9 +10,9 @@ class CollectionMailer < ActionMailer::Base
     mail(subject: "Daily Link Checker Collection Report For #{Time.zone.today - 1.day} - #{Rails.env.try(:capitalize)}")
   end
 
-  def collection_status(collection, status)
-    @collection = collection
+  def collection_status(source, status)
+    @source = source
     @status = status
-    mail(subject: "#{collection} is #{status}")
+    mail(subject: "#{source.name} is #{status}")
   end
 end
