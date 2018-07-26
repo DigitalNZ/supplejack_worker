@@ -6,8 +6,10 @@ class EnqueueSourceChecksWorker
   sidekiq_options queue: 'default'
 
   def perform
+    time = 0
     EnqueueSourceChecksWorker.sources_to_check.each do |collection|
-      SourceCheckWorker.perform_async(collection)
+      SourceCheckWorker.perform_in(time.seconds, collection)
+      time += 20
     end
   end
 
