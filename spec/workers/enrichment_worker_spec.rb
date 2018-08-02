@@ -143,7 +143,7 @@ describe EnrichmentWorker do
       before { job.stub(:record_id) { 'abc123' } }
 
       it 'should fetch a specific record' do
-        expect(SupplejackApi::Record).to receive(:find).with({ record_id: job.record_id, 'fragments.source_id' => 'nlnzcat' }, page: 1)
+        expect(SupplejackApi::Record).to receive(:find).with({ record_id: job.record_id }, page: 1)
         worker.fetch_records(1)
       end
 
@@ -151,7 +151,7 @@ describe EnrichmentWorker do
         before { job.stub(:preview?) { true } }
 
         it 'should fetch a specific record from the preview_records collection' do
-          expect(SupplejackApi::PreviewRecord).to receive(:find).with({record_id: job.record_id, 'fragments.source_id' => 'nlnzcat'}, page: 0)
+          expect(SupplejackApi::PreviewRecord).to receive(:find).with({record_id: job.record_id}, page: 0)
           worker.fetch_records
         end
       end
