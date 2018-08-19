@@ -9,6 +9,7 @@ class EnrichmentJob < AbstractJob
   field :enrichment,  type: String
   field :record_id,   type: Integer
 
+  validates :record_id, numericality: { other_than: 0, allow_nil: true, message: 'record_id cannot be zero' }
   validates_uniqueness_of :enrichment,
                           scope: %i[environment status _type parser_id],
                           message: I18n.t('job.already_running', type: 'Enrichment'), if: :active?

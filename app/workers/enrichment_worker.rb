@@ -3,8 +3,7 @@
 # app/workers/enrichment_worker.rb
 class EnrichmentWorker < AbstractWorker
   include Sidekiq::Worker
-  sidekiq_options retry: 1, queue: 'default'
-  sidekiq_retry_in { 1 }
+  sidekiq_options retry: 5, queue: 'default'
 
   sidekiq_retries_exhausted do |msg|
     job_id = msg['args'].first
@@ -69,7 +68,7 @@ class EnrichmentWorker < AbstractWorker
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.find({ record_id: job.record_id, 'fragments.source_id' => job.parser.source.source_id }, page: page)
+      klass.find({ record_id: job.record_id }, page: page)
     end
   end
 
