@@ -24,7 +24,7 @@ gem 'rails', '~> 5.1.4'
 gem 'responders'
 gem 'sidekiq', '= 4.1.1'
 gem 'sinatra', :require => nil
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v2.3.1'
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v2.3.0'
 gem 'whenever', require: false
 gem 'rubocop', require: false
 
