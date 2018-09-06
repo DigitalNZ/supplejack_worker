@@ -7,7 +7,7 @@ class AbstractJob
   include Mongoid::Attributes::Dynamic
   include AASM
 
-  index status: 1
+  index status: 1, start_time: 1
 
   field :start_time,            type: DateTime
   field :end_time,              type: DateTime
