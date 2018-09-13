@@ -6,8 +6,6 @@ module SupplejackApi
     include Mongoid::Document
     include Mongoid::Attributes::Dynamic
 
-    store_in client: 'api', collection: 'concepts'
-
     index concept_id: 1
 
     embeds_many :fragments, cascade_callbacks: true,
