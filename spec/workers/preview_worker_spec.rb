@@ -26,6 +26,7 @@ describe PreviewWorker do
       worker.stub(:process_record)
       worker.stub(:enrich_record)
       job.stub(:finish!)
+      worker.stub(:stop_harvest?) { false }
     end
 
     it 'is a critical job' do
@@ -73,6 +74,18 @@ describe PreviewWorker do
       it 'should update the preview object with validation errors' do
         expect(preview).to receive(:update_attribute).with(:harvest_failure, job.harvest_failure.to_json)
         worker.perform('abc123', 'preview123')
+      end
+    end
+
+    context 'stopped jobs' do
+      before { worker.stub(:stop_harvest?) { true } }
+
+      it 'does not call preview_record if the job is stopped' do
+        expect(worker).to_not receive(:process_record)
+      end
+
+      it 'does not call enrich_record if the job is stopped' do
+        expect(worker).to_not receive(:enrich_record)
       end
     end
   end
