@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    stdin_open: true
+    networks:
+      - worker
+    ports:
+      - 3002:3002
+    volumes:
+      - .:/var/worker/:cached
+    command: bash -c " rm tmp/pids/server.pid; bundle exec rails s -b 0.0.0.0 -p 3002"
+    environment:
+      - REDIS_URL=redis://redis_host:6379
+    depends_on:
+      - mongo
+      - sidekiq
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true
+    stdin_open: true
+    networks:
+      - worker
+    volumes:
+      - .:/var/worker/:cached
+    command: bash -c " rm tmp/pids/sidekiq.pid; bundle exec sidekiq"
+    environment:
+      - REDIS_URL=redis://redis_host:6379
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:2.8
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      worker:
+        aliases:
+          - redis_host
+
+  mongo:
+    image: mongo:3.6.8
+    restart: always
+    networks:
+      worker:
+        aliases:
+          - mongo_container
+    volumes:
+      - mongo-datavolume:/data/db
+
+networks:
+  worker:
+
+volumes:
+  mongo-datavolume:
