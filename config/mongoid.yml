@@ -40,7 +40,7 @@ staging:
     default:
       database: worker_staging
       hosts:
-        - localhost:27017
+        - mongodb-staging-mongodb-replicaset-0.mongodb-staging-mongodb-replicaset.staging.svc.cluster.local:27017
       options:
         read:
           mode: :primary
