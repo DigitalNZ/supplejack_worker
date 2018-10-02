@@ -4,7 +4,7 @@ development:
     default:
       database: worker_development
       hosts:
-        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
       options:
 
     api:
@@ -40,7 +40,7 @@ staging:
     default:
       database: worker_staging
       hosts:
-        - mongodb-staging-mongodb-replicaset-0.mongodb-staging-mongodb-replicaset.staging.svc.cluster.local:27017
+        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
       options:
         read:
           mode: :primary
