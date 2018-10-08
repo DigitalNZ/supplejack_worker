@@ -1,14 +1,9 @@
-FROM ruby:2.1.4
-RUN apt-get update -qq && apt-get install -y build-essential nodejs npm nodejs-legacy mysql-client vim openssh-client 
-RUN npm install -g phantomjs-prebuilt
-
+FROM ruby:2.3.1
+RUN apt-get update -qq && apt-get install -y build-essential nodejs npm nodejs-legacy mysql-client vim openssh-client
 RUN apt-get install -y g++ cron
 
 # For nokogiri
 RUN apt-get install -y libxml2-dev libxslt1-dev libxslt-dev liblzma-dev curl
-
-# capybara-webkit
-RUN apt-get install -y qt5-default libqt5webkit5-dev
 
 # Utilities
 RUN apt-get install -y nmap htop
@@ -16,19 +11,16 @@ RUN apt-get install -y nmap htop
 # Use libxml2, libxslt a packages from alpine for building nokogiri
 RUN bundle config build.nokogiri --use-system-libraries
 
-RUN mkdir /worker
-RUN mkdir -p /worker/tmp/pids
+RUN mkdir /var/worker
+RUN mkdir -p /var/worker/tmp/pids
 
-# CMD ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
-
-# http://ilikestuffblog.com/2014/01/06/how-to-skip-bundle-install-when-deploying-a-rails-app-to-docker/
+# Cache bundle install
 WORKDIR /tmp
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-
-# Cache bundle install
 ENV BUNDLE_PATH /bundle
-
 RUN bundle install
-WORKDIR /worker
-ADD . /worker
+
+WORKDIR /var/worker
+ADD . /var/worker
+
