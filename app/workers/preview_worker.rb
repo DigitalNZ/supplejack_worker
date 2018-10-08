@@ -29,10 +29,12 @@ class PreviewWorker < HarvestWorker
 
     preview.update_attribute(:status, 'Worker starting. Loading parser and fetching data...')
 
-    job.records do |record, i|
-      next if i < job.index
-      process_record(record)
-      enrich_record(record)
+    unless stop_harvest?
+      job.records do |record, i|
+        next if i < job.index
+        process_record(record)
+        enrich_record(record)
+      end
     end
 
     job.finish!
