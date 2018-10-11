@@ -19,7 +19,7 @@ gem 'mongoid', '~> 7.0'
 gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
 gem 'parse-cron'
 gem 'puma', '~> 3.7'
-gem 'rails', '~> 5.1.4'
+gem 'rails', '5.2.1'
 gem 'responders'
 gem 'sidekiq', '= 4.1.1'
 gem 'sinatra', :require => nil
