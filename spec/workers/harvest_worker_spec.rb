@@ -8,9 +8,9 @@ describe HarvestWorker do
 
   before(:each) do
     SupplejackCommon.parser_base_path = Rails.root.to_s + '/tmp/parsers'
-    RestClient.stub(:post)
+    allow(RestClient).to receive(:post)
 
-    worker.stub(:job) { job }
+    allow(worker).to receive(:job) { job }
     parser.load_file(:staging)
   end
 
@@ -18,10 +18,10 @@ describe HarvestWorker do
     let!(:record) { double(:record, attributes: {}, valid?: true) }
 
     before(:each) do
-      job.stub(:parser) { parser }
-      LoadedParser::Staging::NatlibPages.stub(:records) { [record] }
-      worker.stub(:api_update_finished?) { true }
-      worker.stub(:process_record)
+      allow(job).to receive(:parser) { parser }
+      allow(LoadedParser::Staging::NatlibPages).to receive(:records) { [record] }
+      allow(worker).to receive(:api_update_finished?) { true }
+      allow(worker).to receive(:process_record)
     end
 
     it 'is a default priority job' do
@@ -29,27 +29,27 @@ describe HarvestWorker do
     end
 
     it 'processes each record' do
-      worker.should_receive(:process_record).with(record, job)
+      expect(worker).to receive(:process_record).with(record, job)
       worker.perform(1)
     end
 
     it 'enqueues enrichment jobs' do
-      job.should_receive(:enqueue_enrichment_jobs)
+      expect(job).to receive(:enqueue_enrichment_jobs)
       worker.perform(1)
     end
 
     it 'sets @job_id to the harvest_job_id' do
       worker.perform('abc123')
-      worker.job_id.should eq 'abc123'
+      expect(worker.job_id).to eq 'abc123'
     end
 
     it 'handles ids as objects' do
       worker.perform('$oid' => 'abc123')
-      worker.job_id.should eq 'abc123'
+      expect(worker.job_id).to eq 'abc123'
     end
 
     it 'calls finish!' do
-      job.should_receive(:finish!)
+      expect(job).to receive(:finish!)
       worker.perform('abc123')
     end
   end
@@ -60,65 +60,65 @@ describe HarvestWorker do
 
     context 'record' do
       before do
-        record.stub(:deletable?) { false }
-        job.stub_chain(:parser, :source, :source_id) { 'source_id' }
-        job.stub_chain(:parser, :data_type) { 'record' }
-        job.stub_chain(:parser, :record?) { true }
-        job.stub_chain(:parser, :id) { 1 }
+        allow(record).to receive(:deletable?) { false }
+        allow(job).to receive_message_chain(:parser, :source, :source_id) { 'source_id' }
+        allow(job).to receive_message_chain(:parser, :data_type) { 'record' }
+        allow(job).to receive_message_chain(:parser, :record?) { true }
+        allow(job).to receive_message_chain(:parser, :id) { 1 }
         worker.instance_variable_set(:@source_id, 'source_id')
-        worker.stub(:post_to_api)
+        allow(worker).to receive(:post_to_api)
       end
 
       it 'posts the record to the api with job_id' do
-        worker.should_receive(:post_to_api).with(hash_including(title: 'Hi', internal_identifier: ['record123'], job_id: job.id.to_s))
+        expect(worker).to receive(:post_to_api).with(hash_including(title: 'Hi', internal_identifier: ['record123'], job_id: job.id.to_s))
         worker.process_record(record, job)
       end
 
       it 'posts the record to the api with source_id' do
-        worker.should_receive(:post_to_api).with(hash_including(source_id: 'source_id'))
+        expect(worker).to receive(:post_to_api).with(hash_including(source_id: 'source_id'))
         worker.process_record(record, job)
       end
 
       it "doesn't post to the API on a test harvest" do
-        job.stub(:test?) { true }
-        worker.should_not_receive(:post_to_api).with(record)
+        allow(job).to receive(:test?) { true }
+        expect(worker).not_to receive(:post_to_api).with(record)
         worker.process_record(record, job)
       end
 
       it 'increments records_count' do
         worker.process_record(record, job)
-        job.records_count.should eq 1
+        expect(job.records_count).to eq 1
       end
 
       it 'saves the job' do
-        job.should_receive(:save!)
+        expect(job).to receive(:save!)
         worker.process_record(record, job)
       end
 
       it "stores invalid record's raw data" do
-        record.stub(:valid?) { false }
-        errors.stub(:full_messages) { ["Title can't be blank"] }
+        allow(record).to receive(:valid?) { false }
+        allow(errors).to receive(:full_messages) { ["Title can't be blank"] }
         worker.process_record(record, job)
-        job.invalid_records.first.raw_data.should eq '</record>'
-        job.invalid_records.first.error_messages.should eq ["Title can't be blank"]
+        expect(job.invalid_records.first.raw_data).to eq '</record>'
+        expect(job.invalid_records.first.error_messages).to eq ["Title can't be blank"]
       end
 
       it 'rescues exceptions from a record and adds it to the failed records' do
-        worker.stub(:post_to_api).and_raise 'Post failed'
+        allow(worker).to receive(:post_to_api).and_raise 'Post failed'
         worker.process_record(record, job)
-        job.failed_records.first.message.should eq 'Post failed'
+        expect(job.failed_records.first.message).to eq 'Post failed'
       end
 
       context 'deleteable record' do
-        before { record.stub(:deletable?) { true } }
+        before { allow(record).to receive(:deletable?) { true } }
 
         it 'deletes_from_api if the record is deletable?' do
-          worker.should_receive(:delete_from_api).with(['record123'])
+          expect(worker).to receive(:delete_from_api).with(['record123'])
           worker.process_record(record, job)
         end
 
         it 'does not post to api' do
-          worker.should_not_receive(:post_to_api)
+          expect(worker).not_to receive(:post_to_api)
           worker.process_record(record, job)
         end
       end
@@ -129,14 +129,14 @@ describe HarvestWorker do
       let(:parser) { double(:parser, data_type: 'concept', concept?: true, record?: false).as_null_object }
 
       before do
-        record.stub(:deletable?) { false }
-        job.stub(:parser) { parser }
+        allow(record).to receive(:deletable?) { false }
+        allow(job).to receive(:parser) { parser }
         worker.instance_variable_set(:@source_id, 'source_id')
-        worker.stub(:post_to_api)
+        allow(worker).to receive(:post_to_api)
       end
 
       it 'should determine whether to create or match a concept' do
-        worker.should_receive(:create_concept?).with(hash_including(label: ['Colin John McCahon'], internal_identifier: ['record123'], match_concepts: :create_or_match, source_id: 'source_id', data_type: 'concept'))
+        expect(worker).to receive(:create_concept?).with(hash_including(label: ['Colin John McCahon'], internal_identifier: ['record123'], match_concepts: :create_or_match, source_id: 'source_id', data_type: 'concept'))
         worker.process_record(record, job)
       end
     end
@@ -146,7 +146,7 @@ describe HarvestWorker do
     let(:attributes) { { title: 'Hi', data_type: 'record' } }
 
     before(:each) do
-      job.stub(:required_enrichments)
+      allow(job).to receive(:required_enrichments)
     end
 
     it 'should post to the API' do
@@ -155,18 +155,18 @@ describe HarvestWorker do
     end
 
     it 'should not post the data_type attribute to the API' do
-      ApiUpdateWorker.stub(:perform_async)
-      attributes.stub(:delete)
+      allow(ApiUpdateWorker).to receive(:perform_async)
+      allow(attributes).to receive(:delete)
 
-      attributes.should_receive(:delete).with(:data_type)
+      expect(attributes).to receive(:delete).with(:data_type)
       worker.post_to_api(attributes)
     end
 
     it 'should not post the match_concepts attribute to the API' do
-      ApiUpdateWorker.stub(:perform_async)
-      attributes.stub(:delete)
+      allow(ApiUpdateWorker).to receive(:perform_async)
+      allow(attributes).to receive(:delete)
 
-      attributes.should_receive(:delete).with(:match_concepts)
+      expect(attributes).to receive(:delete).with(:match_concepts)
       worker.post_to_api(attributes)
     end
 
@@ -191,16 +191,16 @@ describe HarvestWorker do
       let(:api_update_worker) { double(:api_update_worker) }
 
       it 'should create a new instance of ApiUpdateWorker' do
-        job.stub(:required_enrichments)
-        ApiUpdateWorker.should_receive(:new) { api_update_worker }
-        api_update_worker.should_receive(:perform)
+        allow(job).to receive(:required_enrichments)
+        expect(ApiUpdateWorker).to receive(:new) { api_update_worker }
+        expect(api_update_worker).to receive(:perform)
         worker.post_to_api(attributes, false)
       end
     end
 
     context 'required fragments' do
       it 'should send the required enricments to the api' do
-        job.stub(:required_enrichments) { [:ndha_rights] }
+        allow(job).to receive(:required_enrichments) { [:ndha_rights] }
         worker.post_to_api(attributes)
         expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json', { 'record' => { 'title' => 'Hi' }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
       end

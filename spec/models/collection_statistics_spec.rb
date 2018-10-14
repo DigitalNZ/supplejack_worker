@@ -5,26 +5,26 @@ describe CollectionStatistics do
   let(:collection_statistics) { build(:collection_statistics, source_id: 'source_id', day: Date.today) }
 
   context 'validations' do
-    it 'should validate uniqueness of collection name' do
+    it 'validates uniqueness of collection name' do
       collection_statistics.save
       collection_stats = build(:collection_statistics, source_id: 'source_id')
-      collection_stats.should_not be_valid
+      expect(collection_stats).to_not be_valid
     end
 
-    it 'should validate the uniqueness of day' do
+    it 'validates the uniqueness of day' do
       collection_statistics.save
       collection_stats = build(:collection_statistics, source_id: 'source_id', day: Date.today)
-      collection_stats.should_not be_valid
+      expect(collection_stats).to_not be_valid
     end
 
-    it 'should validate presence of collection name' do
+    it 'validates presence of collection name' do
       collection_stats = build(:collection_statistics)
-      collection_stats.should_not be_valid
+      expect(collection_stats).to_not be_valid
     end
 
-    it 'should validate the presence of day' do
+    it 'validates the presence of day' do
       collection_stats = build(:collection_statistics, source_id: 'source_id')
-      collection_stats.should_not be_valid
+      expect(collection_stats).to_not be_valid
     end
   end
 
@@ -32,9 +32,9 @@ describe CollectionStatistics do
     let(:mailer) { double(:mailer) }
 
     it 'sends daily collection stats' do
-      CollectionMailer.should_receive(:daily_collection_stats).with([]) { mailer }
-      mailer.should_receive(:deliver)
-      CollectionStatistics.email_daily_stats
+      allow(CollectionMailer).to receive(:daily_collection_stats).with([]).and_return(mailer)
+      allow(mailer).to receive(:deliver)
+      allow(CollectionStatistics).to receive(:email_daily_stats)
     end
   end
 
@@ -47,44 +47,44 @@ describe CollectionStatistics do
   end
 
   describe '.record_id_collection_whitelist' do
-    it 'should return the whitelist' do
-      CollectionStatistics.send(:record_id_collection_whitelist).should include('suppressed', 'activated', 'deleted')
+    it 'returns the whitelist' do
+      expect(CollectionStatistics.send(:record_id_collection_whitelist)).to include 'suppressed', 'activated', 'deleted'
     end
   end
 
   describe 'add_record_item' do
-    it 'should initialize an empty array if record_ids id nil' do
+    it 'initializes an empty array if record_ids id nil' do
       collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
-      collection_statistics.activated_records.should be_a Array
+      expect(collection_statistics.activated_records).to be_a Array
     end
 
-    it 'should add a record_id to the array of record_ids' do
+    it 'adds a record_id to the array of record_ids' do
       collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le')
-      collection_statistics.activated_records.should eq [{ record_id: 12_345, landing_url: 'http://goog.le' }]
+      expect(collection_statistics.activated_records).to eq [{ record_id: 12_345, landing_url: 'http://goog.le' }]
     end
 
-    it 'should not reinitialize record_ids array after adding two values' do
+    it 'does not reinitialize record_ids array after adding two values' do
       collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
       collection_statistics.send(:add_record_item, 54_321, 'activated', 'http://goog.le/1')
-      collection_statistics.activated_records.should eq [{ record_id: 12_345, landing_url: 'http://goog.le/' }, { record_id: 54_321, landing_url: 'http://goog.le/1' }]
+      expect(collection_statistics.activated_records).to eq [{ record_id: 12_345, landing_url: 'http://goog.le/' }, { record_id: 54_321, landing_url: 'http://goog.le/1' }]
     end
 
-    it 'should not add duplicate items' do
+    it 'does not add duplicate items' do
       collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
       collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
-      collection_statistics.activated_records.should eq [{ record_id: 12_345, landing_url: 'http://goog.le/' }]
+      expect(collection_statistics.activated_records).to eq [{ record_id: 12_345, landing_url: 'http://goog.le/' }]
     end
 
-    it 'should incriment the suppressed_count' do
+    it 'does not increment the suppressed_count' do
       collection_statistics.send(:add_record_item, 1234, 'suppressed', 'http://google.gle')
-      collection_statistics.suppressed_records.should eq [{ record_id: 1234, landing_url: 'http://google.gle' }]
-      collection_statistics.suppressed_count.should eq 1
+      expect(collection_statistics.suppressed_records).to eq [{ record_id: 1234, landing_url: 'http://google.gle' }]
+      expect(collection_statistics.suppressed_count).to eq 1
     end
 
-    it 'should only increment for one suppression' do
+    it 'only increments for one suppression' do
       collection_statistics.send(:add_record_item, 1234, 'suppressed', 'http://google.gle')
       collection_statistics.send(:add_record_item, 1234, 'suppressed', 'http://google.gle')
-      collection_statistics.suppressed_count.should eq 1
+      expect(collection_statistics.suppressed_count).to eq 1
     end
 
     context 'large array of values' do
@@ -96,12 +96,12 @@ describe CollectionStatistics do
           collection_statistics.save
         end
 
-        it 'should maintain a size of 20' do
-          collection_statistics.reload.activated_records.size.should eq 20
+        it 'maintains a size of 20' do
+          expect(collection_statistics.reload.activated_records.size).to eq 20
         end
 
-        it 'should have a count of 32' do
-          collection_statistics.reload.activated_count.should eq 31
+        it 'has a count of 31' do
+          expect(collection_statistics.reload.activated_count).to eq 31
         end
       end
 
@@ -113,12 +113,12 @@ describe CollectionStatistics do
           collection_statistics.save
         end
 
-        it 'should maintain a size of 20' do
-          collection_statistics.reload.suppressed_records.size.should eq 20
+        it 'maintains a size of 20' do
+          expect(collection_statistics.reload.suppressed_records.size).to eq 20
         end
 
-        it 'should have a count of 32' do
-          collection_statistics.reload.suppressed_count.should eq 31
+        it 'has a count of 31' do
+          expect(collection_statistics.reload.suppressed_count).to eq 31
         end
       end
 
@@ -130,12 +130,12 @@ describe CollectionStatistics do
           collection_statistics.save
         end
 
-        it 'should maintain a size of 20' do
-          collection_statistics.reload.deleted_records.size.should eq 20
+        it 'maintains a size of 20' do
+          expect(collection_statistics.reload.deleted_records.size).to eq 20
         end
 
-        it 'should have a count of 32' do
-          collection_statistics.reload.deleted_count.should eq 31
+        it 'has a count of 31' do
+          expect(collection_statistics.reload.deleted_count).to eq 31
         end
       end
     end

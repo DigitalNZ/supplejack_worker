@@ -7,9 +7,9 @@ describe LinkCheckJobsController do
 
     it 'should create a link_check_job' do
       params = ActionController::Parameters.new('url' => 'http://google.co.nz', 'source_id' => 'source_id', record_id: '123').permit!
-      LinkCheckJob.should_receive(:create!).with(params) { link_check_job }
+      allow(LinkCheckJob).to receive(:create!).with(params).and_return(link_check_job)
       post :create, params: { link_check: { url: 'http://google.co.nz', source_id: 'source_id', record_id: '123' } }
-      assigns(:link_check).should eq link_check_job
+      expect(assigns(:link_check)).to eq link_check_job
     end
   end
 end

@@ -11,49 +11,49 @@ describe HarvestSchedule do
       s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: '111', status: 'paused')
       s3 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '333', status: 'inactive')
 
-      HarvestSchedule.all.should eq [s1, s2]
+      expect(HarvestSchedule.all).to eq [s1, s2]
     end
   end
 
   describe '.one_offs_to_be_run' do
-    it 'should only return non recurrent schedules' do
+    it 'returns only non recurrent schedules' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
         s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: '111')
 
-        HarvestSchedule.one_offs_to_be_run.should eq [s1]
+        expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
     end
 
-    it 'should return schedules that have start_time in the last 5 minutes' do
+    it 'returns schedules that have start_time in the last 5 minutes' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
         s2 = HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: '111')
-        HarvestSchedule.one_offs_to_be_run.should eq [s1]
+        expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
     end
 
-    it 'should not return schedules that have already been run' do
+    it 'does not return schedules that have already been run' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
         s2 = HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: '111', last_run_at: time - 15.minutes)
-        HarvestSchedule.one_offs_to_be_run.should eq [s1]
+        expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
     end
 
-    it 'should not return schedules that have a start_time in the future' do
+    it 'does not return schedules that have a start_time in the future' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
         s2 = HarvestSchedule.create(start_time: time + 2.minutes, recurrent: false, parser_id: '111')
-        HarvestSchedule.one_offs_to_be_run.should eq [s1]
+        expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
     end
   end
 
   describe '.create_one_off_jobs' do
-    it 'should create a job for every one off schedule that needs to run' do
-      HarvestSchedule.should_receive(:one_offs_to_be_run) { [schedule] }
-      schedule.should_receive(:create_job)
+    it 'creates a job for every one off schedule that needs to run' do
+      expect(HarvestSchedule).to receive(:one_offs_to_be_run).and_return([schedule])
+      expect(schedule).to receive(:create_job)
       HarvestSchedule.create_one_off_jobs
     end
   end
@@ -70,7 +70,7 @@ describe HarvestSchedule do
       Timecop.freeze(time) do
         s1 = schedule_with_next_run_at(parser_id: '222', next_run_at: time - 2.minutes)
         s2 = schedule_with_next_run_at(recurrent: false, parser_id: '111', next_run_at: time - 2.minutes)
-        HarvestSchedule.recurrents_to_be_run.should eq [s1]
+        expect(HarvestSchedule.recurrents_to_be_run).to eq [s1]
       end
     end
 
@@ -78,7 +78,7 @@ describe HarvestSchedule do
       Timecop.freeze(time) do
         s1 = schedule_with_next_run_at(start_time: time - 10.minutes, parser_id: '222', next_run_at: time - 2.minutes)
         s2 = schedule_with_next_run_at(start_time: time + 10.minutes, parser_id: '111', next_run_at: time - 2.minutes)
-        HarvestSchedule.recurrents_to_be_run.should eq [s1]
+        expect(HarvestSchedule.recurrents_to_be_run).to eq [s1]
       end
     end
 
@@ -86,15 +86,15 @@ describe HarvestSchedule do
       Timecop.freeze(time) do
         s1 = schedule_with_next_run_at(parser_id: '222', next_run_at: time - 1.minutes)
         s2 = schedule_with_next_run_at(parser_id: '111', next_run_at: time + 1.day)
-        HarvestSchedule.recurrents_to_be_run.should eq [s1]
+        expect(HarvestSchedule.recurrents_to_be_run).to eq [s1]
       end
     end
   end
 
   describe '.create_recurrent_jobs' do
-    it 'should generate jobs for each recurrent schedule' do
-      HarvestSchedule.should_receive(:recurrents_to_be_run) { [schedule] }
-      schedule.should_receive(:create_job)
+    it 'generates jobs for each recurrent schedule' do
+      expect(HarvestSchedule).to receive(:recurrents_to_be_run).and_return([schedule])
+      expect(schedule).to receive(:create_job)
       HarvestSchedule.create_recurrent_jobs
     end
   end
@@ -102,28 +102,28 @@ describe HarvestSchedule do
   describe '#next_job' do
     it 'returns the next time on a weekly cron' do
       Timecop.freeze(time) do
-        schedule.stub(:cron) { '0 2 * * 0' }
-        schedule.next_job.should eq Time.parse('2013-03-03 02:00:00')
+        allow(schedule).to receive(:cron).and_return('0 2 * * 0')
+        expect(schedule.next_job).to eq Time.parse('2013-03-03 02:00:00')
       end
     end
 
     it 'returns the next time on a montly cron' do
       Timecop.freeze(time) do
-        schedule.stub(:cron) { '0 2 1 * *' }
-        schedule.next_job.should eq Time.parse('2013-03-01 02:00:00')
+        allow(schedule).to receive(:cron).and_return('0 2 1 * *')
+        expect(schedule.next_job).to eq Time.parse('2013-03-01 02:00:00')
       end
     end
 
     it 'returns the next time on a fortnightly cron' do
       Timecop.freeze(time) do
-        schedule.stub(:cron) { '0 2 1,15 * *' }
-        schedule.next_job.should eq Time.parse('2013-03-1 02:00:00')
+        allow(schedule).to receive(:cron).and_return('0 2 1,15 * *')
+        expect(schedule.next_job).to eq Time.parse('2013-03-1 02:00:00')
       end
     end
 
     it 'returns nil when cron is not present' do
-      schedule.stub(:cron) { '' }
-      schedule.next_job.should be_nil
+      expect(schedule).to receive(:cron).and_return(String.new)
+      expect(schedule.next_job).to be_nil
     end
   end
 
@@ -134,11 +134,11 @@ describe HarvestSchedule do
       schedule.at_minutes = '30'
       schedule.offset = 3
       schedule.generate_cron
-      schedule.cron.should eq '30 13 * * 3'
+      expect(schedule.cron).to eq '30 13 * * 3'
     end
 
-    it 'should not generate a cron without a frequency' do
-      CronGenerator.should_not_receive(:new)
+    it 'does not generate a cron without a frequency' do
+      expect(CronGenerator).to_not receive(:new)
       schedule.frequency = ''
       schedule.generate_cron
     end
@@ -147,9 +147,9 @@ describe HarvestSchedule do
   describe '#generate_next_run_at' do
     it 'calculates the next time it should schedule a job' do
       Timecop.freeze(time) do
-        schedule.stub(:next_job) { time }
+        allow(schedule).to receive(:next_job).and_return(time)
         schedule.generate_next_run_at
-        schedule.next_run_at.should eq time
+        expect(schedule.next_run_at).to eq time
       end
     end
   end
@@ -158,33 +158,32 @@ describe HarvestSchedule do
     let(:schedule) { create(:harvest_schedule, parser_id: '1234', environment: 'staging') }
 
     before do
-      schedule.stub(:allowed?) { true }
+      allow(schedule).to receive(:allowed?).and_return(true)
     end
 
     it 'checks if the job is active' do
-      schedule.should_receive(:active?)
+      allow(schedule).to receive(:active?)
       schedule.create_job
     end
 
-    it 'wont create job if schedule is not active' do
-      schedule.stub(:active?) { false }
+    it 'does not create the job if schedule is not active' do
+      allow(schedule).to receive(:active?).and_return(false)
       schedule.create_job
-
-      schedule.harvest_jobs.last.should eq nil
+      expect(schedule.harvest_jobs.last).to eq nil
     end
 
-    it 'should create a new harvest job' do
+    it 'creates a new harvest job' do
       schedule.create_job
       job = schedule.harvest_jobs.last
-      job.parser_id.should eq '1234'
-      job.environment.should eq 'staging'
+      expect(job.parser_id).to eq '1234'
+      expect(job.environment).to eq 'staging'
     end
 
     it 'should update the last_run_at' do
       Timecop.freeze(time) do
         schedule.create_job
         schedule.reload
-        schedule.last_run_at.should eq time
+        expect(schedule.last_run_at).to eq time
       end
     end
 
@@ -192,7 +191,7 @@ describe HarvestSchedule do
       schedule.recurrent = false
       schedule.create_job
       schedule.reload
-      schedule.status.should eq 'inactive'
+      expect(schedule.status).to eq 'inactive'
     end
 
     it 'should create a new harvest job with the incremental flag' do
@@ -200,7 +199,7 @@ describe HarvestSchedule do
       schedule.create_job
       schedule.reload
       job = schedule.harvest_jobs.last
-      job.incremental?.should be_truthy
+      expect(job.incremental?).to be_truthy
     end
 
     it 'should create a new harvest job with enrichments' do
@@ -208,7 +207,7 @@ describe HarvestSchedule do
       schedule.create_job
       schedule.reload
       job = schedule.harvest_jobs.last
-      job.enrichments.should eq ['ndha_rights']
+      expect(job.enrichments).to eq ['ndha_rights']
     end
   end
 
@@ -217,11 +216,11 @@ describe HarvestSchedule do
     let(:parser) { double(:parser, parser_id: '1234', allow_full_and_flush: true) }
 
     before do
-      Parser.stub(:find) { parser }
+      allow(Parser).to receive(:find).and_return(parser)
     end
 
     it 'returns false if full and flush is not allowed' do
-      parser.stub(:allow_full_and_flush) { false }
+      allow(parser).to receive(:allow_full_and_flush).and_return(false)
       expect(schedule.allowed?).to be_falsey
     end
 

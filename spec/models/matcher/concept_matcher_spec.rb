@@ -28,58 +28,58 @@ describe Matcher::ConceptMatcher do
 
   describe '#create_concept?' do
     context 'create_or_match' do
-      it 'should return false as matches existing concept' do
+      it 'returns false as matches existing concept' do
         expect(worker.create_concept?(attributes)).to be_falsey
       end
 
-      it 'should return true as doesn\'t match existing concept' do
+      it 'returns true as doesn\'t match existing concept' do
         expect(worker.create_concept?(attributes.merge(givenName: 'Noname'))).to be_truthy
       end
     end
 
     context 'create' do
-      it 'should return true as doesn\'t matter if it matches' do
+      it 'returns true as doesn\'t matter if it matches' do
         expect(worker.create_concept?(attributes.merge(match_concepts: :create))).to be_truthy
       end
     end
 
     context 'match' do
-      it 'should return false as matches existing concept' do
+      it 'returns false as matches existing concept' do
         expect(worker.create_concept?(attributes.merge(match_concepts: :match))).to be_falsey
       end
     end
 
-    it 'should convert arrays into single fields' do
+    it 'converts arrays into single fields' do
       attributes[:givenName] = ['John']
-      worker.should_receive(:lookup).with(hash_including(givenName: 'John'))
+      expect(worker).to receive(:lookup).with(hash_including(givenName: 'John'))
       worker.create_concept?(attributes)
     end
 
-    it 'should not perform a lookup if no dob is given' do
+    it 'does not perform a lookup if no job is given' do
       attributes.delete(:dateOfBirth)
-      worker.should_not_receive(:lookup)
+      expect(worker).to_not receive(:lookup)
       expect(worker.create_concept?(attributes)).to be_falsey
     end
   end
 
   describe 'lookup' do
-    it 'should lookup the concept on name and date of birth/death' do
+    it 'looks up the concept on name and date of birth/death' do
       expect(worker.send(:lookup, attributes)).to be_truthy
     end
 
     context 'match found' do
       before(:each) do
         query = double(:query, first: concept).as_null_object
-        SupplejackApi::Concept.stub(:where) { query }
+        allow(SupplejackApi::Concept).to receive(:where).and_return(query)
       end
 
-      it 'should not post an update if the source is reharvested' do
+      it 'does not post an update if the source is reharvested' do
         fragment.update_attribute(:source_id, 'mccahon_co_nz')
         worker.send(:lookup, attributes)
         expect(ApiUpdateWorker).not_to have_enqueued_sidekiq_job('/harvester/concepts.json', { 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => 'http://www.mccahon.co.nz/', 'match_status' => 'strong' } }, nil)
       end
 
-      it 'should post an update to the API with the sameAs and match_status fields' do
+      it 'posts an update to the API with the sameAs and match_status fields' do
         worker.send(:lookup, attributes)
         expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/concepts.json', { 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => ['http://www.en.wikipedia.com/mccahon'], 'match_status' => 'strong' } }, nil)
       end
