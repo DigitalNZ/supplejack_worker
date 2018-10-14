@@ -28,7 +28,7 @@ gem 'whenever', require: false
 gem 'rubocop', require: false
 
 group :test do
-  gem 'cucumber-rails'
+  gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
