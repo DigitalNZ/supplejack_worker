@@ -8,16 +8,16 @@ describe Parser do
     let!(:loader) { double(:loader).as_null_object }
 
     before(:each) do
-      parser.stub(:loader) { loader }
+      allow(parser).to receive(:loader).and_return loader
     end
 
-    it 'should initialize a loader object' do
-      SupplejackCommon::Loader.should_receive(:new).with(parser, :staging)
+    it 'initializes a loader object' do
+      expect(SupplejackCommon::Loader).to receive(:new).with(parser, :staging)
       parser.load_file(:staging)
     end
 
-    it 'should load the parser file' do
-      loader.should_receive(:load_parser)
+    it 'loads the parser file' do
+      expect(loader).to receive(:load_parser)
       parser.load_file(:staging)
     end
   end
@@ -27,16 +27,16 @@ describe Parser do
     let!(:job1) { create(:harvest_job, start_time: time - 1.day, parser_id: '12', status: 'finished') }
     let!(:job2) { create(:harvest_job, start_time: time - 2.day, parser_id: '12', status: 'finished') }
 
-    it 'should return the last date a harvest job was run' do
+    it 'returns the last date a harvest job was run' do
       Timecop.freeze(time) do
         parser = Parser.new(id: '12', name: 'Europeana')
-        parser.last_harvested_at.to_i.should eq (time - 1.day).to_i
+        expect(parser.last_harvested_at.to_i).to eq (time - 1.day).to_i
       end
     end
 
-    it 'should return nil when no job has been run' do
+    it 'returns nil when no job has been run' do
       parser = Parser.new(id: '123', name: 'Europeana')
-      parser.last_harvested_at.should be_nil
+      expect(parser.last_harvested_at).to be_nil
     end
   end
 end

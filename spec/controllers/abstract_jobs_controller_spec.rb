@@ -6,23 +6,22 @@ describe AbstractJobsController do
   describe 'GET index' do
     before(:each) do
       request.headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
-      AbstractJob.stub(:search) do
-        double(total_count: 45, offset_value: 0, limit_value: 20)
-      end
+      mock_obj = double(total_count: 45, offset_value: 0, limit_value: 20)
+      allow(AbstractJob).to receive(:search).and_return(mock_obj)
     end
 
     it 'returns active abstract jobs' do
-      AbstractJob.should_receive(:search).with(
+      allow(AbstractJob).to receive(:search).with(
         hash_including('status' => 'active')
-      )
+      ).and_call_original
       get :index, params: { status: 'active' }
     end
 
     it 'should set pagination headers' do
       get :index, params: { status: 'active' }
-      response.headers['X-total'].should eq '45'
-      response.headers['X-offset'].should eq '0'
-      response.headers['X-limit'].should eq '20'
+      expect(response.headers['X-total']).to eq '45'
+      expect(response.headers['X-offset']).to eq '0'
+      expect(response.headers['X-limit']).to eq '20'
     end
   end
 

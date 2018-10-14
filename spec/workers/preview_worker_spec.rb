@@ -11,22 +11,22 @@ describe PreviewWorker do
   let(:record2) { double(:record) }
 
   before do
-    worker.stub(:job) { job }
-    job.stub(:records).and_yield(record1, 0).and_yield(record2, 1).and_yield(record1, 2).and_yield(record2, 3)
-    record1.stub(:valid?) { true }
-    record2.stub(:valid?) { true }
-    worker.stub(:preview) { preview }
-    preview.stub(:update_attribute)
-    worker.stub(:current_record_id) { 1234 }
+    allow(worker).to receive(:job) { job }
+    allow(job).to receive(:records).and_yield(record1, 0).and_yield(record2, 1).and_yield(record1, 2).and_yield(record2, 3)
+    allow(record1).to receive(:valid?) { true }
+    allow(record2).to receive(:valid?) { true }
+    allow(worker).to receive(:preview) { preview }
+    allow(preview).to receive(:update_attribute)
+    allow(worker).to receive(:current_record_id) { 1234 }
   end
 
   describe '#perform' do
     before do
-      worker.stub(:preview) { preview }
-      worker.stub(:process_record)
-      worker.stub(:enrich_record)
-      job.stub(:finish!)
-      worker.stub(:stop_harvest?) { false }
+      allow(worker).to receive(:preview) { preview }
+      allow(worker).to receive(:process_record)
+      allow(worker).to receive(:enrich_record)
+      allow(job).to receive(:finish!)
+      allow(worker).to receive(:stop_harvest?) { false }
     end
 
     it 'is a critical job' do
@@ -69,7 +69,7 @@ describe PreviewWorker do
     end
 
     context 'harvest_failure' do
-      before { job.stub(:harvest_failure) { '{"error":"message"}' } }
+      before { allow(job).to receive(:harvest_failure) { '{"error":"message"}' } }
 
       it 'should update the preview object with validation errors' do
         expect(preview).to receive(:update_attribute).with(:harvest_failure, job.harvest_failure.to_json)
@@ -78,7 +78,7 @@ describe PreviewWorker do
     end
 
     context 'stopped jobs' do
-      before { worker.stub(:stop_harvest?) { true } }
+      before { allow(worker).to receive(:stop_harvest?) { true } }
 
       it 'does not call preview_record if the job is stopped' do
         expect(worker).to_not receive(:process_record)
@@ -111,7 +111,7 @@ describe PreviewWorker do
 
   describe '#preview' do
     before do
-      worker.unstub(:preview)
+      allow(worker).to receive(:preview).and_call_original
       worker.instance_variable_set(:@preview_id, '123')
     end
 
@@ -129,12 +129,12 @@ describe PreviewWorker do
 
   describe '#process_record' do
     before do
-      worker.stub(:preview) { preview }
-      record1.stub(:deletable?) { false }
-      record1.stub(:errors) { {} }
-      preview.stub(:save)
-      job.stub_chain(:parser, :source, :source_id) { 'tahpuhi' }
-      job.stub_chain(:parser, :data_type) { 'record' }
+      allow(worker).to receive(:preview) { preview }
+      allow(record1).to receive(:deletable?) { false }
+      allow(record1).to receive(:errors) { {} }
+      allow(preview).to receive(:save)
+      allow(job).to receive_message_chain(:parser, :source, :source_id) { 'tahpuhi' }
+      allow(job).to receive_message_chain(:parser, :data_type) { 'record' }
     end
 
     it "should update the attribute status to: 'harvesting record'" do
@@ -164,7 +164,7 @@ describe PreviewWorker do
     end
 
     context 'validation errors' do
-      before { record1.stub(:valid?) { false } }
+      before { allow(record1).to receive(:valid?) { false } }
 
       it 'should update the preview object with validation errors' do
         expect(preview).to receive(:validation_errors=).with([].to_json)
@@ -179,7 +179,7 @@ describe PreviewWorker do
   end
 
   describe '#current_record_id' do
-    before { worker.unstub(:current_record_id) }
+    before { allow(worker).to receive(:current_record_id).and_call_original }
     it 'should reload the job and return the last last_posted_record_id' do
       expect(job).to receive(:reload) { job }
       expect(worker.send(:current_record_id)).to eq '1234'
@@ -195,16 +195,16 @@ describe PreviewWorker do
         mock.get url, {'Accept'=>'application/json'}, [record].to_json, 201
       end
 
-      record1.stub(:valid?) { true }
-      record1.stub(:deletable?) { false }
-      job.stub_chain(:parser, :enrichment_definitions) { {} }
-      SupplejackApi::PreviewRecord.stub(:where) { [record] }
-      worker.stub(:strip_ids) { record.attributes }
-      worker.stub(:post_to_api)
+      allow(record1).to receive(:valid?) { true }
+      allow(record1).to receive(:deletable?) { false }
+      allow(job).to receive_message_chain(:parser, :enrichment_definitions) { {} }
+      allow(SupplejackApi::PreviewRecord).to receive(:where) { [record] }
+      allow(worker).to receive(:strip_ids) { record.attributes }
+      allow(worker).to receive(:post_to_api)
     end
 
     context 'record not valid' do
-      before { record1.stub(:valid?) { false } }
+      before { allow(record1).to receive(:valid?) { false } }
 
       it 'should not post to API if the record is not valid' do
         expect(worker).to_not receive(:post_to_api)
@@ -219,7 +219,7 @@ describe PreviewWorker do
           mock.get url, {'Accept'=>'application/json'}, [].to_json, 201
         end
 
-        record1.stub(:deletable?) { true }
+        allow(record1).to receive(:deletable?) { true }
       end
 
       it 'should not post to API if the record is not valid' do
@@ -238,9 +238,9 @@ describe PreviewWorker do
       let(:enrichment_worker) { double(:enrichment_worker) }
 
       before do
-        job.stub_chain(:parser, :enrichment_definitions).and_return(ndha: {})
-        EnrichmentJob.stub(:create_from_harvest_job) { enrichment_job }
-        EnrichmentWorker.any_instance.stub(:perform)
+        allow(job).to receive_message_chain(:parser, :enrichment_definitions).and_return(ndha: {})
+        allow(EnrichmentJob).to receive(:create_from_harvest_job) { enrichment_job }
+        allow_any_instance_of(EnrichmentWorker).to receive(:perform)
       end
 
       it 'should create a enrichment job' do
@@ -275,13 +275,13 @@ describe PreviewWorker do
     let(:record) { double(:record) }
 
     it 'returns the validation errors' do
-      record.stub(:errors) { { title: 'WRONG!' } }
+      allow(record).to receive(:errors) { { title: 'WRONG!' } }
       expect(worker.send(:validation_errors, record)).to eq([{ title: 'WRONG!' }])
     end
 
     it 'returns an empty hash if there is no @last_processed_record ' do
-      record.stub(:errors) { {} }
-      worker.send(:validation_errors, record).should be_empty
+      allow(record).to receive(:errors) { {} }
+      expect(worker.send(:validation_errors, record)).to be_empty
     end
   end
 end

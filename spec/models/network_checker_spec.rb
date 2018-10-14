@@ -3,23 +3,23 @@ require 'rails_helper'
 
 describe NetworkChecker do
   describe '#check' do
-    it 'should request the Google homepage' do
-      RestClient.should_receive(:get).with('http://google.com') { double(:response, code: 200) }
+    it 'requests the Google homepage' do
+      expect(RestClient).to receive(:get).with('http://google.com').and_return double(:response, code: 200)
       NetworkChecker.check
     end
 
-    it 'should enable link checking if 200 response' do
+    it 'enables link checking if HTTP 200 response' do
       ENV['LINK_CHECKING_ENABLED'] = nil
-      RestClient.stub(:get) { double(:response, code: 200) }
+      allow(RestClient).to receive(:get).and_return double(:response, code: 200)
       NetworkChecker.check
-      ENV['LINK_CHECKING_ENABLED'].should eq 'true'
+      expect(ENV['LINK_CHECKING_ENABLED']).to eq 'true'
     end
 
-    it 'should disable link checking on RestClient errors' do
+    it 'disables link checking on RestClient errors' do
       ENV['LINK_CHECKING_ENABLED'] = 'true'
-      RestClient.stub(:get).and_raise(RestClient::ResourceNotFound)
+      allow(RestClient).to receive(:get).and_raise(RestClient::ResourceNotFound)
       NetworkChecker.check
-      ENV['LINK_CHECKING_ENABLED'].should be_nil
+      expect(ENV['LINK_CHECKING_ENABLED']).to be_nil
     end
   end
 end

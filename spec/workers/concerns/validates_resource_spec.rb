@@ -13,93 +13,93 @@ describe ValidatesResource do
     let(:response) { double(:response, code: 200, body: '<p></p>') }
 
     before do
-      LinkCheckRule.stub(:find_by) { link_check_rule }
+      allow(LinkCheckRule).to receive(:find_by) { link_check_rule }
     end
 
     it 'should validate the response codes' do
-      worker.should_receive(:validate_response_codes).with(305, '200, 3..')
+      expect(worker).to receive(:validate_response_codes).with(305, '200, 3..')
       worker.send(:validate_link_check_rule, double(:response, code: 305, body: '<p></p>'), 'RULE_NAME')
     end
 
     it 'should validate the response body via xpath' do
-      worker.should_receive(:validate_xpath).with('//p', '<p></p>')
+      expect(worker).to receive(:validate_xpath).with('//p', '<p></p>')
       worker.send(:validate_link_check_rule, response, 'RULE_NAME')
     end
 
     context 'response code and xpath is valid' do
       it 'should return true' do
-        worker.stub(:validate_response_codes) { true }
-        worker.stub(:validate_xpath) { true }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_truthy
+        allow(worker).to receive(:validate_response_codes) { true }
+        allow(worker).to receive(:validate_xpath) { true }
+        expect(worker.send(:validate_link_check_rule, response, 'RULE_NAME')).to be_truthy
       end
     end
 
     context 'only response code is invalid' do
       it 'should return false' do
-        worker.stub(:validate_response_codes) { false }
-        worker.stub(:validate_xpath) { true }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_falsey
+        allow(worker).to receive(:validate_response_codes) { false }
+        allow(worker).to receive(:validate_xpath) { true }
+        expect(worker.send(:validate_link_check_rule, response, 'RULE_NAME')).to be_falsey
       end
     end
 
     context 'only validate xpath is invalid' do
       it 'should return false' do
-        worker.stub(:validate_response_codes) { true }
-        worker.stub(:validate_xpath) { false }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_falsey
+        allow(worker).to receive(:validate_response_codes) { true }
+        allow(worker).to receive(:validate_xpath) { false }
+        expect(worker.send(:validate_link_check_rule, response, 'RULE_NAME')).to be_falsey
       end
     end
 
     context 'response code and xpath are invalid' do
       it 'should return true' do
-        worker.stub(:validate_response_codes) { false }
-        worker.stub(:validate_xpath) { false }
-        worker.send(:validate_link_check_rule, response, 'RULE_NAME').should be_falsey
+        allow(worker).to receive(:validate_response_codes) { false }
+        allow(worker).to receive(:validate_xpath) { false }
+        expect(worker.send(:validate_link_check_rule, response, 'RULE_NAME')).to be_falsey
       end
     end
   end
 
   describe 'validate_response_codes' do
     it 'should return false when the response code matches the string' do
-      worker.send(:validate_response_codes, 300, '300').should be_falsey
+      expect(worker.send(:validate_response_codes, 300, '300')).to be_falsey
     end
 
     it 'should return false when the response code matches the regex' do
-      worker.send(:validate_response_codes, 201, '300, 2..').should be_falsey
-      worker.send(:validate_response_codes, 300, '300, 2..').should be_falsey
+      expect(worker.send(:validate_response_codes, 201, '300, 2..')).to be_falsey
+      expect(worker.send(:validate_response_codes, 300, '300, 2..')).to be_falsey
     end
 
     it 'should return true if response code blacklist is nil' do
-      worker.send(:validate_response_codes, 201, nil).should be_truthy
+      expect(worker.send(:validate_response_codes, 201, nil)).to be_truthy
     end
   end
 
   describe '#validate_xpath' do
     it 'should return false when the xpath expression matches' do
-      worker.send(:validate_xpath, '//p[@class="error"]', '<p class="error">Page Not Found</p>').should be_falsey
+      expect(worker.send(:validate_xpath, '//p[@class="error"]', '<p class="error">Page Not Found</p>')).to be_falsey
     end
 
     it "should return true when the xpath expression doesn't match" do
-      worker.send(:validate_xpath, '//p[@class="error"]', '<a class="large">Title</a>').should be_truthy
+      expect(worker.send(:validate_xpath, '//p[@class="error"]', '<a class="large">Title</a>')).to be_truthy
     end
 
     it 'should return true when there is no xpath' do
-      worker.send(:validate_xpath, nil, '<a class="large">Title</a>').should be_truthy
+      expect(worker.send(:validate_xpath, nil, '<a class="large">Title</a>')).to be_truthy
     end
 
     it 'should return true when there is no xpath' do
-      worker.send(:validate_xpath, '', '<a class="large">Title</a>').should be_truthy
+      expect(worker.send(:validate_xpath, '', '<a class="large">Title</a>')).to be_truthy
     end
   end
 
   describe '#link_check_rule' do
     it 'should should find the collection rule' do
-      LinkCheckRule.should_receive(:find_by).with(source_id: 'source_id') {}
+      expect(LinkCheckRule).to receive(:find_by).with(source_id: 'source_id') {}
       worker.send(:link_check_rule, 'source_id')
     end
 
     it 'should memozie the collection rule' do
-      LinkCheckRule.should_receive(:find_by).once { [double(:link_check_rule)] }
+      expect(LinkCheckRule).to receive(:find_by).once { [double(:link_check_rule)] }
       worker.send(:link_check_rule, 'RULE_NAME')
       worker.send(:link_check_rule, 'RULE_NAME')
     end

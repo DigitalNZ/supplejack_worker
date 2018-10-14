@@ -18,7 +18,7 @@ describe EnrichmentJobsController do
       end
 
       it 'should save the enrichment job' do
-        EnrichmentJob.any_instance.should_receive(:save)
+        allow_any_instance_of(EnrichmentJob).to receive(:save)
         post :create, params: { enrichment_job: { strategy: 'xml', file_name: 'youtube.rb' }, format: 'json' }
         expect(assigns(:enrichment_job).strategy).to eq 'xml'
         expect(assigns(:enrichment_job).file_name).to eq 'youtube.rb'
@@ -27,7 +27,7 @@ describe EnrichmentJobsController do
 
     describe '#GET show' do
       it 'finds the enrichment job' do
-        EnrichmentJob.should_receive(:find).with('1') { job }
+        expect(EnrichmentJob).to receive(:find).with('1').and_return(job)
         get :show, params: { id: 1 }, format: 'json'
         expect(assigns(:enrichment_job)).to eq job
       end
@@ -35,18 +35,18 @@ describe EnrichmentJobsController do
 
     describe 'PUT Update' do
       before(:each) do
-        EnrichmentJob.stub(:find).with('1') { job }
+        allow(EnrichmentJob).to receive(:find).with('1').and_return(job)
       end
 
       it 'finds the enrichment job' do
-        EnrichmentJob.should_receive(:find).with('1') { job }
+        allow(EnrichmentJob).to receive(:find).with('1').and_return(job)
         put :update, params: { id: 1, enrichment_job: { stop: true } }, format: 'json'
         expect(assigns(:enrichment_job)).to eq job
       end
 
       it 'should update the attributes' do
         params = ActionController::Parameters.new(stop: 'true').permit!
-        job.should_receive(:update).with(params)
+        expect(job).to receive(:update).with(params)
         put :update, params: { id: 1, enrichment_job: { stop: true } }, format: 'json'
       end
     end
