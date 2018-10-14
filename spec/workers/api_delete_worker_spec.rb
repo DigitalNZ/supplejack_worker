@@ -53,8 +53,8 @@ describe ApiDeleteWorker do
         end
       end
 
-      it 'raises an exception' do
-        expect { worker.perform('/harvester/records/123/fragments.json', {}) }.to raise_exception
+      it 'raises an invalid request Active Resource exception' do
+        expect { worker.perform('/harvester/records/123/fragments.json', {}) }.to raise_exception(ActiveResource::InvalidRequestError)
       end
     end
 
