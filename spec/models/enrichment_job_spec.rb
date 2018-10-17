@@ -5,22 +5,22 @@ describe EnrichmentJob do
   let(:job) { create(:harvest_job, parser_id: '12345', version_id: '666', user_id: '1', environment: 'staging') }
 
   context 'validations' do
-    it 'should not be possible to have 2 active jobs for the same enrichment/parser/environment' do
+    it 'is not possible to have 2 active jobs for the same enrichment/parser/environment' do
       job1 = create(:enrichment_job, enrichment: 'duplicate_enrichment', parser_id: '333', environment: 'staging', status: 'active')
       job2 = build(:enrichment_job, enrichment: 'duplicate_enrichment', parser_id: '333', environment: 'staging', status: 'active')
-      job2.should_not be_valid
+      expect(job2).to_not be_valid
     end
 
-    it 'should be possible to have 2 finished jobs for the same enrichment/parser/environment' do
+    it 'is possible to have 2 finished jobs for the same enrichment/parser/environment' do
       job1 = create(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'finished')
       job2 = build(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'finished')
-      job2.should be_valid
+      expect(job2).to be_valid
     end
 
-    it 'should be possible to have 2 active jobs with the same parser/environment' do
+    it 'is possible to have 2 active jobs with the same parser/environment' do
       job1 = create(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'active')
       job2 = build(:enrichment_job, enrichment: 'duplicate_denormalization', parser_id: '333', environment: 'staging', status: 'active')
-      job2.should be_valid
+      expect(job2).to be_valid
     end
   end
 
@@ -38,8 +38,8 @@ describe EnrichmentJob do
   end
 
   describe '#enqueue' do
-    it 'should enqueue a EnrichmentWorker' do
-      EnrichmentWorker.should_receive(:perform_async)
+    it 'enqueues a EnrichmentWorker' do
+      expect(EnrichmentWorker).to receive(:perform_async)
       EnrichmentJob.create_from_harvest_job(job, :ndha_rights)
     end
   end
@@ -48,7 +48,7 @@ describe EnrichmentJob do
     before { job.environment = 'preview' }
 
     it 'does not enque a job after create' do
-      EnrichmentWorker.should_not_receive(:perform_async)
+      expect(EnrichmentWorker).to_not receive(:perform_async)
       EnrichmentJob.create_from_harvest_job(job, :ndha_rights)
     end
   end

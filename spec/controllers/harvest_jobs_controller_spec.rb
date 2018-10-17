@@ -11,25 +11,25 @@ describe HarvestJobsController do
 
     describe 'POST create' do
       before(:each) do
-        HarvestJob.stub(:new) { job }
+        allow(HarvestJob).to receive(:new).and_return(job)
       end
 
       it 'initializes a new harvest job' do
         params = ActionController::Parameters.new(strategy: 'xml', file_name: 'youtube.rb').permit!
-        HarvestJob.should_receive(:new).with(params) { job }
+        expect(HarvestJob).to receive(:new).with(params).and_return(job)
         post :create, params: { harvest_job: { strategy: 'xml', file_name: 'youtube.rb' } }, format: 'js'
         expect(assigns(:harvest_job)).to eq job
       end
 
-      it 'should save the harvest job' do
-        job.should_receive(:save)
+      it 'saves the harvest job' do
+        expect(job).to receive(:save)
         post :create, params: { harvest_job: { strategy: 'xml', file_name: 'youtube.rb' } }, format: 'js'
       end
     end
 
     describe '#GET show' do
       it 'finds the harvest job' do
-        HarvestJob.should_receive(:find).with('1') { job }
+        expect(HarvestJob).to receive(:find).with('1').and_return(job)
         get :show, params: { id: 1 }, format: 'js'
         expect(assigns(:harvest_job)).to eq job
       end
@@ -37,18 +37,18 @@ describe HarvestJobsController do
 
     describe 'PUT Update' do
       before(:each) do
-        HarvestJob.stub(:find).with('1') { job }
+        allow(HarvestJob).to receive(:find).with('1').and_return(job)
       end
 
       it 'finds the harvest job' do
-        HarvestJob.should_receive(:find).with('1') { job }
+        expect(HarvestJob).to receive(:find).with('1').and_return(job)
         put :update, params: { id: 1, harvest_job: { stop: true } }, format: 'js'
         expect(assigns(:harvest_job)).to eq job
       end
 
-      it 'should update the attributes' do
+      it 'updates the attributes' do
         params = ActionController::Parameters.new(stop: 'true').permit!
-        job.should_receive(:update).with(params)
+        expect(job).to receive(:update).with(params)
         put :update, params: { id: 1, harvest_job: { stop: true } }, format: 'js'
       end
     end

@@ -33,7 +33,7 @@ describe ApiUpdateWorker do
     end
 
     before(:each) do
-      AbstractJob.stub(:find).and_return(job)
+      allow(AbstractJob).to receive(:find).and_return(job)
     end
 
     it 'is a default priority job' do
@@ -41,23 +41,23 @@ describe ApiUpdateWorker do
     end
 
     it 'post attributes to the api' do
-      RestClient.should_receive(:post).and_return(success_response.to_json)
+      expect(RestClient).to receive(:post).and_return(success_response.to_json)
       worker.perform('/harvester/records/123/fragments.json', {}, 1)
     end
 
     it 'merges preview=true into attributes if environment is preview' do
-      job.stub(:environment) { 'preview' }
+      allow(job).to receive(:environment) { 'preview' }
 
-      RestClient.should_receive(:post) do |_, attributes, _|
+      expect(RestClient).to receive(:post) { |_, attributes, _|
         expect(attributes).to eq({ preview: true, api_key: ENV['HARVESTER_API_KEY'] }.to_json)
-      end.and_return(success_response.to_json)
+      }.and_return(success_response.to_json)
 
       worker.perform('/harvester/records/123/fragments.json', {}, 1)
     end
 
     context 'Api return status: :failed' do
       before(:each) do
-        RestClient.stub(:post).and_return(failed_response.to_json)
+        allow(RestClient).to receive(:post).and_return(failed_response.to_json)
       end
 
       it 'raises Supplejack::HarvestError exception' do
@@ -67,16 +67,16 @@ describe ApiUpdateWorker do
 
     context 'API return a status: :success' do
       before(:each) do
-        RestClient.stub(:post).and_return(success_response.to_json)
+        allow(RestClient).to receive(:post).and_return(success_response.to_json)
       end
 
       it 'increments job.posted_records_count' do
-        job.should_receive(:inc).with(posted_records_count: 1)
+        expect(job).to receive(:inc).with(posted_records_count: 1)
         worker.perform('/harvester/records/123/fragments.json', {}, 1)
       end
 
       it 'updates job.last_posted_record_id' do
-        job.should_receive(:set).with(last_posted_record_id: 123)
+        expect(job).to receive(:set).with(last_posted_record_id: 123)
 
         worker.perform('/harvester/records/123/fragments.json', {}, 1)
       end

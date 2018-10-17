@@ -10,7 +10,7 @@ describe EnqueueSourceChecksWorker do
      double(:link_check_rule, source_id: '3', active: false)]
   end
 
-  before { LinkCheckRule.stub(:all) { link_check_rules } }
+  before { allow(LinkCheckRule).to receive(:all) { link_check_rules } }
 
   describe '#perform' do
     it 'is a default priority job' do
@@ -27,11 +27,11 @@ describe EnqueueSourceChecksWorker do
 
   describe '.sources_to_check' do
     it 'should get all the sources to check' do
-      EnqueueSourceChecksWorker.sources_to_check.should include('1', '2')
+      expect(EnqueueSourceChecksWorker.sources_to_check).to include('1', '2')
     end
 
     it 'should not include inactive sources' do
-      EnqueueSourceChecksWorker.sources_to_check.should_not include('3')
+      expect(EnqueueSourceChecksWorker.sources_to_check).not_to include('3')
     end
   end
 end

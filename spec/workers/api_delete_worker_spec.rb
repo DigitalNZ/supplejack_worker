@@ -24,7 +24,7 @@ describe ApiDeleteWorker do
     end
 
     before(:each) do
-      AbstractJob.stub(:find).and_return(job)
+      allow(AbstractJob).to receive(:find).and_return(job)
     end
 
     it 'is a default priority job' do
@@ -32,13 +32,13 @@ describe ApiDeleteWorker do
     end
 
     it 'put attributes to the api' do
-      RestClient.should_receive(:put).and_return(success_response.to_json)
+      expect(RestClient).to receive(:put).and_return(success_response.to_json)
       worker.perform('/harvester/records/123/fragments.json', {})
     end
 
     context 'API return a status: :failed' do
       before(:each) do
-        RestClient.stub(:put).and_return(failed_response.to_json)
+        allow(RestClient).to receive(:put).and_return(failed_response.to_json)
       end
 
       it 'triggers an Airbrake notification' do
@@ -53,24 +53,24 @@ describe ApiDeleteWorker do
         end
       end
 
-      it 'raises an exception' do
-        expect { worker.perform('/harvester/records/123/fragments.json', {}) }.to raise_exception
+      it 'raises an invalid request Active Resource exception' do
+        expect { worker.perform('/harvester/records/123/fragments.json', {}) }.to raise_exception(ActiveResource::InvalidRequestError)
       end
     end
 
     context 'API return a status: :success' do
       before(:each) do
-        RestClient.stub(:put).and_return(success_response.to_json)
+        allow(RestClient).to receive(:put).and_return(success_response.to_json)
       end
 
       it 'increments job.posted_records_count' do
-        job.should_receive(:inc).with(posted_records_count: 1)
+        expect(job).to receive(:inc).with(posted_records_count: 1)
 
         worker.perform('/harvester/records/123/fragments.json', {})
       end
 
       it 'updates job.last_posted_record_id' do
-        job.should_receive(:set).with(last_posted_record_id: 123)
+        expect(job).to receive(:set).with(last_posted_record_id: 123)
 
         worker.perform('/harvester/records/123/fragments.json', {})
       end

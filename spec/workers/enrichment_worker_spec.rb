@@ -21,15 +21,15 @@ describe EnrichmentWorker do
       mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id.to_s}&search_options%5Bpage%5D=1", {'Accept'=>'application/json'}, records_response, 201
     end
 
-    job.stub(:parser) { parser }
-    worker.stub(:job) { job }
-    worker.stub(:api_update_finished?) { true }
+    allow(job).to receive(:parser) { parser }
+    allow(worker).to receive(:job) { job }
+    allow(worker).to receive(:api_update_finished?) { true }
   end
 
   describe '#perform' do
     before(:each) do
       worker.send(:setup_parser)
-      job.stub_chain(:parser, :source, :source_id) { 'nlnzcat' }
+      allow(job).to receive_message_chain(:parser, :source, :source_id) { 'nlnzcat' }
     end
 
     it 'is a default priority job' do
@@ -38,39 +38,39 @@ describe EnrichmentWorker do
 
     it 'should set the @job_id as a string' do
       worker.perform(1234)
-      worker.instance_variable_get('@job_id').should eq '1234'
+      expect(worker.instance_variable_get('@job_id')).to eq '1234'
     end
 
     it 'should mark the job as started' do
-      job.should_receive(:start!)
+      expect(job).to receive(:start!)
       worker.perform(1234)
     end
 
     it 'should setup the parser' do
-      worker.should_receive(:setup_parser).and_call_original
+      expect(worker).to receive(:setup_parser).and_call_original
       worker.perform(1234)
     end
 
     it 'should process every record' do
       worker.fetch_records(1).each do |record|
-        worker.should_receive(:process_record).with(record)
+        expect(worker).to receive(:process_record).with(record)
       end
       worker.perform(1234)
     end
 
     it 'should finish the enrichment_job' do
-      job.should_receive(:finish!)
+      expect(job).to receive(:finish!)
       worker.perform(1234)
     end
 
     it 'stops processing the records' do
-      worker.stub(:stop_harvest?) { true }
-      worker.should_not_receive(:process_record)
+      allow(worker).to receive(:stop_harvest?) { true }
+      expect(worker).not_to receive(:process_record)
       worker.perform(1)
     end
 
     it 'should check the api update has finished' do
-      worker.should_receive(:api_update_finished?)
+      expect(worker).to receive(:api_update_finished?)
       worker.perform(1)
     end
 
@@ -119,7 +119,7 @@ describe EnrichmentWorker do
       end
 
       worker.send(:setup_parser)
-      job.stub_chain(:parser, :source, :source_id) { 'nlnzcat' }
+      allow(job).to receive_message_chain(:parser, :source, :source_id) { 'nlnzcat' }
     end
 
     it 'should fetch records based on the source_id' do
@@ -130,7 +130,7 @@ describe EnrichmentWorker do
 
     context 'enrichment job has a relationship to a harvest job' do
       before do
-        job.stub(:harvest_job) { double(:harvest_job, id: 'abc123') }
+        allow(job).to receive(:harvest_job) { double(:harvest_job, id: 'abc123') }
       end
 
       it 'only returns records with a fragment containing harvest job\'s id' do
@@ -140,7 +140,7 @@ describe EnrichmentWorker do
     end
 
     context 'record_id is set' do
-      before { job.stub(:record_id) { 'abc123' } }
+      before { allow(job).to receive(:record_id) { 'abc123' } }
 
       it 'should fetch a specific record' do
         expect(SupplejackApi::Record).to receive(:find).with({ record_id: job.record_id }, page: 1)
@@ -148,7 +148,7 @@ describe EnrichmentWorker do
       end
 
       context 'preview environment' do
-        before { job.stub(:preview?) { true } }
+        before { allow(job).to receive(:preview?) { true } }
 
         it 'should fetch a specific record from the preview_records collection' do
           expect(SupplejackApi::PreviewRecord).to receive(:find).with({record_id: job.record_id}, page: 0)
@@ -164,61 +164,61 @@ describe EnrichmentWorker do
 
     before do
       worker.send(:setup_parser)
-      parser.stub(:enrichment_definitions) { { ndha_rights: {} } }
-      SupplejackCommon::Enrichment.stub(:new) { enrichment }
-      worker.stub(:post_to_api) { nil }
+      allow(parser).to receive(:enrichment_definitions) { { ndha_rights: {} } }
+      allow(SupplejackCommon::Enrichment).to receive(:new) { enrichment }
+      allow(worker).to receive(:post_to_api) { nil }
     end
 
     it 'should initialize a enrichment' do
-      SupplejackCommon::Enrichment.should_receive(:new).with('ndha_rights', worker.send(:enrichment_options), record, TestClass)
+      expect(SupplejackCommon::Enrichment).to receive(:new).with('ndha_rights', worker.send(:enrichment_options), record, TestClass)
       worker.process_record(record)
     end
 
     it 'should call increment_processed_count!' do
-      worker.job.should_receive(:increment_processed_count!)
+      expect(worker.job).to receive(:increment_processed_count!)
       worker.process_record(record)
     end
 
     context 'enrichable' do
-      before { enrichment.stub(:enrichable?) { true } }
+      before { allow(enrichment).to receive(:enrichable?) { true } }
 
       it 'should set the enrichment attributes' do
-        enrichment.should_receive(:set_attribute_values)
+        expect(enrichment).to receive(:set_attribute_values)
         worker.process_record(record)
       end
 
       it 'should post to the api' do
-        worker.should_receive(:post_to_api).with(enrichment)
+        expect(worker).to receive(:post_to_api).with(enrichment)
         worker.process_record(record)
       end
 
       it 'should post to the api in a test environment' do
-        job.stub(:test?) { true }
-        worker.should_not_receive(:post_to_api).with(enrichment)
+        allow(job).to receive(:test?) { true }
+        expect(worker).not_to receive(:post_to_api).with(enrichment)
         worker.process_record(record)
       end
 
       it 'should rescue from a exception in processing the record' do
-        enrichment.stub(:set_attribute_values).and_raise(StandardError.new('Hi'))
+        allow(enrichment).to receive(:set_attribute_values).and_raise(StandardError.new('Hi'))
         worker.process_record(record)
       end
     end
 
     context 'not enrichable' do
-      before { enrichment.stub(:enrichable?) { false } }
+      before { allow(enrichment).to receive(:enrichable?) { false } }
 
       it 'should not set the enrichment attributes' do
-        enrichment.should_not_receive(:set_attribute_values)
+        expect(enrichment).not_to receive(:set_attribute_values)
         worker.process_record(record)
       end
 
       it 'should not post to the api' do
-        worker.should_not_receive(:post_to_api).with(enrichment)
+        expect(worker).not_to receive(:post_to_api).with(enrichment)
         worker.process_record(record)
       end
 
       it 'should not increment the records count on the job' do
-        job.should_not_receive(:increment_records_count!)
+        expect(job).not_to receive(:increment_records_count!)
         worker.process_record(record)
       end
     end
@@ -227,22 +227,22 @@ describe EnrichmentWorker do
   describe '#setup_parser' do
     it 'should initialize a parser' do
       worker.send(:setup_parser)
-      worker.parser.should eq parser
+      expect(worker.parser).to eq parser
     end
 
     it 'should load the parser file' do
-      parser.should_receive(:load_file)
+      expect(parser).to receive(:load_file)
       worker.send(:setup_parser)
     end
 
     it 'should initialize the parser class' do
       worker.send(:setup_parser)
-      worker.parser_class.should eq TestClass
+      expect(worker.parser_class).to eq TestClass
     end
 
     it 'should set the environment of the job to the parser_class' do
       worker.send(:setup_parser)
-      worker.parser_class.environment.should eq 'production'
+      expect(worker.parser_class.environment).to eq 'production'
     end
   end
 
@@ -250,13 +250,13 @@ describe EnrichmentWorker do
     let(:block) { proc { 'Hi' } }
 
     before(:each) do
-      parser.stub(:enrichment_definitions) { { ndha_rights: { block: block } } }
+      allow(parser).to receive(:enrichment_definitions) { { ndha_rights: { block: block } } }
     end
 
     it 'should fetch the enrichment definition options' do
       job.enrichment = 'ndha_rights'
       worker.send(:setup_parser)
-      worker.send(:enrichment_options).should eq(block: block)
+      expect(worker.send(:enrichment_options)).to eq(block: block)
     end
   end
 
@@ -264,13 +264,13 @@ describe EnrichmentWorker do
     let(:block) { proc { 'Hi' } }
 
     before(:each) do
-      parser.stub(:enrichment_definitions) { { ndha_rights: { block: block } } }
+      allow(parser).to receive(:enrichment_definitions) { { ndha_rights: { block: block } } }
       job.enrichment = 'ndha_rights'
       worker.send(:setup_parser)
     end
 
     it 'defaults to SupplejackCommon::Enrichment' do
-      worker.send(:enrichment_class).should eq SupplejackCommon::Enrichment
+      expect(worker.send(:enrichment_class)).to eq SupplejackCommon::Enrichment
     end
   end
 
@@ -285,13 +285,13 @@ describe EnrichmentWorker do
     end
 
     it 'should increment the records count on the job' do
-      job.should_receive(:increment_records_count!).twice
+      expect(job).to receive(:increment_records_count!).twice
       worker.send(:post_to_api, enrichment)
     end
 
     context 'required fragments' do
       it 'should send the required enricments to the api' do
-        job.stub(:required_enrichments) { ['ndha_rights'] }
+        allow(job).to receive(:required_enrichments) { ['ndha_rights'] }
         worker.send(:post_to_api, enrichment)
         expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', { 'fragment' => { 'title' => 'foo', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
       end

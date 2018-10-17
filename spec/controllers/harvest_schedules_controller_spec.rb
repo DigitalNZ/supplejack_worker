@@ -11,16 +11,17 @@ describe HarvestSchedulesController do
 
 
     describe 'GET index' do
-      it 'should return all the harvest schedules' do
-        HarvestSchedule.should_receive(:all) { [schedule] }
+      it 'returns all the harvest schedules' do
+        expect(HarvestSchedule).to receive(:all).and_return([schedule])
         get :index
         expect(assigns(:harvest_schedules)).to eq [schedule]
       end
 
       context 'params[:harvest_schedule] is present' do
-        it 'should use a where query ' do
-          HarvestSchedule.stub(:where) { [schedule] }
-          HarvestSchedule.should_receive(:where).with('parser_id' => 'abc123')
+        it 'uses a where query ' do
+          allow(HarvestSchedule).to receive(:where).and_return([schedule])
+          expect(HarvestSchedule).to receive(:where).with('parser_id' => 'abc123')
+
           get :index, params: { harvest_schedule: { parser_id: 'abc123' } }
           expect(assigns(:harvest_schedules)).to eq [schedule]
         end
@@ -29,11 +30,11 @@ describe HarvestSchedulesController do
 
     describe 'GET show' do
       before(:each) do
-        HarvestSchedule.stub(:find).with('1') { schedule }
+        allow(HarvestSchedule).to receive(:find).with('1').and_return(schedule)
       end
 
       it 'finds the harvest schedule' do
-        HarvestSchedule.should_receive(:find).with('1') { schedule }
+        expect(HarvestSchedule).to receive(:find).with('1').and_return(schedule)
         get :show, params: { id: 1 }
         expect(assigns(:harvest_schedule)).to eq schedule
       end
@@ -41,12 +42,12 @@ describe HarvestSchedulesController do
 
     describe 'POST create' do
       before(:each) do
-        HarvestSchedule.stub(:new) { schedule }
+        allow(HarvestSchedule).to receive(:new).and_return(schedule)
       end
 
       it 'creates a new harvest schedule' do
         params = ActionController::Parameters.new(cron: '* * * * *').permit!
-        HarvestSchedule.should_receive(:create).with(params) { schedule }
+        expect(HarvestSchedule).to receive(:create).with(params).and_return(schedule)
         post :create, params: { harvest_schedule: { cron: '* * * * *' } }
         expect(assigns(:harvest_schedule)).to eq schedule
       end
@@ -54,35 +55,35 @@ describe HarvestSchedulesController do
 
     describe 'PUT update' do
       before(:each) do
-        HarvestSchedule.stub(:find).with('1') { schedule }
+        allow(HarvestSchedule).to receive(:find).with('1').and_return(schedule)
       end
 
       it 'finds the harvest schedule' do
-        HarvestSchedule.should_receive(:find).with('1') { schedule }
+        allow(HarvestSchedule).to receive(:find).with('1').and_return(schedule)
         put :update, params: { id: 1, harvest_schedule: { cron: '* * * * *' } }
         expect(assigns(:harvest_schedule)).to eq schedule
       end
 
-      it 'should update the attributes' do
+      it 'updates the attributes' do
         params = ActionController::Parameters.new(cron: '* * * * *').permit!
-        schedule.should_receive(:update).with(params)
+        allow(schedule).to receive(:update).with(params)
         put :update, params: { id: 1, harvest_schedule: { cron: '* * * * *' } }
       end
     end
 
     describe 'GET destroy' do
       before(:each) do
-        HarvestSchedule.stub(:find).with('1') { schedule }
+        allow(HarvestSchedule).to receive(:find).with('1').and_return(schedule)
       end
 
       it 'finds the harvest schedule' do
-        HarvestSchedule.should_receive(:find).with('1') { schedule }
+        allow(HarvestSchedule).to receive(:find).with('1').and_return(schedule)
         delete :destroy, params: { id: 1 }
         expect(assigns(:harvest_schedule)).to eq schedule
       end
 
-      it 'should destroy the schedule' do
-        schedule.should_receive(:destroy)
+      it 'destroys the schedule' do
+        expect(schedule).to receive(:destroy)
         delete :destroy, params: { id: 1 }
       end
     end
