@@ -44,7 +44,8 @@ module HarvesterWorker
     LINK_CHECKING_ENABLED = Rails.application.credentials[Rails.env.to_sym][:link_checking_enabled]
     LINKCHECKER_RECIPIENTS = Rails.application.credentials[Rails.env.to_sym][:linkchecker_recipients]
     WORKER_KEY = Rails.application.credentials[Rails.env.to_sym][:worker_key]
-
+    MONGOID_STAGING_USER = Rails.application.credential[Rails.env.to_sym][:mongoid_staging_user]
+    MONGOID_STAGING_PASSWORD = Rails.application.credentials[Rais.env.to_sym][:mongoid_staging_password]
   end
 end
 
