@@ -45,6 +45,8 @@ staging:
         read:
           mode: :primary
         pool_size: 500
+        user: <%= ENV['MONGOID_STAGING_USER'] %>
+        password: <%= ENV['MONGOID_STAGING_PASSWORD'] %>
     api:
       database: dnz_api_staging
       hosts:
@@ -53,7 +55,8 @@ staging:
         read:
           mode: :primary
         pool_size: 500
-
+        user: <%= ENV['MONGOID_STAGING_USER'] %>
+        password: <%= ENV['MONGOID_STAGING_PASSWORD'] %>
 production:
   clients:
     default:
@@ -72,4 +75,3 @@ production:
         read:
           mode: :primary_preferred
         pool_size: 500
-
