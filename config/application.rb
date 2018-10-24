@@ -35,17 +35,6 @@ module HarvesterWorker
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    API_HOST = Rails.application.credentials[Rails.env.to_sym][:api_host]
-    API_MONGOID_HOSTS = Rails.application.credentials[Rails.env.to_sym][:api_mongoid_hosts]
-    MANAGER_HOST = Rails.application.credentials[Rails.env.to_sym][:manager_host]
-    HARVESTER_API_KEY = Rails.application.credentials[Rails.env.to_sym][:harvester_api_key]
-    HARVESTER_CACHING_ENABLED = Rails.application.credentials[Rails.env.to_sym][:harvester_caching_enabled]
-    AIRBRAKE_API_KEY = Rails.application.credentials[Rails.env.to_sym][:airbrake_api_key]
-    LINK_CHECKING_ENABLED = Rails.application.credentials[Rails.env.to_sym][:link_checking_enabled]
-    LINKCHECKER_RECIPIENTS = Rails.application.credentials[Rails.env.to_sym][:linkchecker_recipients]
-    WORKER_KEY = Rails.application.credentials[Rails.env.to_sym][:worker_key]
-    MONGOID_STAGING_USER = Rails.application.credential[Rails.env.to_sym][:mongoid_staging_user]
-    MONGOID_STAGING_PASSWORD = Rails.application.credentials[Rais.env.to_sym][:mongoid_staging_password]
   end
 end
 
