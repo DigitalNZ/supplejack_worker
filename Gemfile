@@ -12,6 +12,7 @@ gem 'active_model_serializers', '~> 0.10.7'
 gem 'activeresource', require: 'active_resource'
 gem 'airbrake', '~> 7.2'
 gem 'chronic'
+gem 'figaro'
 gem 'kaminari'
 gem 'kaminari-mongoid'
 gem 'mongoid', '~> 7.0'
@@ -25,7 +26,6 @@ gem 'sinatra', :require => nil
 gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v2.3.0'
 gem 'whenever', require: false
 gem 'rubocop', require: false
-gem 'figaro'
 
 group :test do
   gem 'cucumber-rails', require: false
