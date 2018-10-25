@@ -47,6 +47,7 @@ staging:
         pool_size: 500
         user: <%= ENV['MONGOID_USER'] %>
         password: <%= ENV['MONGOID_PASSWORD'] %>
+        auth_source: admin
     api:
       database: dnz_api_staging
       hosts:
@@ -57,6 +58,7 @@ staging:
         pool_size: 500
         user: <%= ENV['MONGOID_USER'] %>
         password: <%= ENV['MONGOID_PASSWORD'] %>
+        auth_source: admin
 production:
   clients:
     default:
