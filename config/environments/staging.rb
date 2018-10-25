@@ -85,9 +85,9 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: ENV['HOST'] }
 
 
-  HARVESTER_API_KEY = Rails.application.credentials[Rails.env.to_sym][:harvester_api_key]
-  AIRBRAKE_API_KEY = Rails.application.credentials[Rails.env.to_sym][:airbrake_api_key]
-  WORKER_KEY = Rails.application.credentials[Rails.env.to_sym][:worker_key]
-  MONGOID_USER = Rails.application.credentials[Rails.env.to_sym][:mongoid_user]
-  MONGOID_PASSWORD = Rails.application.credentials[Rails.env.to_sym][:mongoid_password]
+  ENV['HARVESTER_API_KEY'] = Rails.application.credentials[Rails.env.to_sym][:HARVESTER_API_KEY]
+  ENV['AIRBRAKE_API_KEY'] = Rails.application.credentials[Rails.env.to_sym][:AIRBRAKE_API_KEY]
+  ENV['WORKER_KEY'] = Rails.application.credentials[Rails.env.to_sym][:WORKER_KEY]
+  ENV['MONGOID_USER'] = Rails.application.credentials[Rails.env.to_sym][:MONGOID_USER]
+  ENV['MONGOID_PASSWORD'] = Rails.application.credentials[Rails.env.to_sym][:MONGOID_PASSWORD]
 end
