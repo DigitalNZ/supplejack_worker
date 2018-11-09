@@ -24,3 +24,4 @@ RUN bundle install
 WORKDIR /var/worker
 ADD . /var/worker
 
+EXPOSE 3000
