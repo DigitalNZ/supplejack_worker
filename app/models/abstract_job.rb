@@ -131,6 +131,16 @@ class AbstractJob
       transitions to: :failed
     end
 
+    event :failed do
+      after do
+        self.start_time = Time.zone.now if start_time.blank?
+        self.end_time = Time.zone.now
+        save!
+      end
+
+      transitions to: :stopped
+    end
+
     event :stop do
       after do
         self.start_time = Time.zone.now if start_time.blank?
