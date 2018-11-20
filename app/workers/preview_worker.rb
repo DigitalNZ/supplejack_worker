@@ -14,7 +14,7 @@ class PreviewWorker < HarvestWorker
     preview_id = msg['args'].last
 
     job = AbstractJob.find(job_id)
-    job.update_attribute(:end_time, Time.zone.now)    
+    job.update_attribute(:end_time, Time.zone.now)
     job.update_attribute(:status_message, "Failed with exception #{msg['error_message']}")
     job.error!
 
