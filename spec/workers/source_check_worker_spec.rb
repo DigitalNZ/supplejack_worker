@@ -4,7 +4,7 @@ require 'rails_helper'
 
 describe SourceCheckWorker do
   let(:worker) { SourceCheckWorker.new }
-  let(:source) { double(:source, name: 'name', source_id: 'source_id', id: 'abc123') }
+  let(:source) { double(:source, source_id: 'source_id', id: 'abc123') }
 
   before(:each) do
     worker.instance_variable_set(:@primary_collection, 'NAME')
