@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: e9b8c599123618237e1dc11ad6922d173130bdf0
-  branch: rm/sj-harvest-dies-on-404
+  revision: 9b35a043a9ac0802d166feba4e98f072f7af2165
+  tag: v2.3.2
   specs:
     supplejack_common (0.0.2)
       actionpack
