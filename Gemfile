@@ -23,9 +23,8 @@ gem 'rails', '5.2.1'
 gem 'responders'
 gem 'sidekiq', '= 4.1.1'
 gem 'sinatra', :require => nil
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v2.3.2'
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', branch: 'rm/sj-elastic-search-scroll-harvest'
 
-# gem 'supplejack_common', path: '/webspace/supplejack/common'
 gem 'whenever', require: false
 gem 'rubocop', require: false
 
