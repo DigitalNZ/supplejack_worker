@@ -6,7 +6,6 @@ class Source < ActiveResource::Base
   headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
 
   schema do
-    attribute :name,                :string
     attribute :partner_id,          :string
     attribute :source_id,           :string
     attribute :collection_rules_id, :string

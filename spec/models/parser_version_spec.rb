@@ -5,7 +5,7 @@ describe ParserVersion do
   let(:parser) { Parser.new(name: 'Europeana', id: '123', data_type: 'Record', source: source) }
   let(:parser_version) { ParserVersion.new(parser_id: '123') }
   let(:job) { mock_model(HarvestJob).as_null_object }
-  let(:source) { Source.new(name: 'source_name') }
+  let(:source) { Source.new(source_id: 'source_name') }
 
   describe '#last_harvested_at' do
     let!(:time) { Time.now }
