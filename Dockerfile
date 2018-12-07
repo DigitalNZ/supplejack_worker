@@ -1,9 +1,16 @@
 FROM ruby:2.3.1
+
+ARG TIMEZONE
+ENV TIMEZONE=$TIMEZONE
+
+RUN echo $TIMEZONE > /etc/timezone
+RUN dpkg-reconfigure -f noninteractive tzdata
+
 RUN apt-get update -qq && apt-get install -y build-essential nodejs npm nodejs-legacy mysql-client vim openssh-client
 RUN apt-get install -y g++ cron
 
 # For nokogiri
-RUN apt-get install -y libxml2-dev libxslt1-dev libxslt-dev liblzma-dev curl
+RUN apt-get install -y libxml2-dev libxslt1-dev libxslt-dev liblzma-dev
 
 # Utilities
 RUN apt-get install -y nmap htop
