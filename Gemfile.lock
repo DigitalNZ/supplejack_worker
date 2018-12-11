@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: ab3df4ca5b77f8fd720767a5719532309c80df20
+  revision: 9151e9da3ba6b57cbd1017f3740ab7441ee1113f
   branch: rm/sj-elastic-search-scroll-harvest
   specs:
     supplejack_common (0.0.2)
@@ -111,7 +111,7 @@ GEM
       activesupport
     chronic (0.10.2)
     coderay (1.1.2)
-    concurrent-ruby (1.0.5)
+    concurrent-ruby (1.1.3)
     connection_pool (2.2.1)
     crass (1.0.4)
     cucumber (3.1.2)
@@ -160,7 +160,7 @@ GEM
     htmlentities (4.3.4)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.1.0)
+    i18n (1.2.0)
       concurrent-ruby (~> 1.0)
     json (1.8.6)
     jsonapi-renderer (0.2.0)
@@ -185,7 +185,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
-    loofah (2.2.2)
+    loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.0)
@@ -228,7 +228,7 @@ GEM
       pry (~> 0.10)
     public_suffix (3.0.3)
     puma (3.11.0)
-    rack (2.0.5)
+    rack (2.0.6)
     rack-protection (2.0.0)
       rack
     rack-test (1.1.0)
