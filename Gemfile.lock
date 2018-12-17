@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 9151e9da3ba6b57cbd1017f3740ab7441ee1113f
+  revision: 038339d2c62d1628fb5c696b2bb7c4ee93e29191
   branch: rm/sj-elastic-search-scroll-harvest
   specs:
     supplejack_common (0.0.2)
@@ -111,7 +111,7 @@ GEM
       activesupport
     chronic (0.10.2)
     coderay (1.1.2)
-    concurrent-ruby (1.1.3)
+    concurrent-ruby (1.1.4)
     connection_pool (2.2.1)
     crass (1.0.4)
     cucumber (3.1.2)
