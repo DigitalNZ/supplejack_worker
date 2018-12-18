@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 038339d2c62d1628fb5c696b2bb7c4ee93e29191
+  revision: dc39f16fcc88b79df8af4a7a84d3c4f7d74b3f57
   branch: rm/sj-elastic-search-scroll-harvest
   specs:
     supplejack_common (0.0.2)
