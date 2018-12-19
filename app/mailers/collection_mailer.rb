@@ -13,6 +13,6 @@ class CollectionMailer < ActionMailer::Base
   def collection_status(source, status)
     @source = source
     @status = status
-    mail(subject: "#{source.name} is #{status}")
+    mail(subject: "#{source.source_id} is #{status}")
   end
 end
