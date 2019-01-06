@@ -2,7 +2,8 @@
 require 'rails_helper'
 
 describe PreviewWorker do
-  let(:job) { HarvestJob.new(environment: 'preview', index: 3, harvest_failure: {}, last_posted_record_id: 1234) }
+  let(:parser) { Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb', source: { source_id: 'source_id' }) }
+  let(:job) { HarvestJob.new(environment: 'preview', parser_id: 'abc123', index: 3, harvest_failure: {}, last_posted_record_id: 1234) }
   let(:preview) { mock_model(Preview, _id: '123').as_null_object }
 
   let(:worker) { PreviewWorker.new }
@@ -74,6 +75,23 @@ describe PreviewWorker do
       it 'should update the preview object with validation errors' do
         expect(preview).to receive(:update_attribute).with(:harvest_failure, job.harvest_failure.to_json)
         worker.perform('abc123', 'preview123')
+      end
+    end
+
+    context 'sidekiq_retries_exhausted' do
+      before { allow(AbstractJob).to receive(:find).and_return(job) }
+      before { allow(Preview).to receive(:find).and_return(preview) }
+      before { allow(job).to receive(:parser) { parser } }
+
+      it 'should update the end time' do
+        worker.perform('abc123', 'preview123')
+
+        described_class.within_sidekiq_retries_exhausted_block do
+          expect(job).to receive(:update_attribute).twice
+        end
+
+        expect(job.end_time).to_not eq nil
+        expect(job.end_time.day).to eq Time.zone.now.day
       end
     end
 

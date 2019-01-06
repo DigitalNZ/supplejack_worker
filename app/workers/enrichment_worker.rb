@@ -8,6 +8,7 @@ class EnrichmentWorker < AbstractWorker
   sidekiq_retries_exhausted do |msg|
     job_id = msg['args'].first
     job = AbstractJob.find(job_id)
+    job.update_attribute(:end_time, Time.zone.now)
     job.update_attribute(:status_message, "Failed with exception #{msg['error_message']}")
     job.error!
 
