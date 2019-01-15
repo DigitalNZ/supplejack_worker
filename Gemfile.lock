@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 9b35a043a9ac0802d166feba4e98f072f7af2165
-  tag: v2.3.2
+  revision: f17e6cad4a760e9f293d81c5304fcbc15f9c1838
+  branch: rm/set-up-worker-proxy-for-static-ip-address
   specs:
     supplejack_common (0.0.2)
       actionpack
