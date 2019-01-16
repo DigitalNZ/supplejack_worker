@@ -2,7 +2,7 @@
 :verbose: true
 :pidfile: ./tmp/pids/sidekiq.pid
 staging:
-  :concurrency: 10
+  :concurrency: 25
 production:
   :concurrency: 25
 :queues:
