@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 1133bd4feff93db2d9d442e167d8fbcbf7b7ac72
-  tag: v2.4
+  revision: 9ad9fae2fa56f16304fdb297378ffe48cac9b381
+  tag: v2.5
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -160,7 +160,7 @@ GEM
     htmlentities (4.3.4)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    i18n (1.2.0)
+    i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     json (1.8.6)
     jsonapi-renderer (0.2.0)
@@ -185,7 +185,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
-    loofah (2.2.3)
+    loofah (2.2.2)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.0)
@@ -228,7 +228,7 @@ GEM
       pry (~> 0.10)
     public_suffix (3.0.3)
     puma (3.11.0)
-    rack (2.0.6)
+    rack (2.0.5)
     rack-protection (2.0.0)
       rack
     rack-test (1.1.0)

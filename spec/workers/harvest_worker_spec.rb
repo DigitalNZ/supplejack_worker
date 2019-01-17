@@ -124,6 +124,22 @@ describe HarvestWorker do
       end
     end
 
+    context 'sidekiq_retries_exhausted' do
+      before { allow(AbstractJob).to receive(:find).and_return(job) }
+      before { allow(job).to receive(:parser) { parser } }
+
+      it 'should update the end time' do
+        worker.perform('abc123')
+
+        described_class.within_sidekiq_retries_exhausted_block do
+          expect(job).to receive(:update_attribute).twice
+        end
+
+        expect(job.end_time).to_not eq nil
+        expect(job.end_time.day).to eq Time.zone.now.day
+      end
+    end
+
     context 'concept' do
       let(:record) { double(:record, attributes: { label: ['Colin John McCahon'], internal_identifier: ['record123'], match_concepts: :create_or_match }, valid?: true, errors: errors).as_null_object }
       let(:parser) { double(:parser, data_type: 'concept', concept?: true, record?: false).as_null_object }

@@ -74,6 +74,22 @@ describe EnrichmentWorker do
       worker.perform(1)
     end
 
+    context 'sidekiq_retries_exhausted' do
+      before { allow(AbstractJob).to receive(:find).and_return(job) }
+      before { allow(job).to receive(:parser) { parser } }
+
+      it 'should update the end time' do
+        worker.perform('abc123')
+
+        described_class.within_sidekiq_retries_exhausted_block do
+          expect(job).to receive(:update_attribute).twice
+        end
+
+        expect(job.end_time).to_not eq nil
+        expect(job.end_time.day).to eq Time.zone.now.day
+      end
+    end
+
     context 'paginated records response' do
       before do
         page_1_records_response = {
