@@ -21,6 +21,11 @@ class Preview
     preview = Preview.create(format: attributes[:format],
                              status: 'New preview record initialised. Waiting in queue...')
 
+    ActionCable.server.broadcast(
+      "preview_channel_#{job.parser_id}_#{job.user_id}",
+      data: 'New preview record initialised. Waiting in queue...'
+    )
+
     unless job.valid?
       harvest_job = HarvestJob.where(status: 'active', parser_id: job.parser_id,
                                      environment: 'preview').first

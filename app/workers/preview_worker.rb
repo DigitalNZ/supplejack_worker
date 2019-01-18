@@ -30,6 +30,11 @@ class PreviewWorker < HarvestWorker
 
     preview.update_attribute(:status, 'Worker starting. Loading parser and fetching data...')
 
+    ActionCable.server.broadcast(
+      "preview_channel_#{job.parser_id}_#{job.user_id}",
+      data: 'Worker starting. Loading parser and fetching data...'
+    )
+
     unless stop_harvest?
       job.records do |record, i|
         next if i < job.index
@@ -75,6 +80,12 @@ class PreviewWorker < HarvestWorker
 
   def process_record(record)
     preview.update_attribute(:status, 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
+
+    ActionCable.server.broadcast(
+      "preview_channel_#{job.parser_id}_#{job.user_id}",
+      data: 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...'
+    )
+
     record.attributes.merge!(source_id: job.parser.source.source_id, data_type: job.parser.data_type)
 
     preview.raw_data = record.raw_data
@@ -85,6 +96,11 @@ class PreviewWorker < HarvestWorker
     preview.save!
 
     preview.update_attribute(:status, 'Raw data parsing complete.')
+
+    ActionCable.server.broadcast(
+      "preview_channel_#{job.parser_id}_#{job.user_id}",
+      data: 'Raw data parsing complete.'
+    )
   end
 
   def enrich_record(record)
@@ -112,5 +128,11 @@ class PreviewWorker < HarvestWorker
     return if preview_record.nil?
     preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json)
     preview.update_attribute(:status, 'Preview complete.')
+
+
+    ActionCable.server.broadcast(
+      "preview_channel_#{job.parser_id}_#{job.user_id}",
+      data: 'Preview complete.'
+    )
   end
 end
