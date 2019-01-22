@@ -53,8 +53,9 @@ class HarvestJob < AbstractJob
     options[:limit] = limit.to_i if limit.to_i.positive?
     options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
 
-    options[:parser_id] = parser_id
-    options[:user_id]   = user_id
+    options[:parser_id]   = parser_id
+    options[:user_id]     = user_id
+    options[:environment] = environment
 
     parser.load_file(environment)
     parser_klass = parser.loader.parser_class
