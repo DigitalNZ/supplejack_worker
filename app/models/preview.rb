@@ -23,7 +23,7 @@ class Preview
 
     ActionCable.server.broadcast(
       "preview_channel_#{job.parser_id}_#{job.user_id}",
-      data: 'New preview record initialised. Waiting in queue...'
+      status: 'New preview record initialised. Waiting in queue...'
     )
 
     unless job.valid?
@@ -36,5 +36,49 @@ class Preview
     PreviewWorker.perform_async(job.id.to_s, preview.id.to_s)
 
     preview
+  end
+
+  def harvested_attributes_json
+    JSON.pretty_generate(JSON.parse(harvested_attributes))
+  end
+
+  def api_record_output
+    CodeRay.scan(api_record_json, :json).html(line_numbers: :table).html_safe
+  end
+
+  def api_record_json
+    JSON.pretty_generate(JSON.parse(api_record)) unless api_record.nil?
+  end
+
+  def raw_output
+    CodeRay.scan(send("pretty_#{format}_output"), format.to_sym).html(line_numbers: :table).html_safe
+  end
+
+  def pretty_xml_output
+    raw_data
+  end
+
+  def pretty_json_output
+    JSON.pretty_generate(JSON.parse(raw_data))
+  end
+
+  def field_errors_json
+    JSON.pretty_generate(JSON.parse(field_errors)) if field_errors?
+  end
+
+  def field_errors?
+    JSON.parse(field_errors).any? unless field_errors.nil?
+  end
+
+  def field_errors_output
+    CodeRay.scan(field_errors_json, :json).html(line_numbers: :table).html_safe if field_errors?
+  end
+
+  def harvest_job_errors_output
+    JSON.parse(harvest_job_errors) if harvest_job_errors.present?
+  end
+
+  def harvest_failure_output
+    JSON.parse(harvest_failure) if harvest_failure.present?
   end
 end
