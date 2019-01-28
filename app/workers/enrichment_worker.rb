@@ -62,33 +62,19 @@ class EnrichmentWorker < AbstractWorker
   def fetch_records(page = 0)
     if job.record_id.nil?
       if job.harvest_job.present?
-
-        ActionCable.server.broadcast(
-          "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
-          status_log: "Fetching Record to enrich where fragment.job_id matches harvest_job.id #{job.harvest_job.id.to_s} from the API..."
-        )
-
         SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
-
       else
-
-        ActionCable.server.broadcast(
-          "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
-          status_log: "Fetching Record to enrich where fragment.source_id matches job.parser.source.source_id #{job.parser.source.source_id} from the API..."
-        )
-
         SupplejackApi::Record.find({ 'fragments.source_id' => job.parser.source.source_id }, page: page)
       end
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-
-      ActionCable.server.broadcast(
-        "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
-        status_log: "Fetching Record to enrich where record_id matches job.record_id #{job.record_id} from the API..."
-      )
-
       klass.find({ record_id: job.record_id }, page: page)
     end
+
+    ActionCable.server.broadcast(
+      "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
+      status_log: "Fetching Record to enrich from the API..."
+    )
   end
 
   # rubocop:disable Metrics/MethodLength
@@ -100,6 +86,12 @@ class EnrichmentWorker < AbstractWorker
         enrichment = enrichment_class.new(job.enrichment, enrichment_options, record, @parser_class)
 
         return unless enrichment.enrichable?
+
+
+        ActionCable.server.broadcast(
+          "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
+          status_log: 'Starting Enrichment Job...'
+        )
 
         enrichment.set_attribute_values
         if enrichment.errors.any?
@@ -113,6 +105,11 @@ class EnrichmentWorker < AbstractWorker
               record: record.inspect,
               parser: @parser.id
             }
+          )
+
+          ActionCable.server.broadcast(
+            "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
+            status_log: "Enrichment Errors on #{enrichment_class} in Parser: #{@parser.id}, please check Airbrake"
           )
         else
           post_to_api(enrichment) unless job.test?
@@ -147,6 +144,12 @@ class EnrichmentWorker < AbstractWorker
 
   def post_to_api(enrichment)
     enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
+
+      ActionCable.server.broadcast(
+        "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
+        status_log: "Posting #{attributes} to Record with Mongo ID #{mongo_record_id}"
+      )
+
       attrs = attributes.merge(job_id: job.id.to_s)
       # rubocop:disable Metrics/LineLength
       ApiUpdateWorker.perform_async("/harvester/records/#{mongo_record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
