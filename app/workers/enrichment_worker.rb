@@ -51,18 +51,20 @@ class EnrichmentWorker < AbstractWorker
 
   def more_records?(records)
     return true if job.preview?
+
     records.pagination['page'] <= records.pagination['total_pages']
   end
 
   def last_page_records?(records)
     return true if job.preview?
+
     records.pagination['page'] == records.pagination['total_pages']
   end
 
   def fetch_records(page = 0)
     ActionCable.server.broadcast(
       "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
-      status_log: "Fetching Record to enrich from the API..."
+      status_log: 'Fetching Record to enrich from the API...'
     )
 
     if job.record_id.nil?
@@ -86,7 +88,6 @@ class EnrichmentWorker < AbstractWorker
         enrichment = enrichment_class.new(job.enrichment, enrichment_options, record, @parser_class)
 
         return unless enrichment.enrichable?
-
 
         ActionCable.server.broadcast(
           "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
@@ -144,7 +145,6 @@ class EnrichmentWorker < AbstractWorker
 
   def post_to_api(enrichment)
     enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
-
       ActionCable.server.broadcast(
         "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
         status_log: "Posting #{attributes} to Record with Mongo ID #{mongo_record_id}"

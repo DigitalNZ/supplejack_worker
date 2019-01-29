@@ -23,7 +23,7 @@ class PreviewWorker < HarvestWorker
 
     ActionCable.server.broadcast(
       "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
-      status: "Preview failed. Harvest Job id:#{job_id}, Preview id:#{preview_id}. Exception: #{msg['error_message']}",
+      status: "Preview failed. Harvest Job id:#{job_id}, Preview id:#{preview_id}. Exception: #{msg['error_message']}"
     )
 
     Sidekiq.logger.warn "Preview #{preview_id} FAILED with exception #{msg['error_message']}"
@@ -65,6 +65,7 @@ class PreviewWorker < HarvestWorker
 
   def strip_ids(hash)
     return nil if hash.nil?
+
     hash.delete('_id')
     hash.delete('record_id')
     hash.each do |_key, value|
@@ -91,6 +92,7 @@ class PreviewWorker < HarvestWorker
     job.reload.last_posted_record_id
   end
 
+  # rubocop:disable Metrics/MethodLength:
   def process_record(record)
     preview.update_attribute(:status, 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
 
@@ -107,7 +109,7 @@ class PreviewWorker < HarvestWorker
     preview.field_errors = record.field_errors.to_json
     preview.validation_errors = validation_errors(record).to_json unless record.valid?
     preview.save!
-    
+
     ActionCable.server.broadcast(
       "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
       raw_data: preview.raw_output,
@@ -125,12 +127,17 @@ class PreviewWorker < HarvestWorker
     end
 
     if preview.harvest_job_errors?
-      ActionCable.server.broadcast("#{job.environment}_channel_#{job.parser_id}_#{job.user_id}", harvest_job_errors: preview.harvest_job_errors_output)
+      ActionCable.server.broadcast(
+        "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
+        harvest_job_errors: preview.harvest_job_errors_output
+      )
     end
 
     preview.update_attribute(:status, 'Raw data parsing complete.')
   end
+  # rubocop:enable Metrics/MethodLength:
 
+  # rubocop:disable Metrics/MethodLength:
   def enrich_record(record)
     return if record.deletable? || !record.valid?
 
@@ -175,13 +182,13 @@ class PreviewWorker < HarvestWorker
     ActionCable.server.broadcast(
       "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
       api_record: preview.api_record_output,
-      status: "All enrichments complete"
+      status: 'All enrichments complete'
     )
 
     ActionCable.server.broadcast(
       "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
       api_record: preview.api_record_output,
-      status: "Fetching final preview record from API..."
+      status: 'Fetching final preview record from API...'
     )
 
     preview_record = SupplejackApi::PreviewRecord.find(record_id: current_record_id.to_i).first
@@ -197,4 +204,5 @@ class PreviewWorker < HarvestWorker
       status: 'Preview complete.'
     )
   end
+  # rubocop:enable Metrics/MethodLength:
 end

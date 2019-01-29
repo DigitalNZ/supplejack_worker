@@ -1,9 +1,8 @@
-class PreviewChannel < ApplicationCable::Channel
-  def subscribed
-    # stream_from "some_channel"
-  end
+# frozen_string_literal: true
 
-  def unsubscribed
-    # Any cleanup needed when channel is unsubscribed
-  end
+# app/channels/preview_channel.rb
+class PreviewChannel < ApplicationCable::Channel
+  def subscribed; end
+
+  def unsubscribed; end
 end
