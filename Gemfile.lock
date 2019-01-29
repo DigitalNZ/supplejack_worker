@@ -112,7 +112,7 @@ GEM
     chronic (0.10.2)
     coderay (1.1.2)
     concurrent-ruby (1.1.4)
-    connection_pool (2.2.1)
+    connection_pool (2.2.2)
     crass (1.0.4)
     cucumber (3.1.2)
       builder (>= 2.1.2)
@@ -312,10 +312,10 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.8.0)
       nokogumbo (~> 2.0)
-    sidekiq (4.1.1)
-      concurrent-ruby (~> 1.0)
-      connection_pool (~> 2.2, >= 2.2.0)
-      redis (~> 3.2, >= 3.2.1)
+    sidekiq (5.2.3)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack-protection (>= 1.5.0)
+      redis (>= 3.3.5, < 5)
     sinatra (2.0.0)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -381,7 +381,7 @@ DEPENDENCIES
   rspec-rails (~> 3.6)
   rspec-sidekiq
   rubocop
-  sidekiq (= 4.1.1)
+  sidekiq (= 5.2.3)
   sinatra
   spring
   spring-watcher-listen (~> 2.0.0)
@@ -391,4 +391,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   1.16.4
+   1.17.1

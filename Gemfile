@@ -21,7 +21,7 @@ gem 'parse-cron'
 gem 'puma', '~> 3.7'
 gem 'rails', '5.2.1'
 gem 'responders'
-gem 'sidekiq', '= 4.1.1'
+gem 'sidekiq', '= 5.2.3'
 gem 'sinatra', :require => nil
 gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v2.4'
 # gem 'supplejack_common', path: '/webspace/supplejack/common'
