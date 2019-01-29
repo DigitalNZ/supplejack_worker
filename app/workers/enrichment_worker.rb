@@ -78,32 +78,31 @@ class EnrichmentWorker < AbstractWorker
     job.increment_processed_count!
 
     measure = Benchmark.measure do
-      begin
-        enrichment = enrichment_class.new(job.enrichment, enrichment_options, record, @parser_class)
-        return unless enrichment.enrichable?
+      enrichment = enrichment_class.new(job.enrichment, enrichment_options, record, @parser_class)
+      return unless enrichment.enrichable?
 
-        enrichment.set_attribute_values
-        if enrichment.errors.any?
-          Airbrake.notify(
-            StandardError.new('Enrichment Error'),
-            error_message: "Enrichment Errors on #{enrichment_class} in Parser: #{@parser.id}",
-            backtrace: {
-              enrichment: enrichment.errors.inspect,
-              job: job.inspect,
-              options: enrichment_options.inspect,
-              record: record.inspect,
-              parser: @parser.id
-            }
-          )
-        else
-          post_to_api(enrichment) unless job.test?
-        end
-      rescue RestClient::ResourceNotFound => e
-        Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
-      rescue StandardError => e
-        Airbrake.notify(e, error_message: "The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}", backtrace: e.backtrace)
+      enrichment.set_attribute_values
+      if enrichment.errors.any?
+        Airbrake.notify(
+          StandardError.new('Enrichment Error'),
+          error_message: "Enrichment Errors on #{enrichment_class} in Parser: #{@parser.id}",
+          backtrace: {
+            enrichment: enrichment.errors.inspect,
+            job: job.inspect,
+            options: enrichment_options.inspect,
+            record: record.inspect,
+            parser: @parser.id
+          }
+        )
+      else
+        post_to_api(enrichment) unless job.test?
       end
+    rescue RestClient::ResourceNotFound => e
+      Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
+    rescue StandardError => e
+      Airbrake.notify(e, error_message: "The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}", backtrace: e.backtrace)
     end
+
     Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   end
   # rubocop:enable Metrics/MethodLength
