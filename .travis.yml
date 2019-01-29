@@ -3,6 +3,7 @@ rvm:
   - 2.3.0
 services:
   - mongodb
+  - redis
 before_script:
   - cp config/application.yml.example config/application.yml
 script:
