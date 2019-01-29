@@ -107,7 +107,7 @@ class PreviewWorker < HarvestWorker
     preview.field_errors = record.field_errors.to_json
     preview.validation_errors = validation_errors(record).to_json unless record.valid?
     preview.save!
-
+    
     ActionCable.server.broadcast(
       "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
       raw_data: preview.raw_output,
