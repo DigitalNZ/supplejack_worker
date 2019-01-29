@@ -11,6 +11,7 @@ PATH
   remote: /webspace/supplejack/common
   specs:
     supplejack_common (0.0.2)
+      actioncable
       actionpack
       activesupport
       chronic (<= 0.10.2)

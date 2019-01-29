@@ -60,6 +60,11 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def fetch_records(page = 0)
+    ActionCable.server.broadcast(
+      "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
+      status_log: "Fetching Record to enrich from the API..."
+    )
+
     if job.record_id.nil?
       if job.harvest_job.present?
         SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
@@ -70,11 +75,6 @@ class EnrichmentWorker < AbstractWorker
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
       klass.find({ record_id: job.record_id }, page: page)
     end
-
-    ActionCable.server.broadcast(
-      "#{job.environment}_channel_#{job.parser_id}_#{job.user_id}",
-      status_log: "Fetching Record to enrich from the API..."
-    )
   end
 
   # rubocop:disable Metrics/MethodLength
