@@ -55,7 +55,7 @@ class Preview
   end
 
   def harvested_attributes_output
-    CodeRay.scan(harvested_attributes_json, :json).html(:line_numbers => :table).html_safe
+    CodeRay.scan(harvested_attributes_json, :json).html(line_numbers: :table).html_safe
   end
 
   def pretty_xml_output
