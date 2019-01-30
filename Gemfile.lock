@@ -363,6 +363,7 @@ DEPENDENCIES
   airbrake (~> 7.2)
   byebug
   chronic
+  coderay
   cucumber-rails
   database_cleaner
   factory_bot_rails

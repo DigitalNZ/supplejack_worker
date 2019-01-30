@@ -27,6 +27,7 @@ gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.gi
 # gem 'supplejack_common', path: '/webspace/supplejack/common'
 gem 'whenever', require: false
 gem 'rubocop', require: false
+gem 'coderay'
 
 group :test do
   gem 'cucumber-rails', require: false
