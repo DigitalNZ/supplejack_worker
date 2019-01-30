@@ -10,6 +10,8 @@ HarvesterWorker::Application.routes.draw do
   end
   resources :previews, only: %i[create show]
 
+  resources :previews, only: [:show]
+
   resources :link_check_jobs, only: %i[create show]
   resources :link_check_rules
   resources :collection_statistics, only: [:index]

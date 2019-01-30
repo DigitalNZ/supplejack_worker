@@ -35,6 +35,8 @@ module HarvesterWorker
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    config.web_socket_server_url = "ws://#{ENV['MANAGER_HOST']}/cable"
   end
 end
 
