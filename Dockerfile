@@ -6,7 +6,7 @@ ENV TIMEZONE=$TIMEZONE
 RUN echo $TIMEZONE > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt-get update -qq && apt-get install -y build-essential nodejs npm nodejs-legacy mysql-client vim openssh-client
+RUN apt-get update -qq && apt-get install -y build-essential nodejs nodejs-legacy mysql-client vim openssh-client
 RUN apt-get install -y g++ cron
 
 # For nokogiri
