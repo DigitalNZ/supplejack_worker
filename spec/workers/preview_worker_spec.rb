@@ -4,7 +4,6 @@ require 'rails_helper'
 describe PreviewWorker do
   let(:parser) { Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb', source: { source_id: 'source_id' }) }
   let(:job) { HarvestJob.new(environment: 'preview', parser_id: 'abc123', index: 3, harvest_failure: {}, last_posted_record_id: 1234) }
-  # let(:preview) { mock_model(Preview, _id: '123').as_null_object }
   let(:preview) { build(:preview) }
 
   let(:worker) { PreviewWorker.new }

@@ -11,8 +11,7 @@
 
 redis: &redis
   adapter: redis
-  url: redis://localhost:6379/3
-
+  url: ENV['ACTION_CABLE_REDIS_HOST']
 production: *redis
 development: *redis
 test: *redis
