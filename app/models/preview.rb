@@ -54,6 +54,10 @@ class Preview
     CodeRay.scan(send("pretty_#{format}_output"), format.to_sym).html(line_numbers: :table).html_safe
   end
 
+  def harvested_attributes_output
+    CodeRay.scan(harvested_attributes_json, :json).html(:line_numbers => :table).html_safe
+  end
+
   def pretty_xml_output
     raw_data
   end
