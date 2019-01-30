@@ -14,4 +14,5 @@ redis: &redis
   url: ENV['ACTION_CABLE_REDIS_HOST']
 production: *redis
 development: *redis
-test: *redis
+test:
+  url: redis://localhost:6379/1
