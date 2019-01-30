@@ -92,7 +92,8 @@ class PreviewWorker < HarvestWorker
     job.reload.last_posted_record_id
   end
 
-  # rubocop:disable Metrics/MethodLength:
+  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize
   def process_record(record)
     preview.update_attribute(:status, 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
 
@@ -136,8 +137,10 @@ class PreviewWorker < HarvestWorker
     preview.update_attribute(:status, 'Raw data parsing complete.')
   end
   # rubocop:enable Metrics/MethodLength:
+  # rubocop:enable Metrics/AbcSize:
 
   # rubocop:disable Metrics/MethodLength:
+  # rubocop:disable Metrics/AbcSize:
   def enrich_record(record)
     return if record.deletable? || !record.valid?
 
@@ -205,4 +208,5 @@ class PreviewWorker < HarvestWorker
     )
   end
   # rubocop:enable Metrics/MethodLength:
+  # rubocop:enable Metrics/AbcSize:
 end

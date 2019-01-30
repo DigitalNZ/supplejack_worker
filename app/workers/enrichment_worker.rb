@@ -80,6 +80,7 @@ class EnrichmentWorker < AbstractWorker
   end
 
   # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/AbcSize:
   def process_record(record)
     job.increment_processed_count!
 
@@ -124,6 +125,7 @@ class EnrichmentWorker < AbstractWorker
     Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   end
   # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/AbcSize:
 
   private
 
