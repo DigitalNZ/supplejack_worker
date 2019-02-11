@@ -27,6 +27,7 @@ COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
 ENV BUNDLE_PATH /bundle
 RUN bundle install
+RUN bundle install --binstubs
 
 WORKDIR /var/worker
 ADD . /var/worker
