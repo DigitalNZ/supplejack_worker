@@ -25,6 +25,7 @@ RUN mkdir -p /var/worker/tmp/pids
 WORKDIR /tmp
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
+ENV BUNDLE_PATH /bundle
 RUN bundle install --path vendor/cache
 
 WORKDIR /var/worker
