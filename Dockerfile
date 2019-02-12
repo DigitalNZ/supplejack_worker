@@ -21,14 +21,10 @@ RUN bundle config build.nokogiri --use-system-libraries
 RUN mkdir /var/worker
 RUN mkdir -p /var/worker/tmp/pids
 
-# Cache bundle install
-WORKDIR /tmp
+WORKDIR /var/worker
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-ENV BUNDLE_PATH /bundle
-RUN bundle install
-
-WORKDIR /var/worker
+RUN bundle install --binstubs --without development test --path vendor/cache
 ADD . /var/worker
 
 EXPOSE 3000
