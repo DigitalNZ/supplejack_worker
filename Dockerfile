@@ -4,6 +4,7 @@ ARG TIMEZONE
 ENV TIMEZONE=$TIMEZONE
 
 RUN echo $TIMEZONE > /etc/timezone
+RUN ln -fs /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
 
 RUN apt-get update -qq && apt-get install -y build-essential nodejs nodejs-legacy mysql-client vim openssh-client
