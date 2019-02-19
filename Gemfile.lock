@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: cdf9205b24f7d9374465a5b70de313614b62075f
+  revision: 2d3a596fd08ad7e3021575c11d86d8ff14a7cbf6
   branch: tw/s3-bucket-emu-harvest
   specs:
     supplejack_common (0.0.2)
@@ -259,7 +259,7 @@ GEM
     aws-sdk-directconnect (1.10.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
-    aws-sdk-directoryservice (1.11.0)
+    aws-sdk-directoryservice (1.12.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
     aws-sdk-dlm (1.8.0)
@@ -283,7 +283,7 @@ GEM
     aws-sdk-ecs (1.30.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
-    aws-sdk-efs (1.8.0)
+    aws-sdk-efs (1.9.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
     aws-sdk-eks (1.9.0)
@@ -349,7 +349,7 @@ GEM
     aws-sdk-inspector (1.12.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
-    aws-sdk-iot (1.23.0)
+    aws-sdk-iot (1.24.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
     aws-sdk-iot1clickdevicesservice (1.6.0)
@@ -747,7 +747,7 @@ GEM
     aws-sdk-sqs (1.10.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
-    aws-sdk-ssm (1.35.0)
+    aws-sdk-ssm (1.36.0)
       aws-sdk-core (~> 3, >= 3.39.0)
       aws-sigv4 (~> 1.0)
     aws-sdk-states (1.10.0)
