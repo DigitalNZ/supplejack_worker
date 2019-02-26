@@ -97,9 +97,9 @@ class EnrichmentWorker < AbstractWorker
       else
         post_to_api(enrichment) unless job.test?
       end
-
-      Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
     end
+
+    Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   rescue RestClient::ResourceNotFound => e
     Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
   rescue StandardError => e
