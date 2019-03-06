@@ -1,11 +1,12 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 1133bd4feff93db2d9d442e167d8fbcbf7b7ac72
-  tag: v2.4
+  revision: b598e75beadc97b3b12064cf4915b4fe1f63b5ea
+  tag: v2.6
   specs:
     supplejack_common (0.0.2)
       actionpack
       activesupport
+      aws-sdk-s3
       chronic (<= 0.10.2)
       dimensions
       htmlentities
@@ -96,6 +97,21 @@ GEM
     airbrake-ruby (2.8.2)
     arel (9.0.0)
     ast (2.4.0)
+    aws-eventstream (1.0.1)
+    aws-partitions (1.142.0)
+    aws-sdk-core (3.46.2)
+      aws-eventstream (~> 1.0)
+      aws-partitions (~> 1.0)
+      aws-sigv4 (~> 1.0)
+      jmespath (~> 1.0)
+    aws-sdk-kms (1.13.0)
+      aws-sdk-core (~> 3, >= 3.39.0)
+      aws-sigv4 (~> 1.0)
+    aws-sdk-s3 (1.30.1)
+      aws-sdk-core (~> 3, >= 3.39.0)
+      aws-sdk-kms (~> 1)
+      aws-sigv4 (~> 1.0)
+    aws-sigv4 (1.0.3)
     backports (3.11.4)
     bson (4.3.0)
     builder (3.2.3)
@@ -172,6 +188,7 @@ GEM
     http_parser.rb (0.6.0)
     i18n (1.1.0)
       concurrent-ruby (~> 1.0)
+    jmespath (1.4.0)
     json (1.8.6)
     jsonapi-renderer (0.2.0)
     jsonpath (0.5.8)
@@ -369,6 +386,7 @@ DEPENDENCIES
   active_model_serializers (~> 0.10.7)
   activeresource
   airbrake (~> 7.2)
+  aws-sdk-s3 (~> 1)
   byebug
   chronic
   cucumber-rails
