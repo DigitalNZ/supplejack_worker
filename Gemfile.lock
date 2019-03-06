@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: e2e2fef2ba7fa51f5fdcffe3ae768479e2d3379d
-  branch: tw/s3-bucket-emu-harvest
+  revision: b598e75beadc97b3b12064cf4915b4fe1f63b5ea
+  tag: v2.6
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -98,8 +98,8 @@ GEM
     arel (9.0.0)
     ast (2.4.0)
     aws-eventstream (1.0.1)
-    aws-partitions (1.139.0)
-    aws-sdk-core (3.46.1)
+    aws-partitions (1.142.0)
+    aws-sdk-core (3.46.2)
       aws-eventstream (~> 1.0)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
