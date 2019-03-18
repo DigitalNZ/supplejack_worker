@@ -44,7 +44,7 @@ staging:
       options:
         read:
           mode: :primary
-        pool_size: 500
+        max_pool_size: 500
         user: <%= ENV['MONGOID_USER'] %>
         password: <%= ENV['MONGOID_PASSWORD'] %>
         auth_source: admin
@@ -60,7 +60,7 @@ staging:
       options:
         read:
           mode: :primary
-        pool_size: 500
+        max_pool_size: 500
         user: <%= ENV['MONGOID_USER'] %>
         password: <%= ENV['MONGOID_PASSWORD'] %>
         auth_source: admin
@@ -78,7 +78,7 @@ production:
       options:
         read:
           mode: :primary
-        pool_size: 500
+        max_pool_size: 500
         user: <%= ENV['MONGOID_USER'] %>
         password: <%= ENV['MONGOID_PASSWORD'] %>
         auth_source: admin
@@ -94,4 +94,4 @@ production:
       options:
         read:
           mode: :primary_preferred
-        pool_size: 500
+        max_pool_size: 500
