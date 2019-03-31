@@ -72,7 +72,7 @@ class EnrichmentWorker < AbstractWorker
     end
   rescue ActiveResource::ServerError => e
     # Temporary logging to help surface more information around DB timeouts
-    search_query = job.harvest_job.present? ? "fragments.job_id: #{job.harvest_job.id.to_s}" : "fragments.source_id: #{job.parser.source.source_id}"
+    search_query = job.harvest_job.present? ? "fragments.job_id: #{job.harvest_job.id}" : "fragments.source_id: #{job.parser.source.source_id}"
     Airbrake.notify(e, error_message: "Record Timeout: The record lookup failed with query #{search_query}.  #{e&.message}")
     raise
   end
