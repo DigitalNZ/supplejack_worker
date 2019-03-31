@@ -22,6 +22,9 @@ class SourceCheckWorker
   def source_records
     JSON.parse(RestClient::Request.execute(method: :get, url: "#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records",
                                            timeout: 90, headers: {params: { api_key: ENV['HARVESTER_API_KEY'] }}))
+  rescue RestClient::GatewayTimeout => e
+    # Temporary logging to help surface more information around API timeouts
+    Airbrake.notify(e, error_message: "Api Timeout: Request timed out on #{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records .  #{e&.message}")
   end
 
   def source_active?
