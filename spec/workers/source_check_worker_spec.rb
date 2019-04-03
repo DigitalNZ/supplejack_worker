@@ -79,7 +79,7 @@ describe SourceCheckWorker do
     end
 
     it 'retrieves landing urls from the API to check' do
-      expect(RestClient).to receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }).and_return response
+      expect(RestClient::Request).to receive(:execute).with(method: :get, url: "#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records", timeout: 90, headers: { params: { api_key: ENV['HARVESTER_API_KEY'] }}).and_return response
       worker.send(:source_records)
     end
   end
