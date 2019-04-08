@@ -76,7 +76,7 @@ describe ApiUpdateWorker do
       end
 
       it 'updates job.last_posted_record_id and job.updated_at' do
-        expect(job).to receive(:set).with(updated_at: Time.zone.now.change(:usec => 0), last_posted_record_id: 123)
+        expect(job).to receive(:set).with(updated_at: Time.zone.now.change(usec: 0), last_posted_record_id: 123)
 
         worker.perform('/harvester/records/123/fragments.json', {}, 1)
       end

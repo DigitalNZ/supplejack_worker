@@ -53,7 +53,7 @@ class AbstractWorker
                                          parser_id)
     end
 
-    job.set(updated_at: Time.zone.now.change(:usec => 0), last_posted_record_id: response['record_id'])
+    job.set(updated_at: Time.zone.now.change(usec: 0), last_posted_record_id: response['record_id'])
     job.inc(posted_records_count: 1)
   end
 end
