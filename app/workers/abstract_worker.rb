@@ -54,6 +54,7 @@ class AbstractWorker
     end
 
     job.set(last_posted_record_id: response['record_id'])
+    job.set(updated_at: Time.zone.now)
     job.inc(posted_records_count: 1)
   end
 end
