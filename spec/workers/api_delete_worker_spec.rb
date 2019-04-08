@@ -74,6 +74,12 @@ describe ApiDeleteWorker do
 
         worker.perform('/harvester/records/123/fragments.json', {})
       end
+
+      it 'updates job.updated_at' do
+        expect(job).to receive(:set).with(updated_at: Time.zone.now)
+
+        worker.perform('/harvester/records/123/fragments.json', {})
+      end
     end
   end
 end
