@@ -35,6 +35,30 @@ test:
         read:
           mode: :nearest
 
+uat:
+  clients:
+    default:
+      database: worker_uat
+      hosts:
+        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
+      options:
+        read:
+          mode: :primary
+        auth_source: admin
+        max_pool_size: 500
+        user: <%= ENV['MONGOID_USER'] %>
+        password: <%= ENV['MONGOID_PASSWORD'] %>
+    api:
+      database: dnz_api_uat
+      hosts:
+        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+      options:
+        read:
+          mode: :primary
+        auth_source: admin
+        max_pool_size: 500
+        user: <%= ENV['MONGOID_USER'] %>
+        password: <%= ENV['MONGOID_PASSWORD'] %>
 staging:
   clients:
     default:
@@ -81,4 +105,3 @@ production:
         read:
           mode: :primary_preferred
         max_pool_size: 500
-        
