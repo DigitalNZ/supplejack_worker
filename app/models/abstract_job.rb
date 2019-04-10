@@ -45,6 +45,7 @@ class AbstractJob
 
     page = search_params.delete(:page) || 1
     amount = search_params.delete(:limit) || nil
+
     search_params.delete_if { |key, _value| !valid_fields.include?(key) }
 
     scope = self.page(page.to_i).desc(:start_time)
