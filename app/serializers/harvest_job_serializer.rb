@@ -3,7 +3,7 @@
 # app/serializer/harvest_job_serializer.rb
 class HarvestJobSerializer < ActiveModel::Serializer
   attributes :id, :start_time, :end_time, :records_count, :throughput
-  attributes :created_at, :duration, :status, :status_message, :user_id, :parser_id, :version_id, :environment
+  attributes :created_at, :updated_at, :duration, :status, :status_message, :user_id, :parser_id, :version_id, :environment
   attributes :failed_records_count, :invalid_records_count, :harvest_schedule_id,
              :mode, :posted_records_count, :retried_records_count, :last_posted_record_id
 
