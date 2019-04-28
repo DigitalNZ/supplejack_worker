@@ -11,6 +11,7 @@ class AbstractJob
 
   field :start_time,            type: DateTime
   field :end_time,              type: DateTime
+  field :updated_at,            type: DateTime
   field :records_count,         type: Integer, default: 0
   field :processed_count,       type: Integer, default: 0
   field :throughput,            type: Float
