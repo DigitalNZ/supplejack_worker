@@ -17,6 +17,7 @@ development:
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
   WORKER_KEY: YOUR_WORKER_KEY
+  REDIS_URL: 'redis://localhost:6379/2'
 
 test:
   API_HOST: "http://127.0.0.1:3000"
