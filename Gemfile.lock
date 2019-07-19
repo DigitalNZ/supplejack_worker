@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common.git
-  revision: 1edc4ab0a006f5396792f3b36ac3316dcb21a32a
-  branch: gm/fix-pagination-issue
+  revision: f19835994abcc440f7aad414597d5344fb4cf493
+  tag: v2.7.1
   specs:
     supplejack_common (0.0.2)
       actionpack
