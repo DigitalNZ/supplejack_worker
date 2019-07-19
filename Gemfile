@@ -24,7 +24,7 @@ gem 'rails', '5.2.1'
 gem 'responders'
 gem 'sidekiq', '= 5.2.3'
 gem 'sinatra', :require => nil
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', branch: 'gm/fix-pagination-issue'
+gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v2.7.1'
 # gem 'supplejack_common', path: '/webspace/supplejack/common'
 gem 'elastic-apm'
 
