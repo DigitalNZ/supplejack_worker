@@ -7,25 +7,36 @@ RUN echo $TIMEZONE > /etc/timezone
 RUN ln -fs /usr/share/zoneinfo/$TIMEZONE /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt-get update -qq && apt-get install -y build-essential nodejs nodejs-legacy mysql-client vim openssh-client
-RUN apt-get install -y g++ cron
+RUN apt-get update -qq && apt-get install -y \
+    build-essential \
+    g++ \
+    liblzma-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libxslt-dev \
+    mysql-client \
+    nodejs \
+    nodejs-legacy \
+    openssh-client \
+    nmap \
+   && rm -rf /var/lib/apt/lists/*
 
-# For nokogiri
-RUN apt-get install -y libxml2-dev libxslt1-dev libxslt-dev liblzma-dev
+RUN groupadd -r worker && useradd -r -m -g worker worker
 
-# Utilities
-RUN apt-get install -y nmap htop
-
-# Use libxml2, libxslt a packages from alpine for building nokogiri
 RUN bundle config build.nokogiri --use-system-libraries
 
 RUN mkdir /var/worker
-RUN mkdir -p /var/worker/tmp/pids
+RUN chown -R worker:worker /var/worker
+USER worker
 
 WORKDIR /var/worker
-COPY Gemfile Gemfile
-COPY Gemfile.lock Gemfile.lock
+
+COPY Gemfile .
+COPY Gemfile.lock .
 RUN bundle install --binstubs --without development test --path vendor/cache
-ADD . /var/worker
+
+COPY --chown=worker:worker . .
+
+RUN find / -perm +6000 -type f -exec chmod a-s {} \; || true
 
 EXPOSE 3000
