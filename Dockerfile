@@ -26,6 +26,6 @@ WORKDIR /var/worker
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
 RUN bundle install --binstubs --without development test --path vendor/cache
-ADD . /var/worker
+COPY . /var/worker
 
 EXPOSE 3000
