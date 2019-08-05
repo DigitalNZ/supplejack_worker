@@ -37,6 +37,7 @@ RUN bundle install --binstubs --without development test --path vendor/cache
 
 COPY --chown=worker:worker . .
 
+RUN mkdir -p /var/worker/tmp/pids
 RUN find / -perm +6000 -type f -exec chmod a-s {} \; || true
 
 EXPOSE 3000
