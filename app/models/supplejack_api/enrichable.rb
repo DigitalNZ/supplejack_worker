@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 module SupplejackApi
-  # :nodoc:
+  # app/models/supplejack_api/enrichable.rb
   module Enrichable
     extend ActiveSupport::Concern
 
     def primary
-      fragments.select { |a| a.priority == 0 }.first
+      fragments.select { |a| a.priority.zero? }.first
     end
 
     def locations

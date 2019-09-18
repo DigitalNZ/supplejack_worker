@@ -27,7 +27,7 @@ class EnrichmentWorker < AbstractWorker
 
     records = fetch_records(1)
 
-    while more_records?(records) do
+    while more_records?(records)
       records.each do |record|
         break if stop_harvest?
 
@@ -127,7 +127,9 @@ class EnrichmentWorker < AbstractWorker
   def post_to_api(enrichment)
     enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
       attrs = attributes.merge(job_id: job.id.to_s)
+      # rubocop:disable Metrics/LineLength
       ApiUpdateWorker.perform_async("/harvester/records/#{mongo_record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
+      # rubocop:enable Metrics/LineLength
       job.increment_records_count!
     end
   end

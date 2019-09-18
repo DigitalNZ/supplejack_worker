@@ -60,6 +60,7 @@ describe LinkCheckRulesController do
         delete :destroy, params: { id: link_check_rule.id }
       end
     end
+  end
 
   it 'prevent access if worker_key is not provided' do
     get :index, params: { status: 'active' }
