@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}" }
 
 gem 'aasm'
 gem 'active_model_serializers', '~> 0.10.7'
@@ -15,15 +16,15 @@ gem 'kaminari'
 gem 'kaminari-mongoid'
 gem 'lograge', '~> 0.11.2'
 gem 'mongoid', '~> 7.0'
-gem 'oai', git: 'https://github.com/boost/ruby-oai.git'
+gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma', '~> 3.7'
-gem 'rails', '5.2.1'
+gem 'rails', '~> 5.2.3'
 gem 'responders'
-gem 'sidekiq', '= 5.2.3'
+gem 'sidekiq', '~> 5.2.3'
 gem 'sinatra', require: nil
-gem 'supplejack_common', git: 'https://github.com/DigitalNZ/supplejack_common.git', tag: 'v2.7.1'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.7.1'
 gem 'whenever', require: false
 
 group :test do
