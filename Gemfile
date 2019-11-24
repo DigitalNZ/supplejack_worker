@@ -24,7 +24,7 @@ gem 'rails', '~> 5.2.3'
 gem 'responders'
 gem 'sidekiq', '~> 5.2.3'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.7.1'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'pm/security-fixes'
 gem 'whenever', require: false
 
 group :test do
