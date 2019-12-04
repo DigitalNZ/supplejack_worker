@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 3a8eb5b7b582419369e45a31009a527f7defcfb2
-  branch: pm/security-fixes
+  revision: 37d9fe5a2aa8a5812d61340c9f0d0715f993f2b7
+  tag: v2.8.0
   specs:
     supplejack_common (0.0.2)
       actionpack

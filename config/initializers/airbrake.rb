@@ -5,6 +5,7 @@ if ENV['AIRBRAKE_PROJECT_ID']
     config.project_id = ENV['AIRBRAKE_PROJECT_ID']
     config.environment = Rails.env
     config.ignore_environments = %w[development test]
+    config.performance_stats = false
   end
 
   Airbrake.add_filter do |notice|
