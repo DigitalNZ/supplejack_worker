@@ -13,7 +13,7 @@ Rails.application.configure do
     {
       request_id: event.payload[:request_id],
       params: event.payload[:params].except('controller', 'action', 'format', 'id'),
-      time: event.time
+      time: event.time.to_f
     }
   end
 
