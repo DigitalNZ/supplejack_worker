@@ -10,16 +10,11 @@ class ParserVersion < ActiveResource::Base
   self.element_name = 'version'
 
   def last_harvested_at
-    last_finished_harvest_job = HarvestJob.desc(:start_time)
-                                          .find_by(
-                                            parser_id: parser_id,
-                                            status: 'finished',
-                                            environment: { '$ne': 'preview' }
-                                          )
-
-    last_finished_harvest_job.start_time
-  rescue Mongoid::Errors::DocumentNotFound
-    nil
+    HarvestJob.where(
+      parser_id: parser_id,
+      status: 'finished',
+      environment: { '$ne': 'preview' }
+    ).max(:start_time)
   end
 
   def parser_id
