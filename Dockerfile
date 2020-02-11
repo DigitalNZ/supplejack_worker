@@ -1,7 +1,7 @@
 FROM ruby:2.6.5-alpine AS builder
 
 ARG BUILD_PACKAGES="build-base curl-dev git"
-ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev gmp-dev"
+ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev"
 ARG RUBY_PACKAGES="tzdata"
 
 WORKDIR /app
@@ -37,7 +37,7 @@ ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
 
 FROM ruby:2.6.5-alpine
 
-ARG PACKAGES="tzdata bash libxslt libxml2-dev libxslt-dev gmp-dev"
+ARG PACKAGES="build-base tzdata bash libxslt libxml2-dev libxslt-dev"
 
 WORKDIR /app
 
