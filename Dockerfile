@@ -1,4 +1,4 @@
-FROM ruby:2.6.3-alpine AS builder
+FROM ruby:2.6.5-alpine AS builder
 
 ARG BUILD_PACKAGES="build-base curl-dev git"
 ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev"
@@ -22,7 +22,6 @@ RUN gem install bundler -v $(tail -n1 Gemfile.lock) \
     && find $GEM_HOME/gems/ -name "*.o" -delete
 
 # Change TimeZone
-RUN apk add --update tzdata
 ENV TZ=Pacific/Auckland
 
 COPY . .
@@ -31,7 +30,6 @@ ARG RAILS_ENV="production"
 ARG SECRET_KEY_BASE
 
 ENV RAILS_ENV=$RAILS_ENV
-ENV SECRET_KEY_BASE=$SECRET_KEY_BASE
 
 ############### Build step done ###############
 
