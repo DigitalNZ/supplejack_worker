@@ -32,7 +32,6 @@ class HarvestWorker < AbstractWorker
       sleep(2)
     end
 
-    # Comment me out to get jobs that are status stopped
     job.finish! unless job.stopped?
 
     job.enqueue_enrichment_jobs

@@ -8,12 +8,11 @@ class AbstractWorker
 
   def stop_harvest?
     job.reload
-    
-    return true if job.finished?
 
-    job.finish! if job.errors_over_limit?
+    return true if job.finished? || job.stopped?
+    return job.finish! if job.errors_over_limit?
 
-    return (job.stopped? || job.errors_over_limit?)
+    false
   end
 
   def job

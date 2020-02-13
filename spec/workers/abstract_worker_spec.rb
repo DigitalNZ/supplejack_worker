@@ -17,11 +17,6 @@ describe AbstractWorker do
         expect(worker.stop_harvest?).to be_truthy
       end
 
-      it 'updates the job with the end time' do
-        expect(job).to receive(:finish!)
-        worker.stop_harvest?
-      end
-
       it 'returns true true when errors over limit' do
         allow(job).to receive(:errors_over_limit?) { true }
         expect(worker.stop_harvest?).to be_truthy
