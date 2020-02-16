@@ -10,7 +10,7 @@ WORKDIR /app
 RUN apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
 
 COPY Gemfile Gemfile.lock ./
-# COPY vendor/cache ./vendor/cache
+COPY vendor/cache ./vendor/cache
 
 # install rubygem
 RUN gem install bundler -v $(tail -n1 Gemfile.lock) \
