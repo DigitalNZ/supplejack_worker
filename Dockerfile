@@ -1,31 +1,55 @@
-FROM ruby:2.5.3
+FROM ruby:2.6.5-alpine AS builder
 
-ARG TIMEZONE
-ENV TIMEZONE=$TIMEZONE
+ARG BUILD_PACKAGES="build-base curl-dev git"
+ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev"
+ARG RUBY_PACKAGES="tzdata"
 
-RUN echo $TIMEZONE > /etc/timezone
-RUN ln -fs /usr/share/zoneinfo/$TIMEZONE /etc/localtime
-RUN dpkg-reconfigure -f noninteractive tzdata
+WORKDIR /app
 
-RUN apt-get update -qq && apt-get install -y build-essential nodejs nodejs-legacy mysql-client vim openssh-client
-RUN apt-get install -y g++ cron
+# install packages
+RUN apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
 
-# For nokogiri
-RUN apt-get install -y libxml2-dev libxslt1-dev libxslt-dev liblzma-dev
+COPY Gemfile Gemfile.lock ./
+COPY vendor/cache ./vendor/cache
 
-# Utilities
-RUN apt-get install -y nmap htop
+# install rubygem
+RUN gem install bundler -v $(tail -n1 Gemfile.lock) \
+    && bundle config --global frozen 1 \
+    && bundle install --path=vendor/cache --without development:test:assets -j4 --retry 3 \
+    # Remove unneeded files (cached *.gem, *.o, *.c)
+    && rm -rf $GEM_HOME/cache/*.gem \
+    && find $GEM_HOME/gems/ -name "*.c" -delete \
+    && find $GEM_HOME/gems/ -name "*.o" -delete
 
-# Use libxml2, libxslt a packages from alpine for building nokogiri
-RUN bundle config build.nokogiri --use-system-libraries
+# Change TimeZone
+ENV TZ=Pacific/Auckland
 
-RUN mkdir /var/worker
-RUN mkdir -p /var/worker/tmp/pids
+COPY . .
 
-WORKDIR /var/worker
-COPY Gemfile Gemfile
-COPY Gemfile.lock Gemfile.lock
-RUN bundle install --binstubs --without development test --path vendor/cache
-COPY . /var/worker
+ARG RAILS_ENV="production"
+ARG SECRET_KEY_BASE
 
+ENV RAILS_ENV=$RAILS_ENV
+
+############### Build step done ###############
+
+FROM ruby:2.6.5-alpine
+
+ARG PACKAGES="build-base tzdata bash libxslt libxml2-dev libxslt-dev"
+
+# Change TimeZone
+ENV TZ=Pacific/Auckland
+
+WORKDIR /app
+
+# install packages
+RUN apk add --no-cache $PACKAGES
+
+COPY --from=builder $GEM_HOME $GEM_HOME
+COPY --from=builder /app /app
+
+ARG RAILS_ENV="production"
+ENV RAILS_ENV=$RAILS_ENV
 EXPOSE 3000
+
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
