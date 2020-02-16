@@ -9,17 +9,10 @@ class AbstractWorker
   def stop_harvest?
     job.reload
 
-    # When a harvest operator manually stops a job,
-    # it gets finished below, but we cannot (currently) stop the
-    # Sidekiq job so this will be executed again with status 'finished'
-    # the next time stop_harvest? is called in the loop
-    return true if job.finished?
+    return true if job.finished? || job.stopped?
+    return job.finish! if job.errors_over_limit?
 
-    if (stop = job.stopped? || job.errors_over_limit?)
-      job.finish!
-    end
-
-    stop
+    false
   end
 
   def job

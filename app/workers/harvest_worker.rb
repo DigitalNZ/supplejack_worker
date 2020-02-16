@@ -32,7 +32,7 @@ class HarvestWorker < AbstractWorker
       sleep(2)
     end
 
-    job.finish!
+    job.finish! unless job.stopped?
 
     job.enqueue_enrichment_jobs
   end
