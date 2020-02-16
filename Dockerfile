@@ -10,7 +10,7 @@ WORKDIR /app
 RUN apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
 
 COPY Gemfile Gemfile.lock ./
-COPY vendor/cache ./vendor/cache
+# COPY vendor/cache ./vendor/cache
 
 # install rubygem
 RUN gem install bundler -v $(tail -n1 Gemfile.lock) \
@@ -36,6 +36,9 @@ ENV RAILS_ENV=$RAILS_ENV
 FROM ruby:2.6.5-alpine
 
 ARG PACKAGES="build-base tzdata bash libxslt libxml2-dev libxslt-dev"
+
+# Change TimeZone
+ENV TZ=Pacific/Auckland
 
 WORKDIR /app
 
