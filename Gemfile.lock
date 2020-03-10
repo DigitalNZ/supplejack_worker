@@ -184,6 +184,7 @@ GEM
     http_parser.rb (0.6.0)
     i18n (1.7.0)
       concurrent-ruby (~> 1.0)
+    jaro_winkler (1.5.4)
     jmespath (1.4.0)
     json (1.8.6)
     jsonapi-renderer (0.2.0)
@@ -250,17 +251,18 @@ GEM
     oj (3.9.2)
     ougai (1.8.2)
       oj (~> 3.4)
-    parallel (1.12.1)
+    parallel (1.19.1)
     parse-cron (0.1.4)
-    parser (2.5.0.3)
+    parser (2.7.0.4)
       ast (~> 2.4.0)
-    powerpack (0.1.1)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     pry-byebug (3.5.0)
       byebug (~> 9.1)
       pry (~> 0.10)
+    pry-rails (0.3.9)
+      pry (>= 0.10.4)
     public_suffix (3.0.3)
     puma (3.12.4)
     rack (2.0.8)
@@ -314,6 +316,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retriable (3.1.2)
+    rexml (3.2.4)
     rspec-activemodel-mocks (1.0.3)
       activemodel (>= 3.0)
       activesupport (>= 3.0)
@@ -338,14 +341,25 @@ GEM
       rspec-core (~> 3.0, >= 3.0.0)
       sidekiq (>= 2.4.0)
     rspec-support (3.7.0)
-    rubocop (0.53.0)
+    rubocop (0.80.1)
+      jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.5)
-      powerpack (~> 0.1)
+      parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
+      rexml
       ruby-progressbar (~> 1.7)
-      unicode-display_width (~> 1.0, >= 1.0.1)
-    ruby-progressbar (1.9.0)
+      unicode-display_width (>= 1.4.0, < 1.7)
+    rubocop-performance (1.5.2)
+      rubocop (>= 0.71.0)
+    rubocop-rails (2.4.2)
+      rack (>= 1.1)
+      rubocop (>= 0.72.0)
+    rubocop-rails_config (0.10.0)
+      railties (>= 5.0)
+      rubocop (~> 0.80)
+      rubocop-performance (~> 1.3)
+      rubocop-rails (~> 2.0)
+    ruby-progressbar (1.10.1)
     ruby_dep (1.5.0)
     sanitize (5.1.0)
       crass (~> 1.0.2)
@@ -382,7 +396,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.6)
-    unicode-display_width (1.3.0)
+    unicode-display_width (1.6.1)
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
@@ -416,6 +430,7 @@ DEPENDENCIES
   ougai (~> 1.8)
   parse-cron
   pry-byebug
+  pry-rails
   puma (~> 3.12)
   rails (~> 5.2.3)
   rails-controller-testing
@@ -424,6 +439,7 @@ DEPENDENCIES
   rspec-rails (~> 3.6)
   rspec-sidekiq
   rubocop
+  rubocop-rails_config
   sidekiq (~> 5.2.3)
   sinatra
   spring

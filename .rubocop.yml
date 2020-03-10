@@ -1,4 +1,7 @@
-inherit_from: .rubocop_todo.yml  
+inherit_gem:
+  rubocop-rails_config:
+    - config/rails.yml
+
 AllCops:
   Exclude:
     - 'vendor/**/*'
@@ -11,40 +14,33 @@ AllCops:
     - '**/Guardfile'
   DisplayStyleGuide: true
   DisplayCopNames: true
-Rails:
-  Enabled: true
-Metrics/LineLength:
-  Exclude:
-    - 'lib/capistrano/**/**/*'
-  Max: 120
+
 Metrics/MethodLength:
   Max: 25
-# https://github.com/bbatsov/rubocop/issues/1633
-Rails/InverseOf:
-  Enabled: false
+
 Layout/MultilineOperationIndentation:
   Enabled: false
-Layout/IndentHash:
+
+Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
-Layout/IndentArray:
+
+Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
+
+Layout/LineLength:
+  Max: 150
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
 Style/RegexpLiteral:
   EnforcedStyle: slashes
+
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/**/*'
-Rails/OutputSafety:
-  Enabled: false
+
 Metrics/ModuleLength:
   Exclude:
     - 'app/helpers/records_helper.rb'
     - 'spec/**/*'
-Rails/SkipsModelValidations:
-  Enabled: false
-Rails/FindBy:
-  Enabled: false
-Rails/Validation:
-  Enabled: false
-Metrics/LineLength:
-  Max: 150
-  IgnoredPatterns: ['\A#']
