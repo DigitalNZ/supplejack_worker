@@ -22,8 +22,7 @@ class AbstractJobsController < ApplicationController
   end
 
   private
-
-  def search_params
-    params.permit(:status, :environment, :parser_id, :datetime, :page)
-  end
+    def search_params
+      params.permit(:status, :environment, :parser_id, :datetime, :page)
+    end
 end

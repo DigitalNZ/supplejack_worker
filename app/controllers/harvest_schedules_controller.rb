@@ -6,10 +6,10 @@ class HarvestSchedulesController < ApplicationController
 
   def index
     @harvest_schedules = if params[:harvest_schedule]
-                           HarvestSchedule.where(harvest_schedule_params)
-                         else
-                           HarvestSchedule.all
-                         end
+      HarvestSchedule.where(harvest_schedule_params)
+    else
+      HarvestSchedule.all
+    end
     render json: @harvest_schedules
   end
 
@@ -46,8 +46,7 @@ class HarvestSchedulesController < ApplicationController
   end
 
   private
-
-  def harvest_schedule_params
-    params.require(:harvest_schedule).permit!
-  end
+    def harvest_schedule_params
+      params.require(:harvest_schedule).permit!
+    end
 end

@@ -27,8 +27,7 @@ class EnrichmentJobsController < ApplicationController
   end
 
   private
-
-  def enrichment_job_params
-    params.require(:enrichment_job).permit!
-  end
+    def enrichment_job_params
+      params.require(:enrichment_job).permit!
+    end
 end

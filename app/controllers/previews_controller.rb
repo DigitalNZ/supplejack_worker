@@ -13,8 +13,7 @@ class PreviewsController < ApplicationController
   end
 
   private
-
-  def preview_params
-    params.require(:preview).permit!
-  end
+    def preview_params
+      params.require(:preview).permit!
+    end
 end
