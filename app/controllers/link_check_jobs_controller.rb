@@ -8,8 +8,7 @@ class LinkCheckJobsController < ApplicationController
   end
 
   private
-
-  def link_check_params
-    params.require(:link_check).permit(:url, :source_id, :record_id)
-  end
+    def link_check_params
+      params.require(:link_check).permit(:url, :source_id, :record_id)
+    end
 end

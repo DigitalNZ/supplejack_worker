@@ -39,8 +39,7 @@ class HarvestJobsController < ApplicationController
   end
 
   private
-
-  def harvest_job_params
-    params.require(:harvest_job).permit!
-  end
+    def harvest_job_params
+      params.require(:harvest_job).permit!
+    end
 end

@@ -6,10 +6,10 @@ class LinkCheckRulesController < ApplicationController
 
   def index
     @link_check_rules = if params[:link_check_rule].present?
-                          LinkCheckRule.where(link_check_rule_params)
-                        else
-                          LinkCheckRule.all
-                        end
+      LinkCheckRule.where(link_check_rule_params)
+    else
+      LinkCheckRule.all
+    end
     render json: @link_check_rules
   end
 
@@ -35,8 +35,7 @@ class LinkCheckRulesController < ApplicationController
   end
 
   private
-
-  def link_check_rule_params
-    params.require(:link_check_rule).permit!
-  end
+    def link_check_rule_params
+      params.require(:link_check_rule).permit!
+    end
 end

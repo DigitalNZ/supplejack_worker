@@ -19,9 +19,8 @@ class LinkCheckJob
   end
 
   private
-
-  def enqueue
-    return unless ENV['LINK_CHECKING_ENABLED'] == 'true'
-    LinkCheckWorker.perform_async(id.to_s)
-  end
+    def enqueue
+      return unless ENV['LINK_CHECKING_ENABLED'] == 'true'
+      LinkCheckWorker.perform_async(id.to_s)
+    end
 end

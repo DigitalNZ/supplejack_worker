@@ -25,40 +25,39 @@ module Matcher
 
       case args[:match_concepts]
       when :create_or_match
-        return !lookup(args)
+        !lookup(args)
       when :create
-        return true
+        true
       when :match
         lookup(args)
-        return false
+        false
       end
     end
 
     private
+      def lookup(args)
+        query = SupplejackApi::Concept
+                .where('fragments.givenName' => args[:givenName])
+                .where('fragments.familyName' => args[:familyName])
+                .where(:'fragments.dateOfBirth'.gte => args[:dateOfBirth].beginning_of_year)
+                .where(:'fragments.dateOfBirth'.lt => args[:dateOfBirth].end_of_year)
+                .where(:'fragments.dateOfDeath'.gte => args[:dateOfDeath].beginning_of_year)
+                .where(:'fragments.dateOfDeath'.lt => args[:dateOfDeath].end_of_year)
 
-    def lookup(args)
-      query = SupplejackApi::Concept
-              .where('fragments.givenName' => args[:givenName])
-              .where('fragments.familyName' => args[:familyName])
-              .where(:'fragments.dateOfBirth'.gte => args[:dateOfBirth].beginning_of_year)
-              .where(:'fragments.dateOfBirth'.lt => args[:dateOfBirth].end_of_year)
-              .where(:'fragments.dateOfDeath'.gte => args[:dateOfDeath].beginning_of_year)
-              .where(:'fragments.dateOfDeath'.lt => args[:dateOfDeath].end_of_year)
+        return unless (concept = query.first)
+        return unless concept.primary.source_id != args[:source_id]
 
-      return unless (concept = query.first)
-      return unless concept.primary.source_id != args[:source_id]
+        Sidekiq.logger.info "ConceptMatcher found match for #{args[:givenName]} #{args[:familyName]}"
 
-      Sidekiq.logger.info "ConceptMatcher found match for #{args[:givenName]} #{args[:familyName]}"
+        post_attributes = {
+          internal_identifier: concept.internal_identifier,
+          source_id: args[:source_id],
+          sameAs: args[:sameAs],
+          match_status: 'strong'
+        }
 
-      post_attributes = {
-        internal_identifier: concept.internal_identifier,
-        source_id: args[:source_id],
-        sameAs: args[:sameAs],
-        match_status: 'strong'
-      }
-
-      ApiUpdateWorker.perform_async('/harvester/concepts.json', { concept: post_attributes }, args[:job_id])
-      true
-    end
+        ApiUpdateWorker.perform_async('/harvester/concepts.json', { concept: post_attributes }, args[:job_id])
+        true
+      end
   end
 end

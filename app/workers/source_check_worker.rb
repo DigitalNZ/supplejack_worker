@@ -18,40 +18,53 @@ class SourceCheckWorker
   end
 
   private
+    def source_records
+      JSON.parse(
+        RestClient.get(
+          "#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records",
+          params: { api_key: ENV['HARVESTER_API_KEY'] }
+        )
+      )
+    end
 
-  def source_records
-    JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }))
-  end
+    def source_active?
+      collection = JSON.parse(
+        RestClient.get(
+          "#{ENV['API_HOST']}/harvester/sources/#{source.id}",
+          params: { api_key: ENV['HARVESTER_API_KEY'] }
+        )
+      )
+      collection['status'] == 'active'
+    end
 
-  def source_active?
-    collection = JSON.parse(RestClient.get("#{ENV['API_HOST']}/harvester/sources/#{source.id}", params: { api_key: ENV['HARVESTER_API_KEY'] }))
-    collection['status'] == 'active'
-  end
+    def get(landing_url)
+      RestClient.get(landing_url)
+    rescue StandardError
+      nil
+    end
 
-  def get(landing_url)
-    RestClient.get(landing_url)
-  rescue StandardError
-    nil
-  end
+    def up?(landing_url)
+      return true if landing_url.nil?
+      return unless (response = get(landing_url))
 
-  def up?(landing_url)
-    return true if landing_url.nil?
-    return unless (response = get(landing_url))
+      validate_link_check_rule(response, source.id)
+    end
 
-    validate_link_check_rule(response, source.id)
-  end
+    def suppress_collection
+      RestClient.put(
+        "#{ENV['API_HOST']}/harvester/sources/#{source.id}",
+        source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' },
+        api_key: ENV['HARVESTER_API_KEY']
+      )
+      CollectionMailer.collection_status(source, 'suppressed').deliver
+    end
 
-  def suppress_collection
-    # rubocop:disable Metrics/LineLength
-    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
-    # rubocop:enable Metrics/LineLength
-    CollectionMailer.collection_status(source, 'suppressed').deliver
-  end
-
-  def activate_collection
-    # rubocop:disable Metrics/LineLength
-    RestClient.put("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
-    # rubocop:enable Metrics/LineLength
-    CollectionMailer.collection_status(source, 'activated').deliver
-  end
+    def activate_collection
+      RestClient.put(
+        "#{ENV['API_HOST']}/harvester/sources/#{source.id}",
+        source: { status: 'active', status_updated_by: 'LINK CHECKER' },
+        api_key: ENV['HARVESTER_API_KEY']
+      )
+      CollectionMailer.collection_status(source, 'activated').deliver
+    end
 end

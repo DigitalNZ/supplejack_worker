@@ -14,9 +14,8 @@ module SupplejackApi
     end
 
     private
-
-    def sorted_fragments
-      fragments.sort_by { |s| s.priority || Integer::INT32_MAX }
-    end
+      def sorted_fragments
+        fragments.sort_by { |s| s.priority || Integer::INT32_MAX }
+      end
   end
 end

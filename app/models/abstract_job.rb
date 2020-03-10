@@ -92,6 +92,7 @@ class AbstractJob
     end.keys
   end
 
+  # rubocop:disable Metrics/BlockLength
   aasm column: 'status' do
     state :ready, initial: true
     state :active
@@ -143,6 +144,7 @@ class AbstractJob
       transitions to: :stopped
     end
   end
+  # rubocop:enable Metrics/BlockLength
 
   def fail_job(status_message = nil)
     update_attribute(:status_message, status_message) if status_message.present?

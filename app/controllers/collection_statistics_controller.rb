@@ -6,16 +6,15 @@ class CollectionStatisticsController < ApplicationController
 
   def index
     @collection_statistics = if params[:collection_statistics]
-                               CollectionStatistics.where(c_s_params)
-                             else
-                               CollectionStatistics.all
-                             end
+      CollectionStatistics.where(c_s_params)
+    else
+      CollectionStatistics.all
+    end
     render json: @collection_statistics
   end
 
   private
-
-  def c_s_params
-    params.require(:collection_statistics).permit!
-  end
+    def c_s_params
+      params.require(:collection_statistics).permit!
+    end
 end
