@@ -107,30 +107,29 @@ class EnrichmentWorker < AbstractWorker
   # rubocop:enable Metrics/MethodLength
 
   private
-
-  def setup_parser
-    @parser = job.parser
-    @parser.load_file(job.environment)
-    @parser_class = @parser.loader.parser_class
-    @parser_class.environment = job.environment
-  end
-
-  def enrichment_options
-    @enrichment_options ||= @parser.enrichment_definitions(job.environment)[job.enrichment.to_sym]
-  end
-
-  def enrichment_class
-    klass = "SupplejackCommon::#{enrichment_options[:type]}Enrichment"
-    klass.constantize
-  end
-
-  def post_to_api(enrichment)
-    enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
-      attrs = attributes.merge(job_id: job.id.to_s)
-      # rubocop:disable Metrics/LineLength
-      ApiUpdateWorker.perform_async("/harvester/records/#{mongo_record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
-      # rubocop:enable Metrics/LineLength
-      job.increment_records_count!
+    def setup_parser
+      @parser = job.parser
+      @parser.load_file(job.environment)
+      @parser_class = @parser.loader.parser_class
+      @parser_class.environment = job.environment
     end
-  end
+
+    def enrichment_options
+      @enrichment_options ||= @parser.enrichment_definitions(job.environment)[job.enrichment.to_sym]
+    end
+
+    def enrichment_class
+      klass = "SupplejackCommon::#{enrichment_options[:type]}Enrichment"
+      klass.constantize
+    end
+
+    def post_to_api(enrichment)
+      enrichment.record_attributes.as_json.each do |mongo_record_id, attributes|
+        attrs = attributes.merge(job_id: job.id.to_s)
+        # rubocop:disable Metrics/LineLength
+        ApiUpdateWorker.perform_async("/harvester/records/#{mongo_record_id}/fragments.json", { fragment: attrs, required_fragments: job.required_enrichments }, job.id.to_s)
+        # rubocop:enable Metrics/LineLength
+        job.increment_records_count!
+      end
+    end
 end

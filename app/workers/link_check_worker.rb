@@ -41,61 +41,60 @@ class LinkCheckWorker
   end
 
   private
+    def add_record_stats(record_id, status)
+      status = 'activated' if status == 'active'
+      collection_stats.add_record!(record_id, status, link_check_job.url)
+    end
 
-  def add_record_stats(record_id, status)
-    status = 'activated' if status == 'active'
-    collection_stats.add_record!(record_id, status, link_check_job.url)
-  end
+    def collection_stats
+      @collection_stats ||= CollectionStatistics.find_or_create_by(day: Time.zone.today, source_id: link_check_job.source_id)
+    end
 
-  def collection_stats
-    @collection_stats ||= CollectionStatistics.find_or_create_by(day: Time.zone.today, source_id: link_check_job.source_id)
-  end
+    def link_check_job
+      @link_check_job ||= begin
+                            LinkCheckJob.find(@link_check_job_id)
+                          rescue StandardError
+                            nil
+                          end
+    end
 
-  def link_check_job
-    @link_check_job ||= begin
-                          LinkCheckJob.find(@link_check_job_id)
-                        rescue StandardError
-                          nil
-                        end
-  end
+    def rules
+      link_check_rule(link_check_job.source.id)
+    end
 
-  def rules
-    link_check_rule(link_check_job.source.id)
-  end
-
-  def link_check(url, collection)
-    Sidekiq.redis do |conn|
-      if conn.setnx(collection, 0)
-        conn.expire(collection, rules.try(:throttle) || 2)
-        begin
-          RestClient.get(url)
-        rescue StandardError => e
-          Sidekiq.logger.info "ResctClient get failed for #{url}. Error: #{e.message}"
-          # This return will make the record to be suppressed
-          return nil
+    def link_check(url, collection)
+      Sidekiq.redis do |conn|
+        if conn.setnx(collection, 0)
+          conn.expire(collection, rules.try(:throttle) || 2)
+          begin
+            RestClient.get(url)
+          rescue StandardError => e
+            Sidekiq.logger.info "ResctClient get failed for #{url}. Error: #{e.message}"
+            # This return will make the record to be suppressed
+            return nil
+          end
+        else
+          Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
+          raise ThrottleLimitError, "Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}"
         end
-      else
-        Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
-        raise ThrottleLimitError, "Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}"
       end
     end
-  end
 
-  def suppress_record(link_check_job_id, record_id, strike)
-    timings = [1.hour, 5.hours, 72.hours]
+    def suppress_record(link_check_job_id, record_id, strike)
+      timings = [1.hour, 5.hours, 72.hours]
 
-    if strike >= 3
-      set_record_status(record_id, 'deleted')
-    else
-      set_record_status(record_id, 'suppressed') unless strike.positive?
-      LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
+      if strike >= 3
+        set_record_status(record_id, 'deleted')
+      else
+        set_record_status(record_id, 'suppressed') unless strike.positive?
+        LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
+      end
     end
-  end
 
-  def set_record_status(record_id, status)
-    RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", record: { status: status }, api_key: ENV['HARVESTER_API_KEY'])
-    add_record_stats(record_id, status)
-  rescue StandardError
-    Sidekiq.logger.warn('Record not found when updating status in LinkChecking. Ignoring.')
-  end
+    def set_record_status(record_id, status)
+      RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", record: { status: status }, api_key: ENV['HARVESTER_API_KEY'])
+      add_record_stats(record_id, status)
+    rescue StandardError
+      Sidekiq.logger.warn('Record not found when updating status in LinkChecking. Ignoring.')
+    end
 end

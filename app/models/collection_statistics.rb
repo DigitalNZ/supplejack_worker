@@ -41,14 +41,13 @@ class CollectionStatistics
   end
 
   private
+    def add_record_item(record_id, collection, landing_url)
+      send("#{collection}_records=", []) if send("#{collection}_records").nil?
 
-  def add_record_item(record_id, collection, landing_url)
-    send("#{collection}_records=", []) if send("#{collection}_records").nil?
-
-    records = send("#{collection}_records")
-    record = { record_id: record_id, landing_url: landing_url }
-    return if records.include?(record)
-    records << record
-    inc("#{collection}_count".to_sym => 1)
-  end
+      records = send("#{collection}_records")
+      record = { record_id: record_id, landing_url: landing_url }
+      return if records.include?(record)
+      records << record
+      inc("#{collection}_count".to_sym => 1)
+    end
 end
