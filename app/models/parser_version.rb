@@ -10,16 +10,11 @@ class ParserVersion < ActiveResource::Base
   self.element_name = 'version'
 
   def last_harvested_at
-    job = harvest_jobs('finished')[1]
-    job ? job.start_time : nil
-  end
-
-  def harvest_jobs(status = nil)
-    if status == 'finished'
-      HarvestJob.where(parser_id: parser_id, status: status).desc(:start_time)
-    else
-      HarvestJob.where(parser_id: parser_id).desc(:start_time)
-    end
+    HarvestJob.where(
+      parser_id: parser_id,
+      status: 'finished',
+      environment: { '$ne': 'preview' }
+    ).max(:start_time)
   end
 
   def parser_id

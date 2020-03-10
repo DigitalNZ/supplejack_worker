@@ -17,8 +17,8 @@ describe AbstractWorker do
         expect(worker.stop_harvest?).to be_truthy
       end
 
-      it 'updates the job with the end time' do
-        expect(job).to receive(:finish!)
+      it 'should not finish the job, as it has been stopped' do
+        expect(job).not_to receive(:finish!)
         worker.stop_harvest?
       end
 
