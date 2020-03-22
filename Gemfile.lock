@@ -1,7 +1,5 @@
-GIT
-  remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 37d9fe5a2aa8a5812d61340c9f0d0715f993f2b7
-  tag: v2.8.0
+PATH
+  remote: /webspace/supplejack_common
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -10,7 +8,7 @@ GIT
       chronic (<= 0.10.2)
       dimensions
       htmlentities
-      json (~> 1.8.3)
+      json (>= 2.3.0)
       jsonpath (~> 0.5.0)
       loofah
       mimemagic
@@ -186,7 +184,7 @@ GEM
       concurrent-ruby (~> 1.0)
     jaro_winkler (1.5.4)
     jmespath (1.4.0)
-    json (1.8.6)
+    json (2.3.0)
     jsonapi-renderer (0.2.0)
     jsonpath (0.5.8)
       multi_json
