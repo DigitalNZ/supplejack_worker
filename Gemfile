@@ -24,8 +24,8 @@ gem 'rails', '~> 5.2.4'
 gem 'responders'
 gem 'sidekiq', '~> 5.2.3'
 gem 'sinatra', require: nil
-# gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.8.0'
-gem 'supplejack_common', path: '/webspace/supplejack_common'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'rm/fix-secutity-scans-on-worker'
+# gem 'supplejack_common', path: '/webspace/supplejack_common'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'

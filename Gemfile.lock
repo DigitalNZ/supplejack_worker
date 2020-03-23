@@ -1,5 +1,7 @@
-PATH
-  remote: /webspace/supplejack_common
+GIT
+  remote: https://github.com/DigitalNZ/supplejack_common
+  revision: 75bf73dc327cc5bcaf423e7b78c43ced25889b03
+  branch: rm/fix-secutity-scans-on-worker
   specs:
     supplejack_common (0.0.2)
       actionpack
