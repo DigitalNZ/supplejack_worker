@@ -28,6 +28,6 @@ class EnrichmentJobsController < ApplicationController
 
   private
     def enrichment_job_params
-      params.require(:enrichment_job).permit(:enrichment, :record_id)
+      params.require(:enrichment_job).permit(:enrichment, :record_id, :strategy, :stop, :file_name)
     end
 end

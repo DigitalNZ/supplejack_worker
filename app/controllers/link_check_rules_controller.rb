@@ -36,6 +36,6 @@ class LinkCheckRulesController < ApplicationController
 
   private
     def link_check_rule_params
-      params.require(:link_check_rule).permit(:source_id, :xpath, :status_codes, :active, :throttle)
+      params.require(:link_check_rule).permit(:source_id, :xpath, :status_codes, :active, :throttle, :collection_title)
     end
 end
