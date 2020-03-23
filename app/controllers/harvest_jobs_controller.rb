@@ -40,6 +40,6 @@ class HarvestJobsController < ApplicationController
 
   private
     def harvest_job_params
-      params.require(:harvest_job).permit(:limit, :enrichments, :index, :mode, :strategy, :file_name, :stop)
+      params.require(:harvest_job).permit(:limit, :enrichments, :index, :mode, :strategy, :file_name, :stop, :parser_id, :version_id, :user_id, :environment, :start_time, :end_time, :records_count, :duration, :status, :status_message, :failed_records_count, :invalid_records, :harvest_failure, harvest_job: [:user_id, :parser_id, :version_id, :environment, :limit, :mode, :created_at, :end_time, :records_count, :throughput, :status, :status_message, :environment, :invalid_records_count, :failed_records_count, :type, :mode])
     end
 end
