@@ -27,6 +27,8 @@ gem 'sinatra', require: nil
 # gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.8.0'
 gem 'supplejack_common', path: '/webspace/supplejack_common'
 gem 'whenever', require: false
+gem 'brakeman'
+gem 'moderate_parameters'
 
 group :test do
   gem 'cucumber-rails', require: false
