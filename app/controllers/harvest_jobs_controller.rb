@@ -5,7 +5,7 @@ class HarvestJobsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @harvest_jobs = HarvestJob.search(params.permit!)
+    @harvest_jobs = HarvestJob.search(harvest_job_params)
 
     headers = ['X-total', 'X-offset', 'X-limit']
     values = %i[total_count offset_value limit_value]
