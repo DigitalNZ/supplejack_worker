@@ -40,6 +40,6 @@ class HarvestJobsController < ApplicationController
 
   private
     def harvest_job_params
-      params.require(:harvest_job).permit!
+      params.require(:harvest_job).permit(:limit, :enrichments, :index, :mode)
     end
 end
