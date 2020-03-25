@@ -14,6 +14,9 @@ class PreviewsController < ApplicationController
 
   private
     def preview_params
-      params.require(:preview).permit(:raw_data, :harvested_attributes, :api_record, :status, :deletable, :field_errors, :validation_errors, :harvest_failure, :harvest_job_errors, :format, harvest_job: [:parser_code, :parser_id, :environment, :index, :limit, :user_id])
+      params.require(:preview).permit(:raw_data, :harvested_attributes, :api_record,
+                                      :status, :deletable, :field_errors, :validation_errors,
+                                      :harvest_failure, :harvest_job_errors,
+                                      :format, harvest_job: [:parser_code, :parser_id, :environment, :index, :limit, :user_id])
     end
 end
