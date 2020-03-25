@@ -1,4 +1,4 @@
-language: ruby
+language: ruby-2.6.5
 
 services:
   - mongodb
