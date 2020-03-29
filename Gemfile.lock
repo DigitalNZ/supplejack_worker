@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 75bf73dc327cc5bcaf423e7b78c43ced25889b03
-  branch: rm/fix-secutity-scans-on-worker
+  revision: b409a080018e7f635b08ea475ffae646cca42498
+  tag: v2.8.2
   specs:
     supplejack_common (0.0.2)
       actionpack
