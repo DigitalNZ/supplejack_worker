@@ -20,12 +20,14 @@ gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma', '~> 3.12'
-gem 'rails', '~> 5.2.3'
+gem 'rails', '~> 5.2.4'
 gem 'responders'
 gem 'sidekiq', '~> 5.2.3'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.8.0'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.8.2'
 gem 'whenever', require: false
+gem 'brakeman'
+gem 'moderate_parameters'
 
 group :test do
   gem 'cucumber-rails', require: false

@@ -15,6 +15,8 @@ class CollectionStatisticsController < ApplicationController
 
   private
     def c_s_params
-      params.require(:collection_statistics).permit!
+      params.require(:collection_statistics).permit(:source_id, :day, :suppressed_count,
+                                                    :deleted_count, :activated_count, :suppressed_records,
+                                                    :deleted_records, :activated_records)
     end
 end
