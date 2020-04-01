@@ -60,11 +60,14 @@ Rails.application.configure do
     address: ENV['SMTP_ADDRESS'],
     domain: ENV['SMTP_DOMAIN'],
     port: ENV['SMTP_PORT'],
-    user_name: ENV['SMTP_USER_NAME'],
+    user_name: ENV['SMTP_USER'],
     password: ENV['SMTP_PASSWORD']
   }
 
-  config.action_mailer.default_url_options = { host: ENV['HOST'] }
+  config.action_mailer.default_url_options = {
+    host: ENV['HOST'],
+    protocol: 'https'
+  }
 
   config.log_level = ENV['LOG_LEVEL'] || :info
   config.log_tags = [:request_id]
