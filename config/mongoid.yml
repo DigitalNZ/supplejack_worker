@@ -129,3 +129,5 @@ production:
         read:
           mode: :primary_preferred
         max_pool_size: 500
+        user: <%= ENV['MONGOID_USER'] %>
+        password: <%= ENV['MONGOID_PASSWORD'] %>
