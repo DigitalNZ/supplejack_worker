@@ -10,7 +10,7 @@
 development:
   API_HOST: "http://127.0.0.1:3000"
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
-  API_MONGOID_HOSTS: "localhost:27017"
+  MONGO_HOSTS: "localhost:27017"
   MANAGER_HOST: "http://127.0.0.1:3001"
   HARVESTER_CACHING_ENABLED: "true"
   AIRBRAKE_API_KEY: "anc123"
@@ -22,7 +22,7 @@ development:
 test:
   API_HOST: "http://127.0.0.1:3000"
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
-  API_MONGOID_HOSTS: "localhost:27017"
+  MONGO_HOSTS: "localhost:27017"
   MANAGER_HOST: "http://127.0.0.1:3001"
   HARVESTER_CACHING_ENABLED: "false"
   AIRBRAKE_API_KEY: "anc123"
@@ -42,7 +42,7 @@ staging:
   SECRET_KEY_BASE: 'some long hash value'
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
-  API_MONGOID_HOSTS: "localhost:27017"
+  MONGO_HOSTS: "localhost:27017"
   WORKER_KEY: YOUR_WORKER_KEY
 
 production:
@@ -57,6 +57,6 @@ production:
   SECRET_KEY_BASE: 'some long hash value'
   DEVISE_MAILER: "info@harvester.org"
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
-  API_MONGOID_HOSTS: "localhost:27017"
+  MONGO_HOSTS: "localhost:27017"
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
   WORKER_KEY: YOUR_WORKER_KEY
