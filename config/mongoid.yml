@@ -2,39 +2,35 @@ default:
   clients:
     default:
       database: worker_uat
-      hosts:
-        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :primary
         auth_source: admin
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
     api:
       database: dnz_api_uat
-      hosts:
-        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :primary
         auth_source: admin
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
 
 development:
   clients:
     default:
       database: worker_development
-      hosts:
-        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
 
     api:
       database: dnz_api_development
-      hosts:
-        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :nearest
@@ -44,8 +40,7 @@ test:
   clients:
     default:
       database: worker_test
-      hosts:
-        - localhost:27017
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :nearest
@@ -53,8 +48,7 @@ test:
         retry_interval: 0
     api:
       database: dnz_api_test
-      hosts:
-        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :nearest
@@ -63,71 +57,66 @@ uat:
   clients:
     default:
       database: worker_uat
-      hosts:
-        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :primary
         auth_source: admin
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
     api:
       database: dnz_api_uat
-      hosts:
-        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :primary
         auth_source: admin
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
 staging:
   clients:
     default:
       database: worker_staging
-      hosts:
-        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :primary
         auth_source: admin
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
     api:
       database: dnz_api_staging
-      hosts:
-        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :primary
         auth_source: admin
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
+
 production:
   clients:
     default:
       database: worker_production
-      hosts:
-        - <%= ENV['MONGOID_HOST'] || 'localhost:27017' %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         read:
           mode: :primary
         auth_source: admin
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
     api:
       database: dnz_api_production
-      hosts:
-        <%= ENV['API_MONGOID_HOSTS'].gsub(/\s+/, "").split(',') %>
+      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
       options:
         auth_source: admin
         read:
           mode: :primary_preferred
         max_pool_size: 500
-        user: <%= ENV['MONGOID_USER'] %>
-        password: <%= ENV['MONGOID_PASSWORD'] %>
+        user: <%= ENV['MONGO_USER'] %>
+        password: <%= ENV['MONGO_PASSWORD'] %>
