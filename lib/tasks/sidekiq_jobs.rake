@@ -10,4 +10,8 @@ namespace :sidekiq_jobs do
     AbstractJob.where(:created_at.lte => (Date.today - 7),
                       environment: 'preview').delete_all
   end
+
+  task :recover_in_progress_jobs do
+    RecoverActiveJobsWorker.perform_async
+  end
 end

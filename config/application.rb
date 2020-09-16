@@ -34,6 +34,11 @@ module HarvesterWorker
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    config.after_initialize do
+      Rails.application.load_tasks # Load our Event collection task.
+      Rake::Task['sidekiq_jobs:recover_in_progress_jobs'].invoke
+    end
   end
 end
 

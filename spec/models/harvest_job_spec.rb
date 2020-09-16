@@ -163,4 +163,12 @@ describe HarvestJob do
       expect(full_and_flush_job_with_no_records.full_and_flush_available?).to eq false
     end
   end
+
+  describe '#job_states' do
+    let(:job_with_state_history) { create(:harvest_job, :states) }
+
+    it 'can have an embedded history of the job state' do
+      expect(job_with_state_history.job_states.count).not_to eq(0)
+    end
+  end
 end

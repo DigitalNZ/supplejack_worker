@@ -1,7 +1,5 @@
-GIT
-  remote: https://github.com/DigitalNZ/supplejack_common
-  revision: a866415515ee9513caf8bdf67765a401e2458a1c
-  tag: v2.8.3
+PATH
+  remote: /webspace/supplejack_common
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -177,7 +175,7 @@ GEM
       concurrent-ruby (~> 1.0)
     jaro_winkler (1.5.4)
     jmespath (1.4.0)
-    json (2.3.0)
+    json (2.3.1)
     jsonapi-renderer (0.2.0)
     jsonpath (0.5.8)
       multi_json
@@ -391,7 +389,7 @@ GEM
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.6)
+    unf_ext (0.0.7.7)
     unicode-display_width (1.6.1)
     websocket-driver (0.7.2)
       websocket-extensions (>= 0.1.0)
