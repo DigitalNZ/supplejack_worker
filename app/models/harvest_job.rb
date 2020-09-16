@@ -7,7 +7,7 @@ class HarvestJob < AbstractJob
   field :index,                 type: Integer
   field :mode,                  type: String, default: 'normal'
 
-  after_create :enqueue, unless: :preview?
+  after_save :enqueue
 
   validates_uniqueness_of :parser_id, scope: %i[environment status _type],
                                       message: I18n.t('job.already_running', type: 'Harvest'),
@@ -16,6 +16,8 @@ class HarvestJob < AbstractJob
   validates :mode, inclusion: %w[normal full_and_flush incremental]
 
   def enqueue
+    return if preview? || !ready?
+
     HarvestWorker.perform_async(id.to_s)
   end
 
@@ -52,6 +54,16 @@ class HarvestJob < AbstractJob
     options = {}
     options[:limit] = limit.to_i if limit.to_i.positive?
     options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
+
+    # pass details that are needed for resuming the job ...
+    options[:job]     = self
+
+    if self.states.any?
+      options[:page]    = self.states.last.page
+      options[:limit]   = self.states.last.limit
+      options[:counter] = self.states.last.counter
+      options[:base_urls] = self.states.last.base_urls
+    end
 
     parser.load_file(environment)
     parser_klass = parser.loader.parser_class

@@ -11,5 +11,12 @@ FactoryBot.define do
     sequence(:user_id)    { |n| "abc#{n}" }
 
     association :harvest_schedule, factory: :harvest_schedule
+
+    trait :stateful do
+      after(:create) do |harvest_job|
+        harvest_job.states << build_list(:state, 3)
+        harvest_job.save!
+      end
+    end
   end
 end

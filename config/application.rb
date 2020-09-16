@@ -39,6 +39,13 @@ module HarvesterWorker
     # custom global configs goes here
     config.eager_load_paths += %W[#{Rails.root}/lib]
     config.time_zone = 'Wellington'
+
+    config.after_initialize do
+      unless Rails.env.test?
+        Rails.application.load_tasks # Load our Event collection task.
+        Rake::Task['sidekiq_jobs:recover_interrupted_jobs'].invoke
+      end
+    end
   end
 end
 

@@ -22,10 +22,13 @@ gem 'rails', '~> 6.0.3'
 gem 'responders'
 gem 'sidekiq'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.8.3'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'rm/store-harvest-job-state'
+# gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.8.3'
+# gem 'supplejack_common', path: '/webspace/supplejack_common'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'
+gem 'amazing_print'
 
 group :test do
   gem 'database_cleaner'

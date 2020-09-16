@@ -32,6 +32,7 @@ class AbstractJob
   embeds_many :invalid_records
   embeds_many :failed_records
   embeds_one :harvest_failure
+  embeds_many :states
 
   belongs_to :harvest_schedule, optional: true
 
