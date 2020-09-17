@@ -29,6 +29,7 @@ gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'
 gem 'sidekiq-unique-jobs'
+gem 'amazing_print'
 
 group :test do
   gem 'cucumber-rails', require: false

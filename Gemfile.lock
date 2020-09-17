@@ -88,6 +88,7 @@ GEM
       airbrake-ruby (~> 5.0)
     airbrake-ruby (5.0.2)
       rbtree3 (~> 0.5)
+    amazing_print (1.2.1)
     arel (9.0.0)
     ast (2.4.1)
     awesome_print (1.8.0)
@@ -440,6 +441,7 @@ DEPENDENCIES
   active_model_serializers (~> 0.10.7)
   activeresource
   airbrake
+  amazing_print
   awesome_print (~> 1.8)
   aws-sdk-s3 (~> 1)
   brakeman
