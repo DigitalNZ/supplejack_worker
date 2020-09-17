@@ -165,10 +165,11 @@ describe HarvestJob do
   end
 
   describe '#job_states' do
-    let(:job_with_state_history) { create(:harvest_job, :states) }
+    let(:stateful_job) { create(:harvest_job, :stateful) }
 
     it 'can have an embedded history of the job state' do
-      expect(job_with_state_history.job_states.count).not_to eq(0)
+      expect(stateful_job.states.count).not_to eq(0)
+      expect(stateful_job.states.first).to be_a(State)
     end
   end
 end

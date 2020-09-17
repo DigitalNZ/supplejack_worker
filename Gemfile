@@ -28,6 +28,7 @@ gem 'supplejack_common', path: '/webspace/supplejack_common'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'
+gem 'sidekiq-unique-jobs'
 
 group :test do
   gem 'cucumber-rails', require: false

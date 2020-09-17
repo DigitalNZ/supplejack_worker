@@ -11,7 +11,20 @@ namespace :sidekiq_jobs do
                       environment: 'preview').delete_all
   end
 
-  task :recover_in_progress_jobs do
-    RecoverActiveJobsWorker.perform_async
+  task :recover_interrupted_jobs do
+    p 'Recovering interrupted jobs ...'
+
+    harvest_jobs = HarvestJob.where(status: 'ready')
+
+    if harvest_jobs.count.zero?
+      p 'There are no HarvestJobs ready to start.'
+    else
+      p "There are #{harvest_jobs.count} HarvestJobs ready to start ..."
+
+      harvest_jobs.each do |harvest_job|
+        p "Starting HarvestJob with id #{harvest_job.id}"
+        harvest_job.enqueue
+      end
+    end
   end
 end

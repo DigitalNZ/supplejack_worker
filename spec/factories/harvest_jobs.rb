@@ -11,9 +11,10 @@ FactoryBot.define do
 
     association :harvest_schedule, factory: :harvest_schedule
 
-    trait :states do
+    trait :stateful do
       after(:create) do |harvest_job|
-        harvest_job.job_states << create_list(:job_state, 3)
+        harvest_job.states << build_list(:state, 3)
+        harvest_job.save!
       end
     end
   end

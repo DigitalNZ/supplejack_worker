@@ -1,5 +1,5 @@
 ---
-:verbose: true
+:verbose: false
 staging:
   :concurrency: 25
 production:

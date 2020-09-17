@@ -36,8 +36,10 @@ module HarvesterWorker
     config.api_only = true
 
     config.after_initialize do
-      Rails.application.load_tasks # Load our Event collection task.
-      Rake::Task['sidekiq_jobs:recover_in_progress_jobs'].invoke
+      unless Rails.env.test?
+        Rails.application.load_tasks # Load our Event collection task.
+        Rake::Task['sidekiq_jobs:recover_interrupted_jobs'].invoke
+      end
     end
   end
 end
