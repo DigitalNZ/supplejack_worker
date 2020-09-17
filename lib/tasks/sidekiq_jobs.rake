@@ -16,15 +16,15 @@ namespace :sidekiq_jobs do
 
     harvest_jobs = HarvestJob.where(status: 'ready')
 
-    if harvest_jobs.count.zero?
-      p 'There are no HarvestJobs ready to start.'
-    else
+    if harvest_jobs.any?
       p "There are #{harvest_jobs.count} HarvestJobs ready to start ..."
 
       harvest_jobs.each do |harvest_job|
         p "Starting HarvestJob with id #{harvest_job.id}"
         harvest_job.enqueue
       end
+    else
+      p 'There are no HarvestJobs ready to start.'
     end
   end
 end
