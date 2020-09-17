@@ -6,7 +6,7 @@ require 'snippet'
 class HarvestWorker < AbstractWorker
   include Sidekiq::Worker
   include Matcher::ConceptMatcher
-  
+
   sidekiq_options retry: 5, backtrace: true, queue: 'default', lock: :until_expired, lock_ttl: 5.minutes, on_conflict: :log
 
   sidekiq_retries_exhausted do |msg|
