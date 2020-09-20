@@ -14,7 +14,7 @@ namespace :sidekiq_jobs do
   task :recover_interrupted_jobs do
     p 'Recovering interrupted jobs ...'
 
-    harvest_jobs = HarvestJob.where(status: 'ready')
+    harvest_jobs = HarvestJob.where(status: 'active')
 
     if harvest_jobs.any?
       p "There are #{harvest_jobs.count} HarvestJobs ready to start ..."
