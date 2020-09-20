@@ -16,15 +16,19 @@ namespace :sidekiq_jobs do
 
     harvest_jobs = HarvestJob.where(status: 'active')
 
-    if harvest_jobs.any?
-      p "There are #{harvest_jobs.count} HarvestJobs ready to start ..."
+    # TODO confirm if this is actually required
+    # When Sidekiq recieves a graceful termination code it will put the jobs back into redis
+    # It's only in cases where Sidekiq is forcefully killed that something like this would be required. When it may be safer to schedule them back manually. 
 
-      harvest_jobs.each do |harvest_job|
-        p "Starting HarvestJob with id #{harvest_job.id}"
-        harvest_job.enqueue
-      end
-    else
-      p 'There are no HarvestJobs ready to start.'
-    end
+    # if harvest_jobs.any?
+    #   p "There are #{harvest_jobs.count} HarvestJobs ready to start ..."
+
+    #   harvest_jobs.each do |harvest_job|
+    #     p "Starting HarvestJob with id #{harvest_job.id}"
+    #     harvest_job.enqueue
+    #   end
+    # else
+    #   p 'There are no HarvestJobs ready to start.'
+    # end
   end
 end
