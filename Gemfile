@@ -28,7 +28,6 @@ gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'rm/stor
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'
-gem 'sidekiq-unique-jobs'
 gem 'amazing_print'
 
 group :test do
