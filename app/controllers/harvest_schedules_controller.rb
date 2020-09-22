@@ -49,6 +49,6 @@ class HarvestSchedulesController < ApplicationController
     def harvest_schedule_params
       params.require(:harvest_schedule).permit(:parser_id, :start_time, :cron, :frequency, :at_hour, :at_minutes,
                                                :offset, :environment, :recurrent, :last_run_at,
-                                               :next_run_at, :status, :enrichments, :mode)
+                                               :next_run_at, :status, :mode, enrichments: [])
     end
 end
