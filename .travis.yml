@@ -4,6 +4,7 @@ rvm:
 
 services:
   - mongodb
+  - redis
 
 before_script:
   - cp config/application.yml.example config/application.yml

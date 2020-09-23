@@ -6,6 +6,7 @@ class HarvestJob < AbstractJob
   field :enrichments,           type: Array
   field :index,                 type: Integer
   field :mode,                  type: String, default: 'normal'
+  embeds_many                   :states
 
   after_create :enqueue, unless: :preview?
 
@@ -52,6 +53,15 @@ class HarvestJob < AbstractJob
     options = {}
     options[:limit] = limit.to_i if limit.to_i.positive?
     options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
+
+    # pass details that are needed for resuming the job ...
+    options[:job]     = self
+
+    if self.states.any?
+      options[:page]    = self.states.last.page
+      options[:limit]   = self.states.last.limit
+      options[:counter] = self.states.last.counter
+    end
 
     parser.load_file(environment)
     parser_klass = parser.loader.parser_class
