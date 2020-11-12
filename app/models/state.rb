@@ -11,4 +11,5 @@ class State
   field :per_page,    type: Integer
   field :limit,       type: Integer
   field :counter,     type: Integer
+  field :base_urls,   type: Array
 end

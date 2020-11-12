@@ -21,5 +21,9 @@ RSpec.describe State do
     it 'has the counter' do
       expect(state.counter).to eq 1
     end
+
+    it 'has the base_urls' do
+      expect(state.base_urls).to eq []
+    end
   end
 end
