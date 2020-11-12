@@ -6,7 +6,6 @@ class HarvestJob < AbstractJob
   field :enrichments,           type: Array
   field :index,                 type: Integer
   field :mode,                  type: String, default: 'normal'
-  embeds_many                   :states
 
   after_create :enqueue, unless: :preview?
 

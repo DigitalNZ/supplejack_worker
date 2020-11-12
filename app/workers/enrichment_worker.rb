@@ -25,7 +25,16 @@ class EnrichmentWorker < AbstractWorker
 
     enrichment_class.before(job.enrichment)
 
-    records = fetch_records(1)
+    if job.states.any?
+      p "!!! I AM STARTING FROM PAGE #{job.states.last.page} !!!"
+      records = fetch_records(job.states.last.page.to_i)
+    else
+      p '!!! I AM STARTING FROM PAGE 1 !!!'
+      records = fetch_records(1)
+      job.states.create!(page: 1)
+    end
+
+    p "!!! THIS IS THE FIRST RECORD ID #{records.first.record_id} !!!"
 
     while more_records?(records)
       records.each do |record|
@@ -37,6 +46,7 @@ class EnrichmentWorker < AbstractWorker
       break if last_page_records?(records)
 
       records = fetch_records(records.pagination['page'] + 1)
+      job.states.create!(page: records.pagination['page'])
     end
 
     until api_update_finished?
@@ -60,6 +70,8 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def fetch_records(page = 0)
+    p "!!! I AM FETCHING RECORDS FROM PAGE #{page} !!!"
+
     if job.record_id.nil?
       if job.harvest_job.present?
         SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
@@ -115,7 +127,7 @@ class EnrichmentWorker < AbstractWorker
     end
 
     def enrichment_options
-      @enrichment_options ||= @parser.enrichment_definitions(job.environment)[job.enrichment.to_sym]
+      @enrichment_options = @parser.enrichment_definitions(job.environment)[job.enrichment.to_sym]
     end
 
     def enrichment_class

@@ -5,7 +5,7 @@ class State
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  embedded_in :harvest_job
+  embedded_in :abstract_job
 
   field :page,        type: Integer
   field :per_page,    type: Integer
