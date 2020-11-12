@@ -5,5 +5,6 @@ FactoryBot.define do
     per_page  { 10 }
     limit     { 100 }
     counter   { 1 }
+    base_urls { [] }
   end
 end
