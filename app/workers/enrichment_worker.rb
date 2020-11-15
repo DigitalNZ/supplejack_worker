@@ -37,6 +37,10 @@ class EnrichmentWorker < AbstractWorker
     p "!!! THIS IS THE FIRST RECORD ID #{records.first.record_id} !!!"
 
     while more_records?(records)
+      p '!!! I AM FETCHING MORE RECORDS, STOP THE PROCESS NOW !!!'
+      p 'Sleeping for 30 seconds...'
+      sleep 30
+
       records.each do |record|
         break if stop_harvest?
 
@@ -127,7 +131,7 @@ class EnrichmentWorker < AbstractWorker
     end
 
     def enrichment_options
-      @enrichment_options = @parser.enrichment_definitions(job.environment)[job.enrichment.to_sym]
+      @enrichment_options ||= @parser.enrichment_definitions(job.environment)[job.enrichment.to_sym]
     end
 
     def enrichment_class
