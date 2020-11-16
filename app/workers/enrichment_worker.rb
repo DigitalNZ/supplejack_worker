@@ -26,21 +26,13 @@ class EnrichmentWorker < AbstractWorker
     enrichment_class.before(job.enrichment)
 
     if job.states.any?
-      p "!!! I AM STARTING FROM PAGE #{job.states.last.page} !!!"
       records = fetch_records(job.states.last.page.to_i)
     else
-      p '!!! I AM STARTING FROM PAGE 1 !!!'
       records = fetch_records(1)
       job.states.create!(page: 1)
     end
 
-    p "!!! THIS IS THE FIRST RECORD ID #{records.first.record_id} !!!"
-
     while more_records?(records)
-      p '!!! I AM FETCHING MORE RECORDS, STOP THE PROCESS NOW !!!'
-      p 'Sleeping for 30 seconds...'
-      sleep 30
-
       records.each do |record|
         break if stop_harvest?
 
@@ -74,8 +66,6 @@ class EnrichmentWorker < AbstractWorker
   end
 
   def fetch_records(page = 0)
-    p "!!! I AM FETCHING RECORDS FROM PAGE #{page} !!!"
-
     if job.record_id.nil?
       if job.harvest_job.present?
         SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
