@@ -7,56 +7,68 @@
 # makes 'Your_Gmail_Username' available as ENV["GMAIL_USERNAME"]
 # Add application configuration variables here, as shown below.
 
-development:
-  API_HOST: "http://127.0.0.1:3000"
-  HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
-  MONGO_HOSTS: "localhost:27017"
-  MANAGER_HOST: "http://127.0.0.1:3001"
-  HARVESTER_CACHING_ENABLED: "true"
-  AIRBRAKE_API_KEY: "anc123"
-  LINK_CHECKING_ENABLED: "true"
-  LINKCHECKER_RECIPIENTS: "test@test.com"
-  WORKER_KEY: YOUR_WORKER_KEY
-  REDIS_URL: 'redis://localhost:6379/2'
-
 test:
   API_HOST: "http://127.0.0.1:3000"
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
-  MONGO_HOSTS: "localhost:27017"
   MANAGER_HOST: "http://127.0.0.1:3001"
   HARVESTER_CACHING_ENABLED: "false"
-  AIRBRAKE_API_KEY: "anc123"
+  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   LINK_CHECKING_ENABLED: "true"
   LINKCHECKER_RECIPIENTS: "test@test.com"
   WORKER_KEY: YOUR_WORKER_KEY
 
-staging:
-  API_HOST: "http://api.harvester.org"
+development:
+  HOST: "127.0.0.1:3002"
+  API_HOST: "http://127.0.0.1:3000"
+  MANAGER_HOST: "http://127.0.0.1:3001"
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
-  MANAGER_HOST: "http://harvester.org"
   HARVESTER_CACHING_ENABLED: "true"
-  AIRBRAKE_API_KEY: "anc123"
-  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   LINK_CHECKING_ENABLED: "true"
-  HOST: 'worker.harvester.org'
+  LINKCHECKER_RECIPIENTS: "test@test.com"
+  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   SECRET_KEY_BASE: 'some long hash value'
   DEVISE_MAILER: "info@harvester.org"
-  LINKCHECKER_RECIPIENTS: "bill@harvester.org"
-  MONGO_HOSTS: "localhost:27017"
   WORKER_KEY: YOUR_WORKER_KEY
+  REDIS_URL: 'redis://localhost:6379/2'
+
+uat:
+  HOST: 'worker.harvester.org'
+  API_HOST: "http://api.harvester.org"
+  MANAGER_HOST: "http://harvester.org"
+  HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
+  HARVESTER_CACHING_ENABLED: "true"
+  LINK_CHECKING_ENABLED: "true"
+  LINKCHECKER_RECIPIENTS: "bill@harvester.org"
+  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
+  SECRET_KEY_BASE: 'some long hash value'
+  DEVISE_MAILER: "info@harvester.org"
+  WORKER_KEY: YOUR_WORKER_KEY
+  REDIS_URL: 'redis://localhost:6379/2'
+
+staging:
+  HOST: 'worker.harvester.org'
+  API_HOST: "http://api.harvester.org"
+  MANAGER_HOST: "http://harvester.org"
+  HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
+  HARVESTER_CACHING_ENABLED: "true"
+  LINK_CHECKING_ENABLED: "true"
+  LINKCHECKER_RECIPIENTS: "bill@harvester.org"
+  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
+  SECRET_KEY_BASE: 'some long hash value'
+  DEVISE_MAILER: "info@harvester.org"
+  WORKER_KEY: YOUR_WORKER_KEY
+  REDIS_URL: 'redis://localhost:6379/2'
 
 production:
+  HOST: "worker.harvester.org"
   API_HOST: "http://api.harvester.org"
   MANAGER_HOST: "http://harvester.org"
+  HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
   HARVESTER_CACHING_ENABLED: "true"
-  AIRBRAKE_API_KEY: "anc123"
-  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   LINK_CHECKING_ENABLED: "true"
-  SMTP_ADDRESS: "your SMTP address"
-  HOST: "worker.harvester.org"
+  LINKCHECKER_RECIPIENTS: "bill@harvester.org"
+  LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   SECRET_KEY_BASE: 'some long hash value'
   DEVISE_MAILER: "info@harvester.org"
-  LINKCHECKER_RECIPIENTS: "bill@harvester.org"
-  MONGO_HOSTS: "localhost:27017"
-  HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
   WORKER_KEY: YOUR_WORKER_KEY
+  REDIS_URL: 'redis://localhost:6379/2'
