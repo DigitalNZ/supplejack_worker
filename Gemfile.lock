@@ -281,7 +281,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rbtree3 (0.6.0)
-    redis (4.1.4)
+    redis (4.2.5)
     regexp_parser (2.0.0)
     request_store (1.5.0)
       rack (>= 1.4)
@@ -356,11 +356,10 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.8.0)
       nokogumbo (~> 2.0)
-    sidekiq (5.2.9)
-      connection_pool (~> 2.2, >= 2.2.2)
+    sidekiq (6.1.2)
+      connection_pool (>= 2.2.2)
       rack (~> 2.0)
-      rack-protection (>= 1.5.0)
-      redis (>= 3.3.5, < 4.2)
+      redis (>= 4.2.0)
     sinatra (2.1.0)
       mustermann (~> 1.0)
       rack (~> 2.2)
@@ -429,7 +428,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails_config
   rubocop-rspec
-  sidekiq (~> 5.2.3)
+  sidekiq
   sinatra
   spring
   spring-watcher-listen (~> 2.0.0)
