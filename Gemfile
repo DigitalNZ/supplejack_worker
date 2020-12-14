@@ -32,7 +32,7 @@ group :test do
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'rspec-activemodel-mocks'
-  gem 'rspec-rails', '~> 3.6'
+  gem 'rspec-rails'
   gem 'rspec-sidekiq'
   gem 'timecop'
 end

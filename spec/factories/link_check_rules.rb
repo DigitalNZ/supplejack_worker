@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Read about factories at https://github.com/thoughtbot/factory_girl
+# Read about factories at https://github.com/thoughtbot/factory_bot
 
 FactoryBot.define do
   factory :link_check_rule do
     sequence(:source_id) { |n| "abc#{n}" }
-    xpath '/xpath'
-    status_codes '404'
+    xpath        { '/xpath' }
+    status_codes { '404' }
   end
 end
