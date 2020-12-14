@@ -45,6 +45,4 @@ Rails.application.configure do
 
   # CUSTOM CONFIG GOES UNDER
   # this makes the upgrade process easier
-  config.logger = ActiveSupport::TaggedLogging.new(CustomLogger::Logger.new(STDOUT))
-  config.log_level = :debug
 end
