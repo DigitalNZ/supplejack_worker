@@ -6,7 +6,7 @@ class HarvestSchedulesController < ApplicationController
 
   def index
     @harvest_schedules = if params[:harvest_schedule]
-      HarvestSchedule.where(harvest_schedule_params)
+      HarvestSchedule.where(harvest_schedule_params.to_h)
     else
       HarvestSchedule.all
     end
@@ -47,8 +47,21 @@ class HarvestSchedulesController < ApplicationController
 
   private
     def harvest_schedule_params
-      params.require(:harvest_schedule).permit(:parser_id, :start_time, :cron, :frequency, :at_hour, :at_minutes,
-                                               :offset, :environment, :recurrent, :last_run_at,
-                                               :next_run_at, :status, :mode, enrichments: [])
+      params.require(:harvest_schedule).permit(
+        :parser_id,
+        :start_time,
+        :cron,
+        :frequency,
+        :at_hour,
+        :at_minutes,
+        :offset,
+        :environment,
+        :recurrent,
+        :last_run_at,
+        :next_run_at,
+        :status,
+        :mode,
+        enrichments: []
+      )
     end
 end
