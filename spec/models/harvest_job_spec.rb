@@ -5,19 +5,19 @@ require 'rails_helper'
 describe HarvestJob do
   context 'validations' do
     it 'is not possible to have 2 active jobs for the same parser/environment' do
-      job1 = create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
+      create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
       job2 = build(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
       expect(job2).to_not be_valid
     end
 
     it 'is possible to have 2 finished jobs for the same parser/environment' do
-      job1 = create(:harvest_job, parser_id: '333', environment: 'staging', status: 'finished')
+      create(:harvest_job, parser_id: '333', environment: 'staging', status: 'finished')
       job2 = build(:harvest_job, parser_id: '333', environment: 'staging', status: 'finished')
       expect(job2).to be_valid
     end
 
     it 'is possible to enqueue a harvest and enrichment jobs simultaneously' do
-      job = create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
+      create(:harvest_job, parser_id: '333', environment: 'staging', status: 'active')
       enrichment = build(:enrichment_job, parser_id: '333', environment: 'staging', status: 'active')
       expect(enrichment).to be_valid
     end

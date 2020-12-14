@@ -7,19 +7,19 @@ describe EnrichmentJob do
 
   context 'validations' do
     it 'is not possible to have 2 active jobs for the same enrichment/parser/environment' do
-      job1 = create(:enrichment_job, enrichment: 'duplicate_enrichment', parser_id: '333', environment: 'staging', status: 'active')
+      create(:enrichment_job, enrichment: 'duplicate_enrichment', parser_id: '333', environment: 'staging', status: 'active')
       job2 = build(:enrichment_job, enrichment: 'duplicate_enrichment', parser_id: '333', environment: 'staging', status: 'active')
       expect(job2).to_not be_valid
     end
 
     it 'is possible to have 2 finished jobs for the same enrichment/parser/environment' do
-      job1 = create(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'finished')
+      create(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'finished')
       job2 = build(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'finished')
       expect(job2).to be_valid
     end
 
     it 'is possible to have 2 active jobs with the same parser/environment' do
-      job1 = create(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'active')
+      create(:enrichment_job, enrichment: 'duplicate_relationships', parser_id: '333', environment: 'staging', status: 'active')
       job2 = build(:enrichment_job, enrichment: 'duplicate_denormalization', parser_id: '333', environment: 'staging', status: 'active')
       expect(job2).to be_valid
     end

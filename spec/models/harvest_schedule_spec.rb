@@ -10,7 +10,7 @@ describe HarvestSchedule do
     it 'returns only harvest schedules which are either active or paused' do
       s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222', status: 'active')
       s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: '111', status: 'paused')
-      s3 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '333', status: 'inactive')
+      HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '333', status: 'inactive')
 
       expect(HarvestSchedule.all).to eq [s1, s2]
     end
@@ -20,7 +20,7 @@ describe HarvestSchedule do
     it 'returns only non recurrent schedules' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
-        s2 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: '111')
+        HarvestSchedule.create(start_time: time - 4.minutes, recurrent: true, parser_id: '111')
 
         expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
@@ -29,7 +29,7 @@ describe HarvestSchedule do
     it 'returns schedules that have start_time in the last 5 minutes' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
-        s2 = HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: '111')
+        HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: '111')
         expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
     end
@@ -37,7 +37,7 @@ describe HarvestSchedule do
     it 'does not return schedules that have already been run' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
-        s2 = HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: '111', last_run_at: time - 15.minutes)
+        HarvestSchedule.create(start_time: time - 7.minutes, recurrent: false, parser_id: '111', last_run_at: time - 15.minutes)
         expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
     end
@@ -45,7 +45,7 @@ describe HarvestSchedule do
     it 'does not return schedules that have a start_time in the future' do
       Timecop.freeze(time) do
         s1 = HarvestSchedule.create(start_time: time - 4.minutes, recurrent: false, parser_id: '222')
-        s2 = HarvestSchedule.create(start_time: time + 2.minutes, recurrent: false, parser_id: '111')
+        HarvestSchedule.create(start_time: time + 2.minutes, recurrent: false, parser_id: '111')
         expect(HarvestSchedule.one_offs_to_be_run).to eq [s1]
       end
     end
@@ -70,7 +70,7 @@ describe HarvestSchedule do
     it 'returns only recurrent schedules' do
       Timecop.freeze(time) do
         s1 = schedule_with_next_run_at(parser_id: '222', next_run_at: time - 2.minutes)
-        s2 = schedule_with_next_run_at(recurrent: false, parser_id: '111', next_run_at: time - 2.minutes)
+        schedule_with_next_run_at(recurrent: false, parser_id: '111', next_run_at: time - 2.minutes)
         expect(HarvestSchedule.recurrents_to_be_run).to eq [s1]
       end
     end
@@ -78,7 +78,7 @@ describe HarvestSchedule do
     it 'returns only schedules with a start_time in the past' do
       Timecop.freeze(time) do
         s1 = schedule_with_next_run_at(start_time: time - 10.minutes, parser_id: '222', next_run_at: time - 2.minutes)
-        s2 = schedule_with_next_run_at(start_time: time + 10.minutes, parser_id: '111', next_run_at: time - 2.minutes)
+        schedule_with_next_run_at(start_time: time + 10.minutes, parser_id: '111', next_run_at: time - 2.minutes)
         expect(HarvestSchedule.recurrents_to_be_run).to eq [s1]
       end
     end
@@ -86,7 +86,7 @@ describe HarvestSchedule do
     it 'returns only schedules that have a next_run_at in the past' do
       Timecop.freeze(time) do
         s1 = schedule_with_next_run_at(parser_id: '222', next_run_at: time - 1.minutes)
-        s2 = schedule_with_next_run_at(parser_id: '111', next_run_at: time + 1.day)
+        schedule_with_next_run_at(parser_id: '111', next_run_at: time + 1.day)
         expect(HarvestSchedule.recurrents_to_be_run).to eq [s1]
       end
     end
