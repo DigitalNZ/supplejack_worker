@@ -19,7 +19,7 @@ gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
-gem 'rails', '~> 5.2.4'
+gem 'rails', '~> 6.0.3'
 gem 'responders'
 gem 'sidekiq', '~> 5.2.3'
 gem 'sinatra', require: nil
@@ -29,7 +29,6 @@ gem 'brakeman'
 gem 'moderate_parameters'
 
 group :test do
-  gem 'cucumber-rails', require: false
   gem 'database_cleaner'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
