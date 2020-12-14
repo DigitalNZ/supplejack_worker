@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SupplejackApi
   FactoryBot.define do
     factory :record, class: SupplejackApi::Record do
@@ -37,12 +39,11 @@ module SupplejackApi
                              large_thumbnail_url: nil)]
         end
       end
-
     end
 
     factory :record_fragment do
-      title           'title'
-      content_partner  ['content partner']
+      title 'title'
+      content_partner ['content partner']
       source_id       'source_name'
       priority        0
       name            'John Doe'
@@ -54,7 +55,7 @@ module SupplejackApi
       birth_date      DateTime.now
       nz_citizen      true
       display_collection 'test'
-      large_thumbnail_url    'http://my-website-that-hosts-images/image.png'
+      large_thumbnail_url 'http://my-website-that-hosts-images/image.png'
       thumbnail_url    'http://my-website-that-hosts-images/small-image.png'
       landing_url      'http://my-website'
       subject         []

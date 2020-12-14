@@ -79,14 +79,15 @@ describe SourceCheckWorker do
     end
 
     it 'retrieves landing urls from the API to check' do
-      expect(RestClient).to receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records", params: { api_key: ENV['HARVESTER_API_KEY'] }).and_return response
+      expect(RestClient).to receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records",
+params: { api_key: ENV['HARVESTER_API_KEY'] }).and_return response
       worker.send(:source_records)
     end
   end
 
   describe 'source_active?' do
     before(:each) do
-      allow(RestClient).to receive(:get).and_return({ status: "active" }.to_json)
+      allow(RestClient).to receive(:get).and_return({ status: 'active' }.to_json)
     end
 
     it 'retrieves the collections status' do
@@ -99,7 +100,7 @@ describe SourceCheckWorker do
     end
 
     it 'returns false if the collection is suppressed' do
-      allow(RestClient).to receive(:get).and_return({ status: "suppressed" }.to_json)
+      allow(RestClient).to receive(:get).and_return({ status: 'suppressed' }.to_json)
       expect(worker.send(:source_active?)).to be_falsey
     end
   end
@@ -145,7 +146,8 @@ describe SourceCheckWorker do
     end
 
     it 'suppresses the collection setting the status_updated_by as LINK CHECKER' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}",
+source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:suppress_collection)
     end
 
@@ -163,7 +165,8 @@ describe SourceCheckWorker do
     end
 
     it 'activates the collection and set the status_updated_by as LINK CHECKER' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}",
+source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:activate_collection)
     end
 

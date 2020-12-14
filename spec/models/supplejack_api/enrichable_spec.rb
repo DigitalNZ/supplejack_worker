@@ -1,8 +1,9 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe SupplejackApi::Enrichable do
-  let(:records) { SupplejackApi::Record.find({ 'fragments.source_id' => 'digitalnz-sets' }, {page: 1}) }
+  let(:records) { SupplejackApi::Record.find({ 'fragments.source_id' => 'digitalnz-sets' }, { page: 1 }) }
 
   before do
     records_response = {
@@ -21,7 +22,7 @@ describe SupplejackApi::Enrichable do
 
     ActiveResource::HttpMock.respond_to do |mock|
       url = "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=digitalnz-sets&search_options%5Bpage%5D=1"
-      mock.get(url, {'Accept'=>'application/json'}, records_response, 201)
+      mock.get(url, { 'Accept' => 'application/json' }, records_response, 201)
     end
   end
 
@@ -45,8 +46,9 @@ describe SupplejackApi::Enrichable do
 
   describe '#find' do
     it 'should pass the api_key and search options as parameters' do
-      expect(ActiveResource::Base).to receive(:find).with(:all, params: { search: { 'fragments.source_id' => 'digitalnz-sets' }, search_options: { page: 0 }, api_key: ENV['HARVESTER_API_KEY'] })
-      SupplejackApi::Record.find({'fragments.source_id' => 'digitalnz-sets'}, {page: 0})
+      expect(ActiveResource::Base).to receive(:find).with(:all,
+params: { search: { 'fragments.source_id' => 'digitalnz-sets' }, search_options: { page: 0 }, api_key: ENV['HARVESTER_API_KEY'] })
+      SupplejackApi::Record.find({ 'fragments.source_id' => 'digitalnz-sets' }, { page: 0 })
     end
   end
 end

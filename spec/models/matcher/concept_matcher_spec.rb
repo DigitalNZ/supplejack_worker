@@ -18,7 +18,8 @@ describe Matcher::ConceptMatcher do
   end
 
   let(:fragment) { SupplejackApi::ApiConcept::ConceptFragment.new(attributes) }
-  let(:concept) { SupplejackApi::Concept.create(landing_url: 'http://www.mccahon.co.nz/', internal_identifier: 'http://www.mccahon.co.nz/', status: 'active') }
+  let(:concept) {
+ SupplejackApi::Concept.create(landing_url: 'http://www.mccahon.co.nz/', internal_identifier: 'http://www.mccahon.co.nz/', status: 'active') }
 
   before(:each) do
     concept.fragments = [fragment]
@@ -76,12 +77,14 @@ describe Matcher::ConceptMatcher do
       it 'does not post an update if the source is reharvested' do
         fragment.update_attribute(:source_id, 'mccahon_co_nz')
         worker.send(:lookup, attributes)
-        expect(ApiUpdateWorker).not_to have_enqueued_sidekiq_job('/harvester/concepts.json', { 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => 'http://www.mccahon.co.nz/', 'match_status' => 'strong' } }, nil)
+        expect(ApiUpdateWorker).not_to have_enqueued_sidekiq_job('/harvester/concepts.json',
+{ 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => 'http://www.mccahon.co.nz/', 'match_status' => 'strong' } }, nil)
       end
 
       it 'posts an update to the API with the sameAs and match_status fields' do
         worker.send(:lookup, attributes)
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/concepts.json', { 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => ['http://www.en.wikipedia.com/mccahon'], 'match_status' => 'strong' } }, nil)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/concepts.json',
+{ 'concept' => { 'internal_identifier' => 'http://www.mccahon.co.nz/', 'source_id' => 'mccahon_co_nz', 'sameAs' => ['http://www.en.wikipedia.com/mccahon'], 'match_status' => 'strong' } }, nil)
       end
     end
   end

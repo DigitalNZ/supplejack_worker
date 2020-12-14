@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe LinkCheckWorker do
@@ -212,7 +213,8 @@ describe LinkCheckWorker do
     end
 
     it 'should find or create a collection statistics model with the collection_title' do
-      expect(CollectionStatistics).to receive(:find_or_create_by).with(day: Time.zone.today, source_id: link_check_job.source_id) { collection_statistics }
+      expect(CollectionStatistics).to receive(:find_or_create_by).with(day: Time.zone.today, source_id: link_check_job.source_id) {
+ collection_statistics }
       expect(worker.send(:collection_stats)).to eq collection_statistics
     end
 
@@ -226,7 +228,8 @@ describe LinkCheckWorker do
     before { allow(RestClient).to receive(:put) }
 
     it 'should make a post to the api to change the status to supressed for the record' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", record: { status: 'suppressed' }, api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", record: { status: 'suppressed' },
+api_key: ENV['HARVESTER_API_KEY'])
       worker.send(:suppress_record, link_check_job.id.to_s, 'abc123', 0)
     end
 

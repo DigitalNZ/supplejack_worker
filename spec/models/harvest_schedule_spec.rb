@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe HarvestSchedule do
@@ -122,7 +123,7 @@ describe HarvestSchedule do
     end
 
     it 'returns nil when cron is not present' do
-      expect(schedule).to receive(:cron).and_return(String.new)
+      expect(schedule).to receive(:cron).and_return(+'')
       expect(schedule.next_job).to be_nil
     end
   end

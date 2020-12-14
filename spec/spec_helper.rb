@@ -108,6 +108,6 @@ RSpec.configure do |config|
   # If you need more of the backtrace for any of these deprecations to
   # identify where to make the necessary changes, you can configure
   # `config.raise_errors_for_deprecations!`, and it will turn the
-  # deprecation warnings into errors, giving you the full backtrace. 
+  # deprecation warnings into errors, giving you the full backtrace.
   config.raise_errors_for_deprecations!
 end

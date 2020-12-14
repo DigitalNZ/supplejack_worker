@@ -1,10 +1,13 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe ApiUpdateWorker do
   let(:worker) { ApiUpdateWorker.new }
   let(:job) { create(:harvest_job) }
-  let(:parser) { Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb', source: { source_id: 'source_id' }, id: 1) }
+  let(:parser) {
+ Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb',
+source: { source_id: 'source_id' }, id: 1) }
 
   before(:each) do
     allow_any_instance_of(HarvestJob).to receive(:parser) { parser }

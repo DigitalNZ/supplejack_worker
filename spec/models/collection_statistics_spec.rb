@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe CollectionStatistics do
@@ -66,7 +67,8 @@ describe CollectionStatistics do
     it 'does not reinitialize record_ids array after adding two values' do
       collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
       collection_statistics.send(:add_record_item, 54_321, 'activated', 'http://goog.le/1')
-      expect(collection_statistics.activated_records).to eq [{ record_id: 12_345, landing_url: 'http://goog.le/' }, { record_id: 54_321, landing_url: 'http://goog.le/1' }]
+      expect(collection_statistics.activated_records).to eq [{ record_id: 12_345, landing_url: 'http://goog.le/' },
+{ record_id: 54_321, landing_url: 'http://goog.le/1' }]
     end
 
     it 'does not add duplicate items' do

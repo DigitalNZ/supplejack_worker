@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe LinkCheckRulesController do
@@ -33,7 +34,8 @@ describe LinkCheckRulesController do
 
     describe 'POST create' do
       it 'creates a new collection rule and assign it' do
-        params = ActionController::Parameters.new('collection_title' => 'collection_title', 'status_codes' => '203,205', source_id: 'source_id').permit!
+        params = ActionController::Parameters.new('collection_title' => 'collection_title', 'status_codes' => '203,205',
+source_id: 'source_id').permit!
         allow(LinkCheckRule).to receive(:create!).with(params).and_return(link_check_rule)
         post :create, params: { link_check_rule: { collection_title: 'collection_title', status_codes: '203,205', source_id: 'source_id' } }
         expect(assigns(:link_check_rule)).to eq link_check_rule

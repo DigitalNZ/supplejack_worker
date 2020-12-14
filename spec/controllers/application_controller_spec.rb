@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe ApplicationController do
   controller do
-
     before_action :authenticate_user!
 
     def index

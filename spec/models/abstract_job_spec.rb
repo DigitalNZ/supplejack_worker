@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe AbstractJob do
@@ -130,7 +131,8 @@ describe AbstractJob do
 
   describe '#required_enrichments' do
     it 'returns an array of enrichments with required: true' do
-      allow(job).to receive_message_chain(:parser, :enrichment_definitions).and_return(ndha_rights: { required_for_active_record: true }, thumbnails: {})
+      allow(job).to receive_message_chain(:parser, :enrichment_definitions).and_return(ndha_rights: { required_for_active_record: true },
+thumbnails: {})
       expect(job.required_enrichments).to eq [:ndha_rights]
     end
   end

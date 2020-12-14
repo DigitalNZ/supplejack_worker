@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe HarvestJob do
@@ -49,7 +50,7 @@ describe HarvestJob do
   let(:job) { create(:harvest_job, parser_id: '12345', version_id: '666') }
 
   describe '#enqueue_enrichment_jobs' do
-    let(:parser) { double(:parser, enrichment_definitions: { ndha_rights: proc {} }).as_null_object }
+    let(:parser) { double(:parser, enrichment_definitions: { ndha_rights: proc { } }).as_null_object }
 
     before do
       allow(job).to receive(:parser).and_return(parser)
@@ -71,13 +72,15 @@ describe HarvestJob do
   describe '#flush_old_records' do
     it 'post to the apis /harvester/records/flush action with source_id and the harvest_job_id' do
       allow(job).to receive(:source_id).and_return('source_id')
-      expect(RestClient).to receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", source_id: 'source_id', job_id: job.id, api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient).to receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", source_id: 'source_id', job_id: job.id,
+api_key: ENV['HARVESTER_API_KEY'])
       job.flush_old_records
     end
   end
 
   describe 'records' do
-    let(:parser) { Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb') }
+    let(:parser) {
+ Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb') }
     let(:record1) { double(:record) }
     let(:record2) { double(:record) }
 
@@ -152,8 +155,10 @@ describe HarvestJob do
   end
 
   describe '#full_and_flush_available?' do
-    let(:full_and_flush_job) { create(:harvest_job, parser_id: '12345', version_id: '666', records_count: 1, limit: 0, status: 'running', mode: 'full_and_flush') }
-    let(:full_and_flush_job_with_no_records) { create(:harvest_job, parser_id: '12345', version_id: '666', records_count: 0, limit: 0, status: 'running', mode: 'full_and_flush') }
+    let(:full_and_flush_job) {
+ create(:harvest_job, parser_id: '12345', version_id: '666', records_count: 1, limit: 0, status: 'running', mode: 'full_and_flush') }
+    let(:full_and_flush_job_with_no_records) {
+ create(:harvest_job, parser_id: '12345', version_id: '666', records_count: 0, limit: 0, status: 'running', mode: 'full_and_flush') }
 
     it 'returns true when the requirements for a full and flush are valid' do
       expect(full_and_flush_job.full_and_flush_available?).to eq true
