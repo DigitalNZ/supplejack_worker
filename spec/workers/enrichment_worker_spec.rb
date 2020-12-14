@@ -13,7 +13,8 @@ describe EnrichmentWorker do
   let(:worker) { EnrichmentWorker.new }
   let(:job) { create(:enrichment_job, environment: 'production', enrichment: 'ndha_rights') }
   let(:parser) {
- double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } }, loader: double(:loader, parser_class: TestClass)).as_null_object }
+ double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } },
+loader: double(:loader, parser_class: TestClass)).as_null_object }
   let(:records_response) { {
     records: [{ id: '5a81fa176a694240d94c9592', fragments: [{ priority: 1, locations: %w[a b] }, { priority: 0, locations: %w[c d] }] }],
     meta: { page: 1, total_pages: 1 }
@@ -120,14 +121,16 @@ describe EnrichmentWorker do
 
         ActiveResource::HttpMock.respond_to do |mock|
           mock.get(
-            "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=1",
+            "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}" +
+            "&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=1",
             { 'Accept' => 'application/json' },
             page_1_records_response,
             201
           )
 
           mock.get(
-            "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=2",
+            "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}" +
+            "&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=2",
             { 'Accept' => 'application/json' },
             page_2_records_response,
             201
@@ -146,7 +149,8 @@ describe EnrichmentWorker do
     before(:each) do
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get(
-          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=nlnzcat&search_options&search_options%5Bpage%5D=1",
+          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}" +
+          '&search%5Bfragments.source_id%5D=nlnzcat&search_options&search_options%5Bpage%5D=1',
           { 'Accept' => 'application/json' },
           records_response,
           201
