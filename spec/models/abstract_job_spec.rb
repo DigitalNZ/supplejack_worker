@@ -333,7 +333,7 @@ thumbnails: {})
     let!(:finished_job) { create(:abstract_job, status: 'finished', start_time: (DateTime.now - 1), environment: 'staging') }
 
     it 'returns a count of harvest jobs in the last 2 days' do
-      old_finished_job = create(:abstract_job, status: 'finished', start_time: (DateTime.now - 3), environment: 'staging')
+      create(:abstract_job, status: 'finished', start_time: (DateTime.now - 3), environment: 'staging')
       since = DateTime.now - 2
       jobs_since = AbstractJob.jobs_since('datetime' => since.to_s, 'environment' => 'staging', 'status' => 'finished')
       expect(jobs_since).to eq [finished_job]
