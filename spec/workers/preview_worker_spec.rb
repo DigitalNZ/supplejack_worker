@@ -1,14 +1,18 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe PreviewWorker do
-  let(:parser) { Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb', source: { source_id: 'source_id' }) }
+  let(:parser) {
+ Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb',
+source: { source_id: 'source_id' }) }
   let(:job) { HarvestJob.new(environment: 'preview', parser_id: 'abc123', index: 3, harvest_failure: {}, last_posted_record_id: 1234) }
   let(:preview) { mock_model(Preview, _id: '123').as_null_object }
 
   let(:worker) { PreviewWorker.new }
 
-  let(:record1) { double(:record, raw_data: '{"id": "123"}', attributes: { title: 'Clip the dog', data_type: 'record' }, field_errors: {}, validation_errors: {}) }
+  let(:record1) {
+ double(:record, raw_data: '{"id": "123"}', attributes: { title: 'Clip the dog', data_type: 'record' }, field_errors: {}, validation_errors: {}) }
   let(:record2) { double(:record) }
 
   before do
@@ -156,7 +160,8 @@ describe PreviewWorker do
     end
 
     it "should update the attribute status to: 'harvesting record'" do
-      expect(preview).to receive(:update_attribute).with(:status, 'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
+      expect(preview).to receive(:update_attribute).with(:status,
+'Parser loaded and data fetched. Parsing raw data and checking harvest validations...')
       worker.send(:process_record, record1)
     end
 
@@ -210,7 +215,7 @@ describe PreviewWorker do
     before do
       ActiveResource::HttpMock.respond_to do |mock|
         url = "/harvester/preview_records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Brecord_id%5D=1234"
-        mock.get url, {'Accept'=>'application/json'}, [record].to_json, 201
+        mock.get url, { 'Accept' => 'application/json' }, [record].to_json, 201
       end
 
       allow(record1).to receive(:valid?) { true }
@@ -233,8 +238,8 @@ describe PreviewWorker do
     context 'record is a deletion' do
       before do
         ActiveResource::HttpMock.respond_to do |mock|
-          url = "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.id.to_s}"
-          mock.get url, {'Accept'=>'application/json'}, [].to_json, 201
+          url = "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.id}"
+          mock.get url, { 'Accept' => 'application/json' }, [].to_json, 201
         end
 
         allow(record1).to receive(:deletable?) { true }

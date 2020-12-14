@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe ValidatesResource do
@@ -94,7 +95,7 @@ describe ValidatesResource do
 
   describe '#link_check_rule' do
     it 'should should find the collection rule' do
-      expect(LinkCheckRule).to receive(:find_by).with(source_id: 'source_id') {}
+      expect(LinkCheckRule).to receive(:find_by).with(source_id: 'source_id') { }
       worker.send(:link_check_rule, 'source_id')
     end
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe EnrichmentWorker do
@@ -11,14 +12,16 @@ describe EnrichmentWorker do
 
   let(:worker) { EnrichmentWorker.new }
   let(:job) { create(:enrichment_job, environment: 'production', enrichment: 'ndha_rights') }
-  let(:parser) { double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } }, loader: double(:loader, parser_class: TestClass)).as_null_object }
+  let(:parser) {
+ double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } }, loader: double(:loader, parser_class: TestClass)).as_null_object }
   let(:records_response) { {
-    records: [{id: '5a81fa176a694240d94c9592',fragments: [{ priority: 1, locations: %w[a b] },{ priority: 0, locations: %w[c d] }]}],
-    meta: { page: 1, total_pages: 1}
+    records: [{ id: '5a81fa176a694240d94c9592', fragments: [{ priority: 1, locations: %w[a b] }, { priority: 0, locations: %w[c d] }] }],
+    meta: { page: 1, total_pages: 1 }
   }.to_json }
   before(:each) do
     ActiveResource::HttpMock.respond_to do |mock|
-      mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id.to_s}&search_options%5Bpage%5D=1", {'Accept'=>'application/json'}, records_response, 201
+      mock.get 
+"/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=1", { 'Accept' => 'application/json' }, records_response, 201
     end
 
     allow(job).to receive(:parser) { parser }
@@ -99,7 +102,7 @@ describe EnrichmentWorker do
               { priority: 0, locations: %w[c d] }
             ] }
           ],
-          meta: { page: 1, total_pages: 2}
+          meta: { page: 1, total_pages: 2 }
         }.to_json
         page_2_records_response = {
           records: [
@@ -108,12 +111,14 @@ describe EnrichmentWorker do
               { priority: 0, locations: %w[c d] }
             ] }
           ],
-          meta: { page: 2, total_pages: 2}
+          meta: { page: 2, total_pages: 2 }
         }.to_json
 
         ActiveResource::HttpMock.respond_to do |mock|
-          mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id.to_s}&search_options%5Bpage%5D=1", {'Accept'=>'application/json'}, page_1_records_response, 201
-          mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id.to_s}&search_options%5Bpage%5D=2", {'Accept'=>'application/json'}, page_2_records_response, 201
+          mock.get 
+"/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=1", { 'Accept' => 'application/json' }, page_1_records_response, 201
+          mock.get 
+"/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=2", { 'Accept' => 'application/json' }, page_2_records_response, 201
         end
       end
 
@@ -127,11 +132,13 @@ describe EnrichmentWorker do
   describe '#fetch_records' do
     before(:each) do
       ActiveResource::HttpMock.respond_to do |mock|
-        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=nlnzcat&search_options&search_options%5Bpage%5D=1", {'Accept'=>'application/json'}, records_response, 201
+        mock.get 
+"/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.source_id%5D=nlnzcat&search_options&search_options%5Bpage%5D=1", { 'Accept' => 'application/json' }, records_response, 201
       end
 
       ActiveResource::HttpMock.respond_to do |mock|
-        mock.get "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123&search_options&search_options%5Bpage%5D=1", {'Accept'=>'application/json'}, records_response, 201
+        mock.get 
+"/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123&search_options&search_options%5Bpage%5D=1", { 'Accept' => 'application/json' }, records_response, 201
       end
 
       worker.send(:setup_parser)
@@ -167,7 +174,7 @@ describe EnrichmentWorker do
         before { allow(job).to receive(:preview?) { true } }
 
         it 'should fetch a specific record from the preview_records collection' do
-          expect(SupplejackApi::PreviewRecord).to receive(:find).with({record_id: job.record_id}, page: 0)
+          expect(SupplejackApi::PreviewRecord).to receive(:find).with({ record_id: job.record_id }, page: 0)
           worker.fetch_records
         end
       end
@@ -296,8 +303,10 @@ describe EnrichmentWorker do
 
     it 'enqueues an ApiUpdate job with record_id, attributes (including job_id) and enrichment_job_id for each enriched record' do
       worker.send(:post_to_api, enrichment)
-      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/2/fragments.json', { 'fragment' => { 'category' => 'books', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
-      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', { 'fragment' => { 'title' => 'foo', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/2/fragments.json', 
+{ 'fragment' => { 'category' => 'books', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', 
+{ 'fragment' => { 'title' => 'foo', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
     end
 
     it 'should increment the records count on the job' do
@@ -309,7 +318,8 @@ describe EnrichmentWorker do
       it 'should send the required enricments to the api' do
         allow(job).to receive(:required_enrichments) { ['ndha_rights'] }
         worker.send(:post_to_api, enrichment)
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', { 'fragment' => { 'title' => 'foo', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records/1/fragments.json', 
+{ 'fragment' => { 'title' => 'foo', 'job_id' => job.id.to_s }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
       end
     end
   end

@@ -1,9 +1,12 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe HarvestWorker do
   let(:worker) { HarvestWorker.new }
-  let(:parser) { Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb', source: { source_id: 'source_id' }) }
+  let(:parser) {
+ Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb',
+source: { source_id: 'source_id' }) }
   let(:job) { HarvestJob.new(environment: 'staging', parser_id: 'abc123') }
 
   before(:each) do
@@ -56,7 +59,9 @@ describe HarvestWorker do
 
   describe '#process_record' do
     let(:errors) { double(:errors, full_messages: []) }
-    let(:record) { double(:record, attributes: { title: 'Hi', internal_identifier: ['record123'] }, valid?: true, raw_data: '</record>', errors: errors, full_raw_data: '</record>') }
+    let(:record) {
+ double(:record, attributes: { title: 'Hi', internal_identifier: ['record123'] }, valid?: true, raw_data: '</record>', errors: errors,
+full_raw_data: '</record>') }
 
     context 'record' do
       before do
@@ -141,7 +146,9 @@ describe HarvestWorker do
     end
 
     context 'concept' do
-      let(:record) { double(:record, attributes: { label: ['Colin John McCahon'], internal_identifier: ['record123'], match_concepts: :create_or_match }, valid?: true, errors: errors).as_null_object }
+      let(:record) {
+ double(:record, attributes: { label: ['Colin John McCahon'], internal_identifier: ['record123'], match_concepts: :create_or_match }, valid?: true,
+errors: errors).as_null_object }
       let(:parser) { double(:parser, data_type: 'concept', concept?: true, record?: false).as_null_object }
 
       before do
@@ -152,7 +159,8 @@ describe HarvestWorker do
       end
 
       it 'should determine whether to create or match a concept' do
-        expect(worker).to receive(:create_concept?).with(hash_including(label: ['Colin John McCahon'], internal_identifier: ['record123'], match_concepts: :create_or_match, source_id: 'source_id', data_type: 'concept'))
+        expect(worker).to receive(:create_concept?).with(hash_including(label: ['Colin John McCahon'], internal_identifier: ['record123'],
+match_concepts: :create_or_match, source_id: 'source_id', data_type: 'concept'))
         worker.process_record(record, job)
       end
     end
@@ -167,7 +175,8 @@ describe HarvestWorker do
 
     it 'should post to the API' do
       worker.post_to_api(attributes)
-      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json', { 'record' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
+      expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json',
+{ 'record' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
     end
 
     it 'should not post the data_type attribute to the API' do
@@ -189,17 +198,20 @@ describe HarvestWorker do
     context 'data_type' do
       it 'should post to the (imaginary) Widget API with a widget data_type' do
         worker.post_to_api(title: 'Hi', data_type: 'widget')
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/widgets.json', { 'widget' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/widgets.json',
+{ 'widget' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
       end
 
       it 'should post to the Records API with no data_type' do
         worker.post_to_api(title: 'Hi')
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json', { 'record' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json',
+{ 'record' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
       end
 
       it 'should post to the Records API with an invalid data_type' do
         worker.post_to_api(title: 'Hi', data_type: nil)
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json', { 'record' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json',
+{ 'record' => { 'title' => 'Hi' }, 'required_fragments' => nil }, job.id.to_s)
       end
     end
 
@@ -218,7 +230,8 @@ describe HarvestWorker do
       it 'should send the required enricments to the api' do
         allow(job).to receive(:required_enrichments) { [:ndha_rights] }
         worker.post_to_api(attributes)
-        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json', { 'record' => { 'title' => 'Hi' }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
+        expect(ApiUpdateWorker).to have_enqueued_sidekiq_job('/harvester/records.json',
+{ 'record' => { 'title' => 'Hi' }, 'required_fragments' => ['ndha_rights'] }, job.id.to_s)
       end
     end
   end

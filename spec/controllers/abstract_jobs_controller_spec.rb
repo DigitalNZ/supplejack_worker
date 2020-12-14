@@ -1,8 +1,8 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 describe AbstractJobsController do
-
   describe 'GET index' do
     before(:each) do
       request.headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
