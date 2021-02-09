@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 491a34693ad6c4efcc2a8e88728ac9920460b316
+  revision: 7d310b9282aad2e31ddfd061b237cad979eab20c
   branch: rm/store-harvest-job-state
   specs:
     supplejack_common (0.0.2)
