@@ -63,6 +63,7 @@ class HarvestJob < AbstractJob
       options[:limit]   = self.states.last.limit
       options[:counter] = self.states.last.counter
       options[:base_urls] = self.states.last.base_urls
+      options[:total_selector] = self.states.last.total_selector
     end
 
     parser.load_file(environment)

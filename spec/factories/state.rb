@@ -6,5 +6,6 @@ FactoryBot.define do
     limit     { 100 }
     counter   { 1 }
     base_urls { [] }
+    total_selector { '$.totalObjects' }
   end
 end

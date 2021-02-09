@@ -12,4 +12,5 @@ class State
   field :limit,       type: Integer
   field :counter,     type: Integer
   field :base_urls,   type: Array
+  field :total_selector, type: String
 end
