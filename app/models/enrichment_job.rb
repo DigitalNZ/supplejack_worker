@@ -4,7 +4,7 @@
 class EnrichmentJob < AbstractJob
   belongs_to :harvest_job, optional: true
 
-  after_save :enqueue
+  after_create :enqueue, unless: :preview?
 
   field :enrichment,  type: String
   field :record_id,   type: Integer
@@ -25,8 +25,6 @@ class EnrichmentJob < AbstractJob
   end
 
   def enqueue
-    return if preview? || !ready?
-
     EnrichmentWorker.perform_async(id.to_s)
   end
 end

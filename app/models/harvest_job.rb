@@ -7,7 +7,7 @@ class HarvestJob < AbstractJob
   field :index,                 type: Integer
   field :mode,                  type: String, default: 'normal'
 
-  after_save :enqueue
+  after_create :enqueue, unless: :preview?
 
   validates_uniqueness_of :parser_id, scope: %i[environment status _type],
                                       message: I18n.t('job.already_running', type: 'Harvest'),
@@ -16,8 +16,6 @@ class HarvestJob < AbstractJob
   validates :mode, inclusion: %w[normal full_and_flush incremental]
 
   def enqueue
-    return if preview? || !ready?
-
     HarvestWorker.perform_async(id.to_s)
   end
 

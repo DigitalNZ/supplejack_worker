@@ -277,6 +277,13 @@ thumbnails: {})
     end
   end
 
+  # describe 'resume!' do
+  #   # job.posted_records_count == job.records_count
+  #   it 'sets the records_count to be the same as the posted_records_count' do
+  #     binding.pry
+  #   end
+  # end
+
   describe 'test?' do
     it 'returns true' do
       job.environment = 'test'
