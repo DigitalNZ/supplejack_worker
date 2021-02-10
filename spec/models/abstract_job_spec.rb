@@ -277,25 +277,6 @@ thumbnails: {})
     end
   end
 
-  describe 'resume!' do
-    let(:resumable_job) { create(:abstract_job, parser_id: '12345', version_id: '666', posted_records_count: 10, records_count: 12) }
-
-    it 'sets the records_count to be the same as the posted_records_count' do
-      resumable_job.resume!
-      expect(resumable_job.records_count).to eq resumable_job.posted_records_count
-    end
-
-    it 'sets the job status to be active' do
-      resumable_job.resume!
-      expect(resumable_job.active?).to eq true
-    end
-
-    it 'saves the job' do
-      expect(resumable_job).to receive(:save)
-      resumable_job.resume!
-    end
-  end
-
   describe 'test?' do
     it 'returns true' do
       job.environment = 'test'
@@ -445,6 +426,18 @@ thumbnails: {})
       job.increment_processed_count!
       job.reload
       expect(job.processed_count).to eq 1
+    end
+  end
+
+  describe 'check_if_job_should_be_resumed' do
+    it 'tells a job to resume if it\'s status is set to resume' do
+      expect(job).to receive(:resume!)
+      job.update_attributes(status: 'resume')      
+    end   
+
+    it 'does not tell a job to resume if it\'s status is not set to resume' do
+      expect(job).not_to receive(:resume!)
+      job.update_attributes(status: 'stopped')
     end
   end
 end

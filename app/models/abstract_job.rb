@@ -9,6 +9,8 @@ class AbstractJob
 
   index status: 1, start_time: 1, created_at: 1, updated_at: 1, parser_id: 1
 
+  after_save :check_if_job_should_be_resumed, if: :status_changed?
+
   field :start_time,            type: DateTime
   field :end_time,              type: DateTime
   field :updated_at,            type: DateTime
@@ -129,6 +131,7 @@ class AbstractJob
       after do
         self.records_count = self.posted_records_count
         save!
+        self.enqueue
       end
 
       transitions to: :active
@@ -214,5 +217,9 @@ class AbstractJob
   def increment_processed_count!
     self.processed_count += 1
     save!
+  end
+
+  def check_if_job_should_be_resumed
+    self.resume! if self.status_change.last == 'resume'
   end
 end
