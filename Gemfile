@@ -29,7 +29,7 @@ gem 'moderate_parameters'
 gem 'amazing_print'
 
 group :test do
-  gem 'database_cleaner'
+  gem 'database_cleaner-mongoid'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'rspec-activemodel-mocks'

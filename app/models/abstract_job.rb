@@ -123,6 +123,17 @@ class AbstractJob
       transitions to: :finished
     end
 
+    # Keep the records count and the posted records count in sync, so that the job knows when to stop.
+    # Otherwise jobs will appear finished but stay active forever.
+    event :resume do
+      after do
+        self.records_count = self.posted_records_count
+        save!
+      end
+
+      transitions to: :active
+    end
+
     event :error do
       after do
         self.start_time = Time.zone.now if start_time.blank?
