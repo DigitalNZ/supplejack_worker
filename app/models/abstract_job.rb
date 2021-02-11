@@ -101,6 +101,7 @@ class AbstractJob
     state :active
     state :finished
     state :failed
+    state :resume
     state :stopped
 
     event :start do
