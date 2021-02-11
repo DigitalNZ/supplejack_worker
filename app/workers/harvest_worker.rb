@@ -38,11 +38,6 @@ class HarvestWorker < AbstractWorker
     job.enqueue_enrichment_jobs
   end
 
-  # ISSUE 
-  # The posted to api and records harvested counts are not matching
-  # because if you stop the job at 21, then you end up with 101 in the end as that record is resposted.
-  # it's almost like something needs to reset the last incomplete page from the counter 
-
   def process_record(record, job)
     begin
       if record.deletable? && record.attributes[:internal_identifier].present?

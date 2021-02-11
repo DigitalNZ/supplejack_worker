@@ -25,9 +25,5 @@ RSpec.describe State do
     it 'has the base_urls' do
       expect(state.base_urls).to eq []
     end
-
-    it 'has the total_selector' do
-      expect(state.total_selector).to eq '$.totalObjects'
-    end
   end
 end
