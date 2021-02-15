@@ -432,8 +432,8 @@ thumbnails: {})
   describe 'check_if_job_should_be_resumed' do
     it 'tells a job to resume if it\'s status is set to resume' do
       expect(job).to receive(:resume!)
-      job.update_attributes(status: 'resume')      
-    end   
+      job.update_attributes(status: 'resume')
+    end
 
     it 'does not tell a job to resume if it\'s status is not set to resume' do
       expect(job).not_to receive(:resume!)

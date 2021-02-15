@@ -54,7 +54,7 @@ class HarvestJob < AbstractJob
     options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
 
     # pass details that are needed for resuming the job ...
-    options[:job]     = self
+    options[:job] = self
 
     if self.states.any?
       options[:page]    = self.states.last.page
