@@ -1,5 +1,7 @@
-PATH
-  remote: /webspace/supplejack_common
+GIT
+  remote: https://github.com/DigitalNZ/supplejack_common
+  revision: c0fce36916cf6ba086e999b3e8bd542c1d06e642
+  branch: rm/store-harvest-job-state
   specs:
     supplejack_common (0.0.2)
       actionpack (~> 6.0.3.5)
