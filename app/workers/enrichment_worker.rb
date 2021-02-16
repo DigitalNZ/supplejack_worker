@@ -42,7 +42,7 @@ class EnrichmentWorker < AbstractWorker
       break if last_page_records?(records)
 
       records = fetch_records(records.pagination['page'] + 1)
-      job.states.create!(page: records.pagination['page'])
+      job.states.create!(page: records.pagination['page']) unless stop_harvest?
     end
 
     until api_update_finished?
