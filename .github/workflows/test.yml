@@ -1,0 +1,85 @@
+name: Tests
+on: pull_request
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Rubocop
+      run: |
+        bundle exec rubocop
+
+  rspec:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:3.4.23
+        ports:
+          - 27017:27017
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Run RSpec unit tests
+      env:
+        API_HOST: "http://127.0.0.1:3000"
+        HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
+        MANAGER_HOST: "http://127.0.0.1:3001"
+        HARVESTER_CACHING_ENABLED: "false"
+        LINKCHECKER_EMAIL: "linkchecker@harvester.org"
+        LINK_CHECKING_ENABLED: "true"
+        LINKCHECKER_RECIPIENTS: "test@test.com"
+        WORKER_KEY: YOUR_WORKER_KEY
+      run: |
+        bundle exec rspec spec --fail-fast --format=progress
+
+  brakeman:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Run RSpec unit tests
+      run: |
+        gem install brakeman
+        brakeman --run-all-checks
+
+  bundle-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Run RSpec unit tests
+      run: |
+        gem install bundler-audit
+        bundle audit update
+        bundle audit check --ignore CVE-2021-22880
