@@ -82,4 +82,4 @@ jobs:
       run: |
         gem install bundler-audit
         bundle audit update
-        bundle audit check --ignore CVE-2021-22881
+        bundle audit check --ignore CVE-2021-22881 CVE-2021-22880
