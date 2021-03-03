@@ -26,6 +26,7 @@ class AbstractWorker
 
     def api_update_finished?
       job.reload
+
       job.posted_records_count == job.records_count
     end
 

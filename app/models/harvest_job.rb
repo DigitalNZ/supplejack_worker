@@ -53,6 +53,16 @@ class HarvestJob < AbstractJob
     options[:limit] = limit.to_i if limit.to_i.positive?
     options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
 
+    # pass details that are needed for resuming the job ...
+    options[:job] = self
+
+    if self.states.any?
+      options[:page]    = self.states.last.page
+      options[:limit]   = self.states.last.limit
+      options[:counter] = self.states.last.counter
+      options[:base_urls] = self.states.last.base_urls
+    end
+
     parser.load_file(environment)
     parser_klass = parser.loader.parser_class
     parser_klass.environment = environment if environment.present?

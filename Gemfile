@@ -18,17 +18,18 @@ gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
-gem 'rails', '~> 6.0.3'
+gem 'rails', '~> 6.0.3.5'
 gem 'responders'
 gem 'sidekiq'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.9.0'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.10.0'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'
+gem 'amazing_print'
 
 group :test do
-  gem 'database_cleaner'
+  gem 'database_cleaner-mongoid'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'rspec-activemodel-mocks'

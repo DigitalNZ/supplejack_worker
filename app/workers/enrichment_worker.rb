@@ -25,7 +25,12 @@ class EnrichmentWorker < AbstractWorker
 
     enrichment_class.before(job.enrichment)
 
-    records = fetch_records(1)
+    if job.states.any?
+      records = fetch_records(job.states.last.page.to_i)
+    else
+      records = fetch_records(1)
+      job.states.create!(page: 1)
+    end
 
     while more_records?(records)
       records.each do |record|
@@ -37,6 +42,7 @@ class EnrichmentWorker < AbstractWorker
       break if last_page_records?(records)
 
       records = fetch_records(records.pagination['page'] + 1)
+      job.states.create!(page: records.pagination['page']) unless stop_harvest?
     end
 
     until api_update_finished?
@@ -46,7 +52,7 @@ class EnrichmentWorker < AbstractWorker
 
     enrichment_class.after(job.enrichment)
 
-    job.finish!
+    job.finish! unless job.stopped?
   end
 
   def more_records?(records)
