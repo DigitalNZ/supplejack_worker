@@ -195,10 +195,21 @@ api_key: ENV['HARVESTER_API_KEY'])
 
   describe '#job_states' do
     let(:stateful_job) { create(:harvest_job, :stateful) }
+    let(:states) { build_list(:state, 5) }
+    let(:full_job)    { create(:harvest_job, states: states) }
 
     it 'can have an embedded history of the job state' do
       expect(stateful_job.states.count).not_to eq(0)
       expect(stateful_job.states.first).to be_a(State)
+    end
+
+    it 'only embedds 5 states into the job' do
+      expect(full_job.states.count).to eq 5
+      full_job.states << build(:state, created_at: 10.minutes.from_now)
+      full_job.save!
+      full_job.reload
+      expect(full_job.states.count).to eq 5
+      expect(full_job.states.last.created_at.strftime('%H %d %p')).to eq 10.minutes.from_now.strftime('%H %d %p')
     end
   end
 end

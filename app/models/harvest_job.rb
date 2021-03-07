@@ -14,6 +14,7 @@ class HarvestJob < AbstractJob
                                       if: :active?
 
   validates :mode, inclusion: %w[normal full_and_flush incremental]
+  after_save :clear_old_states!
 
   def enqueue
     HarvestWorker.perform_async(id.to_s)
@@ -95,5 +96,10 @@ class HarvestJob < AbstractJob
 
   def full_and_flush_available?
     full_and_flush? && limit.to_i.zero? && !harvest_failure? && !stopped? && records_count.positive?
+  end
+
+  def clear_old_states!
+    return if states.count <= 5
+    states.first.destroy!
   end
 end
