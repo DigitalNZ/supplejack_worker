@@ -11,6 +11,8 @@ class AbstractJob
 
   after_save :check_if_job_should_be_resumed, if: :status_changed?
 
+  after_save :clear_old_states!
+
   field :start_time,            type: DateTime
   field :end_time,              type: DateTime
   field :updated_at,            type: DateTime
@@ -220,5 +222,10 @@ class AbstractJob
 
   def check_if_job_should_be_resumed
     self.resume! if self.status_change.last == 'resume'
+  end
+
+  def clear_old_states!
+    return if states.count <= 5
+    states.first.destroy!
   end
 end
