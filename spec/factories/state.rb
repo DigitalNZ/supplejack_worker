@@ -7,5 +7,6 @@ FactoryBot.define do
     limit     { 100 }
     counter   { 1 }
     base_urls { [] }
+    created_at { Time.now }
   end
 end
