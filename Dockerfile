@@ -2,7 +2,7 @@ FROM ruby:2.7.3-alpine AS builder
 
 ARG BUILD_PACKAGES="build-base curl-dev git"
 ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev"
-ARG RUBY_PACKAGES="tzdata"
+ARG RUBY_PACKAGES="tzdata shared-mime-info"
 
 WORKDIR /app
 
@@ -45,6 +45,7 @@ WORKDIR /app
 # install packages
 RUN apk add --no-cache $PACKAGES
 
+COPY --from=ruby:3.0.0-buster /usr/share/mime/packages/freedesktop.org.xml /usr/share/mime/packages/
 COPY --from=builder $GEM_HOME $GEM_HOME
 COPY --from=builder /app /app
 
