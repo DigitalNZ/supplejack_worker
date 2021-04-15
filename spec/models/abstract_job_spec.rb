@@ -428,4 +428,36 @@ thumbnails: {})
       expect(job.processed_count).to eq 1
     end
   end
+
+  describe 'check_if_job_should_be_resumed' do
+    it 'tells a job to resume if it\'s status is set to resume' do
+      expect(job).to receive(:resume!)
+      job.update_attributes(status: 'resume')
+    end
+
+    it 'does not tell a job to resume if it\'s status is not set to resume' do
+      expect(job).not_to receive(:resume!)
+      job.update_attributes(status: 'stopped')
+    end
+  end
+
+  describe '#job_states' do
+    let(:stateful_job) { create(:harvest_job, :stateful) }
+    let(:states) { build_list(:state, 5) }
+    let(:full_job)    { create(:harvest_job, states: states) }
+
+    it 'can have an embedded history of the job state' do
+      expect(stateful_job.states.count).not_to eq(0)
+      expect(stateful_job.states.first).to be_a(State)
+    end
+
+    it 'only embedds 5 states into the job' do
+      expect(full_job.states.count).to eq 5
+      full_job.states << build(:state, created_at: 10.minutes.from_now)
+      full_job.save!
+      full_job.reload
+      expect(full_job.states.count).to eq 5
+      expect(full_job.states.last.created_at.strftime('%H %d %p')).to eq 10.minutes.from_now.strftime('%H %d %p')
+    end
+  end
 end

@@ -37,6 +37,15 @@ jobs:
         bundler-cache: true
 
     - name: Run RSpec unit tests
+      env:
+        API_HOST: "http://127.0.0.1:3000"
+        HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
+        MANAGER_HOST: "http://127.0.0.1:3001"
+        HARVESTER_CACHING_ENABLED: "false"
+        LINKCHECKER_EMAIL: "linkchecker@harvester.org"
+        LINK_CHECKING_ENABLED: "true"
+        LINKCHECKER_RECIPIENTS: "test@test.com"
+        WORKER_KEY: YOUR_WORKER_KEY
       run: |
         bundle exec rspec spec --fail-fast --format=progress
 
@@ -72,5 +81,9 @@ jobs:
     - name: Run RSpec unit tests
       run: |
         gem install bundler-audit
+<<<<<<< HEAD
         bundle audit update
         bundle audit check --ignore CVE-2021-22880
+=======
+        bundle audit check --update
+>>>>>>> 4263e6de6fd0c07906aab32e5a43eae80cd6b1d9

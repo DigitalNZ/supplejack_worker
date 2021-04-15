@@ -9,6 +9,10 @@ class AbstractJob
 
   index status: 1, start_time: 1, created_at: 1, updated_at: 1, parser_id: 1
 
+  after_save :check_if_job_should_be_resumed, if: :status_changed?
+
+  after_save :clear_old_states!
+
   field :start_time,            type: DateTime
   field :end_time,              type: DateTime
   field :updated_at,            type: DateTime
@@ -32,6 +36,7 @@ class AbstractJob
   embeds_many :invalid_records
   embeds_many :failed_records
   embeds_one :harvest_failure
+  embeds_many :states
 
   belongs_to :harvest_schedule, optional: true
 
@@ -98,6 +103,7 @@ class AbstractJob
     state :active
     state :finished
     state :failed
+    state :resume
     state :stopped
 
     event :start do
@@ -120,6 +126,16 @@ class AbstractJob
       end
 
       transitions to: :finished
+    end
+
+    event :resume do
+      after do
+        self.records_count = self.posted_records_count
+        save!
+        self.enqueue
+      end
+
+      transitions to: :active
     end
 
     event :error do
@@ -202,5 +218,14 @@ class AbstractJob
   def increment_processed_count!
     self.processed_count += 1
     save!
+  end
+
+  def check_if_job_should_be_resumed
+    self.resume! if self.status_change.last == 'resume'
+  end
+
+  def clear_old_states!
+    return if states.count <= 5
+    states.first.destroy!
   end
 end

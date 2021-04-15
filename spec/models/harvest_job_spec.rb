@@ -154,6 +154,30 @@ api_key: ENV['HARVESTER_API_KEY'])
     end
   end
 
+  describe 'resume!' do
+    let(:resumable_job) { create(:harvest_job, parser_id: '12345', version_id: '666', posted_records_count: 10, records_count: 12) }
+
+    it 'sets the records_count to be the same as the posted_records_count' do
+      resumable_job.resume!
+      expect(resumable_job.records_count).to eq resumable_job.posted_records_count
+    end
+
+    it 'sets the job status to be active' do
+      resumable_job.resume!
+      expect(resumable_job.active?).to eq true
+    end
+
+    it 'saves the job' do
+      expect(resumable_job).to receive(:save)
+      resumable_job.resume!
+    end
+
+    it 'enqueues the job' do
+      expect(resumable_job).to receive(:enqueue)
+      resumable_job.resume!
+    end
+  end
+
   describe '#full_and_flush_available?' do
     let(:full_and_flush_job) {
  create(:harvest_job, parser_id: '12345', version_id: '666', records_count: 1, limit: 0, status: 'running', mode: 'full_and_flush') }
