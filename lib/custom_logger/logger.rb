@@ -18,7 +18,13 @@ end
 module CustomLogger
   class Logger < Ougai::Logger
     include ActiveSupport::LoggerThreadSafeLevel
-    include ActiveSupport::LoggerSilence
+    include LoggerSilence
+
+    def initialize(*args)
+      super
+
+      after_initialize if respond_to? :after_initialize
+    end
 
     def create_formatter
       Ougai::Formatters::Bunyan.new
