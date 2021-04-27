@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-return if Rails.env.test? || Rails.env.development?
-
 module ActiveSupport
   module TaggedLogging
     module Formatter
@@ -15,19 +13,11 @@ module ActiveSupport
   end
 end
 
-module CustomLogger
-  class Logger < Ougai::Logger
-    include ActiveSupport::LoggerThreadSafeLevel
-    include LoggerSilence
+class CustomLogger < Ougai::Logger
+  include ActiveSupport::LoggerThreadSafeLevel
+  include ActiveSupport::LoggerSilence
 
-    def initialize(*args)
-      super
-
-      after_initialize if respond_to? :after_initialize
-    end
-
-    def create_formatter
-      Ougai::Formatters::Bunyan.new
-    end
+  def create_formatter
+    Ougai::Formatters::Bunyan.new
   end
 end
