@@ -18,9 +18,9 @@ gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
-gem 'rails', '= 6.0.3.5'
+gem 'rails'
 gem 'responders'
-gem 'sidekiq'
+gem 'sidekiq', '= 6.1.3'
 gem 'sinatra', require: nil
 gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.10.0'
 gem 'whenever', require: false
