@@ -444,7 +444,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails_config
   rubocop-rspec
-  sidekiq (= 6.1.3)
+  sidekiq
   sinatra
   spring
   spring-watcher-listen (~> 2.0.0)
