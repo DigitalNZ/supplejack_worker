@@ -18,7 +18,7 @@ gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
-gem 'rails', '~> 6.0.3.5'
+gem 'rails', '= 6.0.3.5'
 gem 'responders'
 gem 'sidekiq', '= 6.1.3'
 gem 'sinatra', require: nil
@@ -27,7 +27,7 @@ gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'
 gem 'amazing_print'
-gem 'resolv-replace'
+gem 'mimemagic', '= 0.3.10'
 
 group :test do
   gem 'database_cleaner-mongoid'
