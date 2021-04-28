@@ -27,6 +27,7 @@ gem 'whenever', require: false
 gem 'brakeman'
 gem 'moderate_parameters'
 gem 'amazing_print'
+gem 'resolv-replace'
 
 group :test do
   gem 'database_cleaner-mongoid'

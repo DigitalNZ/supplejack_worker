@@ -294,6 +294,9 @@ GEM
     regexp_parser (2.1.1)
     request_store (1.5.0)
       rack (>= 1.4)
+    resolv (0.2.0)
+    resolv-replace (0.1.0)
+      resolv
     responders (3.0.1)
       actionpack (>= 5.0)
       railties (>= 5.0)
@@ -431,6 +434,7 @@ DEPENDENCIES
   puma
   rails (~> 6.0.3.5)
   rails-controller-testing
+  resolv-replace
   responders
   rspec-activemodel-mocks
   rspec-rails
