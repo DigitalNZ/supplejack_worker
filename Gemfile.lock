@@ -435,7 +435,7 @@ DEPENDENCIES
   pry-byebug
   pry-rails
   puma
-  rails
+  rails (= 6.0.3.5)
   rails-controller-testing
   responders
   rspec-activemodel-mocks
