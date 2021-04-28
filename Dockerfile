@@ -1,4 +1,4 @@
-FROM ruby:2.7.2-alpine AS builder
+FROM ruby:2.7.3-alpine AS builder
 
 ARG BUILD_PACKAGES="build-base curl-dev git"
 ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev"

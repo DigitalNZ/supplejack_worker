@@ -368,7 +368,7 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.8.0)
       nokogumbo (~> 2.0)
-    sidekiq (6.2.1)
+    sidekiq (6.1.3)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
@@ -442,7 +442,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails_config
   rubocop-rspec
-  sidekiq
+  sidekiq (= 6.1.3)
   sinatra
   spring
   spring-watcher-listen (~> 2.0.0)
