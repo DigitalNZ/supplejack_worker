@@ -31,8 +31,8 @@ RSpec.configure do |config|
   end
 
   config.before(:suite) do
-    DatabaseCleaner.strategy = :deletion
-    DatabaseCleaner.clean_with(:deletion)
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.clean_with(:truncation)
   end
 
   config.around(:each) do |example|
