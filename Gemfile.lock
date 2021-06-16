@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 570099ff3b2fb94ba1436eac41cfe1a83880b6f0
-  tag: v2.10.0
+  revision: 92f3eb7ec3f0dd3db7f5e4e883b64118b58b4404
+  tag: v2.10.2
   specs:
     supplejack_common (0.0.2)
-      actionpack (~> 6.0.3.5)
+      actionpack (>= 6.0.3.5, < 6.1.4.0)
       activesupport
       aws-sdk-s3
       chronic (<= 0.10.2)
@@ -161,7 +161,7 @@ GEM
       activesupport (>= 4.2.0)
     htmlentities (4.3.4)
     http-accept (1.7.0)
-    http-cookie (1.0.3)
+    http-cookie (1.0.4)
       domain_name (~> 0.5)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
@@ -209,7 +209,7 @@ GEM
       nokogiri (~> 1)
       rake
     mini_mime (1.1.0)
-    mini_portile2 (2.5.0)
+    mini_portile2 (2.5.1)
     minitest (5.14.4)
     moderate_parameters (0.4.0)
       actionpack (>= 4.2, < 6.1)
@@ -227,10 +227,10 @@ GEM
       ruby2_keywords (~> 0.0.1)
     netrc (0.11.0)
     nio4r (2.5.7)
-    nokogiri (1.11.3)
+    nokogiri (1.11.4)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
-    nokogumbo (2.0.4)
+    nokogumbo (2.0.5)
       nokogiri (~> 1.8, >= 1.8.4)
     oai (1.1.0)
       builder (>= 3.1.0)
@@ -251,7 +251,7 @@ GEM
       pry (~> 0.13.0)
     pry-rails (0.3.9)
       pry (>= 0.10.4)
-    puma (5.2.1)
+    puma (5.3.1)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
