@@ -7,7 +7,8 @@ class ApiUpdateWorker < AbstractWorker
   sidekiq_retry_in { 5.seconds }
 
   sidekiq_retries_exhausted do |msg, e|
-    Airbrake.notify(msg)
+    ElasticAPM.report(msg)
+    # Airbrake.notify(msg)
 
     job_id = msg['args'].last
     job = AbstractJob.find(job_id)

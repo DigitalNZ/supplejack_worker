@@ -30,8 +30,10 @@ class HarvestJob < AbstractJob
                            message: e.message,
                            backtrace: e.backtrace[0..30])
     fail_job(e.message)
-    Airbrake.notify(e, error_message: "Caught Exception. Message:#{e.message},
-                    created harvest failure and failed job")
+    ElasticAPM.report(e)
+    ElasticAPM.report_message("Caught Exception. Message:#{e.message}, created harvest failure and failed job")
+
+    # Airbrake.notify(e, error_message: )
   end
 
   def flush_old_records
@@ -43,7 +45,9 @@ class HarvestJob < AbstractJob
                            message: "Flush old records failed with the following error mesage: #{e.message}",
                            backtrace: e.backtrace[0..30])
     fail_job(e.message)
-    Airbrake.notify(e, error_message: "Flush old records failed with the following error mesage: #{e.message}")
+    ElasticAPM.report(e)
+    ElasticAPM.report_message("Flush old records failed with the following error mesage: #{e.message}")
+    # Airbrake.notify(e, error_message: )
   end
 
   def records
@@ -73,7 +77,8 @@ class HarvestJob < AbstractJob
   rescue StandardError, ScriptError => e
     create_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
     fail_job(e.message)
-    Airbrake.notify(e)
+    ElasticAPM.report(e)
+    # Airbrake.notify(e)
   end
 
   def source_id
