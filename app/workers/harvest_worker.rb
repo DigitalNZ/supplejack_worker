@@ -64,10 +64,10 @@ class HarvestWorker < AbstractWorker
                                end
 
       ElasticAPM.report(e)
-      ElasticAPM.report_message("
-        The Parser #{job.parser.id} has an error in it. Backtrace:
-        #{backtrace: e.backtrace}
-      ")
+      # ElasticAPM.report_message("
+      #   The Parser #{job.parser.id} has an error in it. Backtrace:
+      #   #{backtrace: e.backtrace}
+      # ")
       # Airbrake.notify(e, error_message: "The Parser #{job.parser.id} has an error in it", backtrace: e.backtrace)
     end
 
