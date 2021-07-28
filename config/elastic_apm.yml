@@ -1,0 +1,6 @@
+server_url: "https://apm-server-apm-http.elasticsearch.svc.cluster.local:8200"
+service_name: <%= "Worker - #{Rails.env}" %>
+pool_size: <%= ENV.fetch('ELASTIC_APM_POOL_SIZE', 5).to_i %>
+# disable_send: <%= ENV.fetch('ELASTIC_APM_DISABLE_SEND', 'true') == 'true' %>
+disable_send: "false"
+verify_server_cert: "false"
