@@ -89,28 +89,15 @@ class EnrichmentWorker < AbstractWorker
       enrichment.set_attribute_values
       if enrichment.errors.any?
         ElasticAPM.report(StandardError.new('Enrichment Error'))
-        # ElasticAPM.report_message("
-        #   Enrichment Errors on #{enrichment_class} in Parser: #{@parser.id}. Backtrace:
-        #   #{backtrace: {
-        #     enrichment: enrichment.errors.inspect,
-        #     job: job.inspect,
-        #     options: enrichment_options.inspect,
-        #     record: record.inspect,
-        #     parser: @parser.id
-        #   }}
-        # ")
-
-        # Airbrake.notify(
-        #   StandardError.new('Enrichment Error'),
-        #   error_message: "Enrichment Errors on #{enrichment_class} in Parser: #{@parser.id}",
-        #   backtrace: {
-        #     enrichment: enrichment.errors.inspect,
-        #     job: job.inspect,
-        #     options: enrichment_options.inspect,
-        #     record: record.inspect,
-        #     parser: @parser.id
-        #   }
-        # )
+        ElasticAPM.report_message("Enrichment Errors on #{enrichment_class} in Parser:
+          #{@parser.id}. Backtrace:
+          #{{
+            enrichment: enrichment.errors.inspect,
+            job: job.inspect, options:
+            enrichment_options.inspect,
+            record: record.inspect,
+            parser: @parser.id }}"
+        )
       else
         post_to_api(enrichment) unless job.test?
       end
@@ -118,18 +105,15 @@ class EnrichmentWorker < AbstractWorker
 
     Rails.logger.debug "EnrichmentJob: PROCESS RECORD (#{measure.real.round(4)})" unless Rails.env.test?
   rescue RestClient::ResourceNotFound => e
-    ElasticApm.report(e)
+    ElasticAPM.report(e)
     ElasticAPM.report_message("Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
 
-    # Airbrake.notify(e, error_message: "Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
   rescue StandardError => e
-    ElasticApm.report(e)
-    # ElasticAPM.report_message("
-    #   The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}. Backtrace:
-    #   #{backtrace: e.backtrace}
-    # ")
-
-    # Airbrake.notify(e, error_message: "The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}", backtrace: e.backtrace)
+    ElasticAPM.report(e)
+    ElasticAPM.report_message("
+      The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}. Backtrace:
+      #{e.backtrace}
+    ")
   end
   # rubocop:enable Metrics/MethodLength
 

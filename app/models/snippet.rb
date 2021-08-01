@@ -14,7 +14,6 @@ class Snippet < ActiveResource::Base
                                                  environment: environment })
   rescue StandardError => e
     Rails.logger.error "Snippet with name: #{name} was not found"
-    # Airbrake.notify(e)
     ElasticAPM.report(e)
     nil
   end

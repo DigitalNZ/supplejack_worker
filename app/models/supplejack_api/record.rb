@@ -14,7 +14,6 @@ module SupplejackApi
     rescue ActiveResource::ServerError => e
       ElasticAPM.report(e)
       ElasticAPM.report_message("The api request failed with: query: #{query} and page: #{page}.  #{e&.message}")
-      # Airbrake.notify(e, error_message: "The api request failed with: query: #{query} and page: #{page}.  #{e&.message}")
       raise
     end
   end

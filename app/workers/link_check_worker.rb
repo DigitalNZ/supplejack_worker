@@ -17,7 +17,6 @@ class LinkCheckWorker
         if rules.blank?
           Sidekiq.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
           ElasticAPM.report(MissingLinkCheckRuleError.new(link_check_job.source_id))
-          # Airbrake.notify(MissingLinkCheckRuleError.new(link_check_job.source_id))
           return
         end
 
@@ -33,14 +32,11 @@ class LinkCheckWorker
         end
       end
     rescue ThrottleLimitError
-      # No operation here. Prevents Airbrake from notifying ThrottleLimitError.
+      # No operation here. Prevents ElasticAPM from notifying ThrottleLimitError.
     rescue StandardError => e
       # rubocop:disable Metrics/LineLength
       ElasticAPM.report(e)
-      ElasticAPM.report_message("
-        There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed
-      ")
-      # Airbrake.notify(e, error_message: "There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
+      ElasticAPM.report_message("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
       # rubocop:enable Metrics/LineLength
     end
   end

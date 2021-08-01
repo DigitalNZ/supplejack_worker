@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# To avoid SIGTERMS on scaledown in airbrake
+# To avoid SIGTERMS on scaledown in ElasticAPM
 # https://www.rubydoc.info/gems/puma/Puma%2FDSL:raise_exception_on_sigterm
 raise_exception_on_sigterm false
 

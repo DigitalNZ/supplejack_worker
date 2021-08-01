@@ -28,10 +28,7 @@ gem 'moderate_parameters'
 gem 'amazing_print'
 gem 'mimemagic', '= 0.3.10'
 gem "rexml", ">= 3.2.5"
-
-group :staging, :production do
-  gem 'elastic-apm'
-end
+gem 'elastic-apm'
 
 group :test do
   gem 'database_cleaner-mongoid'
