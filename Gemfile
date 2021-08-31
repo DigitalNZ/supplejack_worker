@@ -6,7 +6,6 @@ git_source(:github) { |repo| "https://github.com/#{repo}" }
 gem 'aasm'
 gem 'active_model_serializers', '~> 0.10.7'
 gem 'activeresource', require: 'active_resource'
-gem 'airbrake'
 gem 'aws-sdk-s3', '~> 1'
 gem 'chronic'
 gem 'figaro'
@@ -29,6 +28,7 @@ gem 'moderate_parameters'
 gem 'amazing_print'
 gem 'mimemagic', '= 0.3.10'
 gem "rexml", ">= 3.2.5"
+gem 'elastic-apm'
 
 group :test do
   gem 'database_cleaner-mongoid'

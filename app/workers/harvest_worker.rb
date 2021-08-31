@@ -62,7 +62,9 @@ class HarvestWorker < AbstractWorker
                                rescue StandardError
                                  nil
                                end
-      Airbrake.notify(e, error_message: "The Parser #{job.parser.id} has an error in it", backtrace: e.backtrace)
+
+      ElasticAPM.report(e)
+      ElasticAPM.report_message("The Parser #{job.parser.id} has an error in it backtrace: #{e.backtrace}")
     end
 
     job.save!

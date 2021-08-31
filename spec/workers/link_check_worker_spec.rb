@@ -42,9 +42,9 @@ describe LinkCheckWorker do
         expect(link_check_rule).to receive(:active)
       end
 
-      it 'notifies an airbrake error when rule not present' do
+      it 'notifies an ElasticAPM error when rule not present' do
         allow(link_check_rule).to receive(:blank?) { true }
-        expect(Airbrake).to receive(:notify).with(MissingLinkCheckRuleError.new(link_check_job.source_id))
+        expect(ElasticAPM).to receive(:report).with(MissingLinkCheckRuleError.new(link_check_job.source_id))
       end
 
       it 'dosent call link check if rule is not active' do

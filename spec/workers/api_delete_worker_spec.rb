@@ -42,9 +42,9 @@ describe ApiDeleteWorker do
         allow(RestClient).to receive(:put).and_return(failed_response.to_json)
       end
 
-      it 'triggers an Airbrake notification' do
+      it 'triggers an ElasticAPM notification' do
         described_class.within_sidekiq_retries_exhausted_block do
-          expect(Airbrake).to receive(:notify)
+          expect(ElasticAPM).to receive(:report_message)
         end
       end
 

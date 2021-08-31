@@ -7,7 +7,7 @@ class ApiDeleteWorker < AbstractWorker
   sidekiq_retry_in { 5.seconds }
 
   sidekiq_retries_exhausted do |msg|
-    Airbrake.notify(msg)
+    ElasticAPM.report_message(msg)
 
     job_id = msg['args'].last
     job = AbstractJob.find(job_id)
