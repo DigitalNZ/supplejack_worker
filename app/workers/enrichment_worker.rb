@@ -72,10 +72,10 @@ class EnrichmentWorker < AbstractWorker
   def fetch_records(page = 0)
     if job.record_id.nil?
       query = if job.harvest_job.present?
-                { 'fragments.job_id' => job.harvest_job.id.to_s }
-              else
-                { 'fragments.source_id' => job.parser.source.source_id }
-              end
+        { 'fragments.job_id' => job.harvest_job.id.to_s }
+      else
+        { 'fragments.source_id' => job.parser.source.source_id }
+      end
 
       SupplejackApi::Record.find(query.merge(ENRICH_STATUS), page: page)
     else

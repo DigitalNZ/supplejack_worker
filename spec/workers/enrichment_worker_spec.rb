@@ -16,7 +16,7 @@ describe EnrichmentWorker do
     double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } },
     loader: double(:loader, parser_class: TestClass)).as_null_object
   }
-    let(:records_response) { {
+  let(:records_response) { {
     records: [{ id: '5a81fa176a694240d94c9592', fragments: [{ priority: 1, locations: %w[a b] }, { priority: 0, locations: %w[c d] }] }],
     meta: { page: 1, total_pages: 1 }
   }.to_json }
@@ -24,7 +24,8 @@ describe EnrichmentWorker do
   before(:each) do
     ActiveResource::HttpMock.respond_to do |mock|
       mock.get(
-        "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search%5Bstatus%5D=active&search_options%5Bpage%5D=1",
+        "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}
+        &search%5Bstatus%5D=active&search_options%5Bpage%5D=1",
         { 'Accept' => 'application/json' },
         records_response,
         201
@@ -161,7 +162,8 @@ describe EnrichmentWorker do
 
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get(
-          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123&search%5Bstatus%5D=active&search%5Bstatus%5D=active&search_options&search_options%5Bpage%5D=1",
+          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123
+          &search%5Bstatus%5D=active&search%5Bstatus%5D=active&search_options&search_options%5Bpage%5D=1",
           { 'Accept' => 'application/json' },
           records_response,
           201
