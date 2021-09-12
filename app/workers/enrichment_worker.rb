@@ -34,6 +34,12 @@ class EnrichmentWorker < AbstractWorker
       job.states.create!(page: 1)
     end
 
+    if records.blank?
+      job.finish!
+
+      return
+    end
+
     while more_records?(records)
       records.each do |record|
         break if stop_harvest?
