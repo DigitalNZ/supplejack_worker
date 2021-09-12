@@ -24,8 +24,7 @@ describe EnrichmentWorker do
   before(:each) do
     ActiveResource::HttpMock.respond_to do |mock|
       mock.get(
-        "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}
-        &search%5Bstatus%5D=active&search_options%5Bpage%5D=1",
+        "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search%5Bstatus%5D=active&search_options%5Bpage%5D=1",
         { 'Accept' => 'application/json' },
         records_response,
         201
@@ -162,8 +161,7 @@ describe EnrichmentWorker do
 
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get(
-          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123
-          &search%5Bstatus%5D=active&search%5Bstatus%5D=active&search_options&search_options%5Bpage%5D=1",
+          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123&search%5Bstatus%5D=active&search%5Bstatus%5D=active&search_options&search_options%5Bpage%5D=1",
           { 'Accept' => 'application/json' },
           records_response,
           201
