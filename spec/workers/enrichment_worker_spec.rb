@@ -13,16 +13,18 @@ describe EnrichmentWorker do
   let(:worker) { EnrichmentWorker.new }
   let(:job) { create(:enrichment_job, environment: 'production', enrichment: 'ndha_rights') }
   let(:parser) {
- double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } },
-loader: double(:loader, parser_class: TestClass)).as_null_object }
-  let(:records_response) { {
+    double(:parser, enrichment_definitions: { ndha_rights: { required_for_active_record: true } },
+    loader: double(:loader, parser_class: TestClass)).as_null_object
+  }
+    let(:records_response) { {
     records: [{ id: '5a81fa176a694240d94c9592', fragments: [{ priority: 1, locations: %w[a b] }, { priority: 0, locations: %w[c d] }] }],
     meta: { page: 1, total_pages: 1 }
   }.to_json }
+
   before(:each) do
     ActiveResource::HttpMock.respond_to do |mock|
       mock.get(
-        "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=1",
+        "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search%5Bstatus%5D=active&search_options%5Bpage%5D=1",
         { 'Accept' => 'application/json' },
         records_response,
         201
@@ -122,7 +124,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
         ActiveResource::HttpMock.respond_to do |mock|
           mock.get(
             "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}" +
-            "&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=1",
+            "&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search%5Bstatus%5D=active&search_options%5Bpage%5D=1",
             { 'Accept' => 'application/json' },
             page_1_records_response,
             201
@@ -130,7 +132,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
 
           mock.get(
             "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}" +
-            "&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search_options%5Bpage%5D=2",
+            "&search%5Bfragments.job_id%5D=#{job.harvest_job.id}&search%5Bstatus%5D=active&search_options%5Bpage%5D=2",
             { 'Accept' => 'application/json' },
             page_2_records_response,
             201
@@ -150,7 +152,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get(
           "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}" +
-          '&search%5Bfragments.source_id%5D=nlnzcat&search_options&search_options%5Bpage%5D=1',
+          '&search%5Bfragments.source_id%5D=nlnzcat&search%5Bstatus%5D=active&search_options&search_options%5Bpage%5D=1',
           { 'Accept' => 'application/json' },
           records_response,
           201
@@ -159,7 +161,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
 
       ActiveResource::HttpMock.respond_to do |mock|
         mock.get(
-          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123&search_options&search_options%5Bpage%5D=1",
+          "/harvester/records.json?api_key=#{ENV['HARVESTER_API_KEY']}&search%5Bfragments.job_id%5D=abc123&search%5Bstatus%5D=active&search%5Bstatus%5D=active&search_options&search_options%5Bpage%5D=1",
           { 'Accept' => 'application/json' },
           records_response,
           201
@@ -172,7 +174,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
 
     it 'should fetch records based on the source_id' do
       worker.job.harvest_job = nil
-      expect(SupplejackApi::Record).to receive(:find).with({ 'fragments.source_id' => 'nlnzcat' }, page: 1)
+      expect(SupplejackApi::Record).to receive(:find).with({ 'fragments.source_id' => 'nlnzcat', 'status' => 'active' }, page: 1)
       worker.fetch_records(1)
     end
 
@@ -182,7 +184,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
       end
 
       it 'only returns records with a fragment containing harvest job\'s id' do
-        expect(SupplejackApi::Record).to receive(:find).with({ 'fragments.job_id' => 'abc123' }, page: 1)
+        expect(SupplejackApi::Record).to receive(:find).with({ 'fragments.job_id' => 'abc123', 'status' => 'active' }, page: 1)
         worker.fetch_records(1)
       end
     end
@@ -191,7 +193,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
       before { allow(job).to receive(:record_id) { 'abc123' } }
 
       it 'should fetch a specific record' do
-        expect(SupplejackApi::Record).to receive(:find).with({ record_id: job.record_id }, page: 1)
+        expect(SupplejackApi::Record).to receive(:find).with({ record_id: job.record_id, 'status' => 'active' }, page: 1)
         worker.fetch_records(1)
       end
 
@@ -199,7 +201,7 @@ loader: double(:loader, parser_class: TestClass)).as_null_object }
         before { allow(job).to receive(:preview?) { true } }
 
         it 'should fetch a specific record from the preview_records collection' do
-          expect(SupplejackApi::PreviewRecord).to receive(:find).with({ record_id: job.record_id }, page: 0)
+          expect(SupplejackApi::PreviewRecord).to receive(:find).with({ record_id: job.record_id, 'status' => 'active' }, page: 0)
           worker.fetch_records
         end
       end
