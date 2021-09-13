@@ -19,6 +19,7 @@ class EnrichmentWorker < AbstractWorker
 
   attr_reader :parser, :parser_class
 
+  # rubocop:disable Metrics/MethodLength
   def perform(enrichment_job_id)
     @job_id = enrichment_job_id.to_s
 
@@ -62,6 +63,7 @@ class EnrichmentWorker < AbstractWorker
 
     job.finish! unless job.stopped?
   end
+  # rubocop:enable Metrics/MethodLength
 
   def more_records?(records)
     return true if job.preview?
