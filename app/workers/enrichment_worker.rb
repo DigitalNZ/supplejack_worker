@@ -15,8 +15,11 @@ class EnrichmentWorker < AbstractWorker
     Sidekiq.logger.warn "EnrichmentJob #{job_id} FAILED with exception #{msg['error_message']}"
   end
 
+  ENRICH_STATUS = { 'status' => 'active' }
+
   attr_reader :parser, :parser_class
 
+  # rubocop:disable Metrics/MethodLength
   def perform(enrichment_job_id)
     @job_id = enrichment_job_id.to_s
 
@@ -30,6 +33,12 @@ class EnrichmentWorker < AbstractWorker
     else
       records = fetch_records(1)
       job.states.create!(page: 1)
+    end
+
+    if records.blank?
+      job.finish!
+
+      return
     end
 
     while more_records?(records)
@@ -54,27 +63,32 @@ class EnrichmentWorker < AbstractWorker
 
     job.finish! unless job.stopped?
   end
+  # rubocop:enable Metrics/MethodLength
 
   def more_records?(records)
     return true if job.preview?
+
     records.pagination['page'] <= records.pagination['total_pages']
   end
 
   def last_page_records?(records)
     return true if job.preview?
+
     records.pagination['page'] == records.pagination['total_pages']
   end
 
   def fetch_records(page = 0)
     if job.record_id.nil?
-      if job.harvest_job.present?
-        SupplejackApi::Record.find({ 'fragments.job_id' => job.harvest_job.id.to_s }, page: page)
+      query = if job.harvest_job.present?
+        { 'fragments.job_id' => job.harvest_job.id.to_s }
       else
-        SupplejackApi::Record.find({ 'fragments.source_id' => job.parser.source.source_id }, page: page)
+        { 'fragments.source_id' => job.parser.source.source_id }
       end
+
+      SupplejackApi::Record.find(query.merge(ENRICH_STATUS), page: page)
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.find({ record_id: job.record_id }, page: page)
+      klass.find({ record_id: job.record_id }.merge(ENRICH_STATUS), page: page)
     end
   end
 

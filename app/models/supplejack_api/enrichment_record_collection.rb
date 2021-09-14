@@ -9,8 +9,8 @@ module SupplejackApi
     # so that can add pagination detail to the record object
 
     def initialize(elements = [])
-      @elements = elements['records']
-      @pagination = elements['meta']
+      @elements = elements.blank? ? [] : elements['records']
+      @pagination = elements.blank? ? { page: 1, total_pages: 1 } : elements['meta']
     end
   end
 end

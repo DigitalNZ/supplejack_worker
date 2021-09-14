@@ -28,6 +28,8 @@ Layout/FirstArrayElementIndentation:
 
 Layout/LineLength:
   Max: 150
+  Exclude:
+    - 'spec/**/**/*'
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
