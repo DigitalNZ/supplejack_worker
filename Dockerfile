@@ -10,12 +10,12 @@ WORKDIR /app
 RUN apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
 
 COPY Gemfile Gemfile.lock ./
-# COPY vendor/cache ./vendor/cache
+COPY vendor/cache ./vendor/cache
 
 # install rubygem
 RUN gem install bundler -v $(tail -n1 Gemfile.lock) \
     && bundle config --global frozen 1 \
-    && bundle install --without development:test:assets -j4 --retry 3 \
+    && bundle install --path=vendor/cache --without development:test:assets -j4 --retry 3 \
     # Remove unneeded files (cached *.gem, *.o, *.c)
     && rm -rf $GEM_HOME/cache/*.gem \
     && find $GEM_HOME/gems/ -name "*.c" -delete \
