@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 92f3eb7ec3f0dd3db7f5e4e883b64118b58b4404
-  tag: v2.10.2
+  revision: 79cf7274981bf0843a75ce1daa1135bb6d83ff66
+  branch: rm/oai-data-format
   specs:
     supplejack_common (0.0.2)
       actionpack (>= 6.0.3.5, < 6.1.4.0)
@@ -217,7 +217,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2021.0225)
+    mime-types-data (3.2021.0901)
     mimemagic (0.3.10)
       nokogiri (~> 1)
       rake
@@ -467,4 +467,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   2.2.16
+   2.2.26

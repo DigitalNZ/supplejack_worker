@@ -52,7 +52,12 @@ class HarvestJob < AbstractJob
 
     options = {}
     options[:limit] = limit.to_i if limit.to_i.positive?
-    options[:from] = parser.last_harvested_at if incremental? && parser.last_harvested_at
+
+    if incremental? && parser.last_harvested_at
+      options[:from] = parser.last_harvested_at
+
+      options[:from] = options[:from].strftime('%Y-%m-%d') if parser.attributes['strategy'] == 'oai'
+    end
 
     # pass details that are needed for resuming the job ...
     options[:job] = self
