@@ -73,9 +73,11 @@ class HarvestJob < AbstractJob
     parser_klass = parser.loader.parser_class
     parser_klass.environment = environment if environment.present?
 
+    # rubocop:disable Style/ExplicitBlockArgument
     parser_klass.records(options).each_with_index do |record, index|
       yield record, index
     end
+    # rubocop:enable Style/ExplicitBlockArgument
   rescue StandardError, ScriptError => e
     create_harvest_failure(exception_class: e.class, message: e.message, backtrace: e.backtrace[0..30])
     fail_job(e.message)

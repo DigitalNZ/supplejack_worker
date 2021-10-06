@@ -24,10 +24,7 @@ describe ParserVersion do
       preview_job = create(:harvest_job, start_time: time, parser_id: '123', status: 'finished', environment: 'preview')
 
       last_finished_harvest_job = HarvestJob.desc(:start_time)
-        .find_by(
-          parser_id: '123',
-          status: 'finished'
-      )
+        .find_by(parser_id: '123', status: 'finished')
 
       expect(last_finished_harvest_job).to eq preview_job
 
