@@ -25,7 +25,6 @@ gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.10.4'
 # gem 'supplejack_common', path: '~/webspace/supplejack_common'
 gem 'whenever', require: false
 gem 'brakeman'
-# gem 'moderate_parameters'
 gem 'amazing_print'
 gem 'mimemagic', '= 0.3.10'
 gem "rexml", ">= 3.2.5"
