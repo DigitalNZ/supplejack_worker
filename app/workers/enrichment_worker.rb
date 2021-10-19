@@ -110,8 +110,7 @@ class EnrichmentWorker < AbstractWorker
             job: job.inspect, options:
             enrichment_options.inspect,
             record: record.inspect,
-            parser: @parser.id }}"
-        )
+            parser: @parser.id }}")
       else
         post_to_api(enrichment) unless job.test?
       end
