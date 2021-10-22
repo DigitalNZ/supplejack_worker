@@ -15,12 +15,15 @@ class LinkCheckJob
   validates :url, :record_id, :source_id, presence: true
 
   def source
-    Source.find(:all, params: { source: { source_id: source_id } }).first
+    Source.find(source_id)
+  rescue ActiveResource::ResourceNotFound
+    nil
   end
 
   private
     def enqueue
       return unless ENV['LINK_CHECKING_ENABLED'] == 'true'
+
       LinkCheckWorker.perform_async(id.to_s)
     end
 end
