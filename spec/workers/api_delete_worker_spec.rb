@@ -33,13 +33,17 @@ describe ApiDeleteWorker do
     end
 
     it 'put attributes to the api' do
-      expect(RestClient).to receive(:put).and_return(success_response.to_json)
+      expect(RestClient::Request).to receive(:execute)
+        .with(hash_including(method: :put))
+        .and_return(success_response.to_json)
       worker.perform('/harvester/records/123/fragments.json', {})
     end
 
     context 'API return a status: :failed' do
       before(:each) do
-        allow(RestClient).to receive(:put).and_return(failed_response.to_json)
+        allow(RestClient::Request).to receive(:execute)
+          .with(hash_including(method: :put))
+          .and_return(failed_response.to_json)
       end
 
       it 'triggers an ElasticAPM notification' do
@@ -61,7 +65,9 @@ describe ApiDeleteWorker do
 
     context 'API return a status: :success' do
       before(:each) do
-        allow(RestClient).to receive(:put).and_return(success_response.to_json)
+        allow(RestClient::Request).to receive(:execute)
+          .with(hash_including(method: :put))
+          .and_return(success_response.to_json)
       end
 
       it 'increments job.posted_records_count' do

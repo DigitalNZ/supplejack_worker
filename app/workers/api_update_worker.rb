@@ -31,7 +31,8 @@ class ApiUpdateWorker < AbstractWorker
     response = RestClient.post(
       "#{ENV['API_HOST']}#{path}",
       attributes.merge(api_key: ENV['HARVESTER_API_KEY']).to_json,
-      content_type: :json, accept: :json
+      content_type: :json, accept: :json,
+      'Authentication-Token': ENV['HARVESTER_API_KEY']
     )
     response = JSON.parse(response)
 

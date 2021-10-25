@@ -164,9 +164,13 @@ describe LinkCheckWorker do
     before { allow(RestClient).to receive(:put) }
     after { worker.send(:set_record_status, '123', 'deleted') }
 
-    it 'makes a http PUT call with restclinet to the API_HOST' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/123",
-                                               record: { status: 'deleted' }, api_key: ENV['HARVESTER_API_KEY'])
+    it 'makes a http PUT call with RestClient to the API_HOST' do
+      expect(RestClient::Request).to receive(:execute).with(
+        method: :put,
+        url: "#{ENV['API_HOST']}/harvester/records/123.json",
+        payload: { record: { status: 'deleted' } },
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      )
     end
   end
 
@@ -228,8 +232,12 @@ describe LinkCheckWorker do
     before { allow(RestClient).to receive(:put) }
 
     it 'should make a post to the api to change the status to supressed for the record' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/records/abc123", record: { status: 'suppressed' },
-api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient::Request).to receive(:execute).with(
+        method: :put,
+        url: "#{ENV['API_HOST']}/harvester/records/abc123.json",
+        payload: { record: { status: 'suppressed' } },
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      )
       worker.send(:suppress_record, link_check_job.id.to_s, 'abc123', 0)
     end
 

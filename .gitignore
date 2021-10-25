@@ -29,6 +29,7 @@
 .idea/*
 id_rsa
 .powder
+/spec/examples.txt
 
 # Vendor Cache
 vendor/cache
