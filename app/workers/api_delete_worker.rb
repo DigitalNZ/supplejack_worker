@@ -24,12 +24,7 @@ class ApiDeleteWorker < AbstractWorker
 
   def perform(identifier, job_id)
     @job_id = job_id
-    response = RestClient.put(
-      "#{ENV['API_HOST']}/harvester/records/delete",
-      { id: identifier, api_key: ENV['HARVESTER_API_KEY'] },
-      content_type: :json, accept: :json
-    )
-    response = JSON.parse(response)
+    response = JSON.parse(Api::Record.delete(identifier))
 
     process_response(response)
   end

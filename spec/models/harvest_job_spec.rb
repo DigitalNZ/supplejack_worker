@@ -72,8 +72,12 @@ describe HarvestJob do
   describe '#flush_old_records' do
     it 'post to the apis /harvester/records/flush action with source_id and the harvest_job_id' do
       allow(job).to receive(:source_id).and_return('source_id')
-      expect(RestClient).to receive(:post).with("#{ENV['API_HOST']}/harvester/records/flush.json", source_id: 'source_id', job_id: job.id,
-api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient::Request).to receive(:execute).with(
+        method: :post,
+        url: "#{ENV['API_HOST']}/harvester/records/flush.json",
+        payload: { source_id: 'source_id', job_id: job.id },
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      )
       job.flush_old_records
     end
   end

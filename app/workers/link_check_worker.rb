@@ -93,7 +93,7 @@ class LinkCheckWorker
     end
 
     def set_record_status(record_id, status)
-      RestClient.put("#{ENV['API_HOST']}/harvester/records/#{record_id}", record: { status: status }, api_key: ENV['HARVESTER_API_KEY'])
+      Api::Record.put(record_id, { record: { status: status } })
       add_record_stats(record_id, status)
     rescue StandardError
       Sidekiq.logger.warn('Record not found when updating status in LinkChecking. Ignoring.')
