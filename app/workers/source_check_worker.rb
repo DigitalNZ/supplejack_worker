@@ -20,19 +20,13 @@ class SourceCheckWorker
   private
     def source_records
       JSON.parse(
-        RestClient.get(
-          "#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records",
-          params: { api_key: ENV['HARVESTER_API_KEY'] }
-        )
+        Api::Source.link_check_records(source.id)
       )
     end
 
     def source_active?
       collection = JSON.parse(
-        RestClient.get(
-          "#{ENV['API_HOST']}/harvester/sources/#{source.id}",
-          params: { api_key: ENV['HARVESTER_API_KEY'] }
-        )
+        Api::Source.get(source.id)
       )
       collection['status'] == 'active'
     end
@@ -51,19 +45,15 @@ class SourceCheckWorker
     end
 
     def suppress_collection
-      RestClient.put(
-        "#{ENV['API_HOST']}/harvester/sources/#{source.id}",
-        source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' },
-        api_key: ENV['HARVESTER_API_KEY']
+      Api::Source.put(source.id, source:
+        { status: 'suppressed', status_updated_by: 'LINK CHECKER' }
       )
       CollectionMailer.collection_status(source, 'suppressed').deliver
     end
 
     def activate_collection
-      RestClient.put(
-        "#{ENV['API_HOST']}/harvester/sources/#{source.id}",
-        source: { status: 'active', status_updated_by: 'LINK CHECKER' },
-        api_key: ENV['HARVESTER_API_KEY']
+      Api::Source.put(source.id, source:
+        { status: 'active', status_updated_by: 'LINK CHECKER' }
       )
       CollectionMailer.collection_status(source, 'activated').deliver
     end

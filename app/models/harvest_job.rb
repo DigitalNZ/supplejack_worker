@@ -35,9 +35,7 @@ class HarvestJob < AbstractJob
   end
 
   def flush_old_records
-    RestClient.post("#{ENV['API_HOST']}/harvester/records/flush.json",
-                    source_id: source_id, job_id: id,
-                    api_key: ENV['HARVESTER_API_KEY'])
+    Api::Record.flush({ source_id: source_id, job_id: id })
   rescue RestClient::Exception => e
     create_harvest_failure(exception_class: e.class,
                            message: "Flush old records failed with the following error mesage: #{e.message}",

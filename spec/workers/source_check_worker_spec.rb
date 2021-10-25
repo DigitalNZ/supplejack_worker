@@ -75,23 +75,39 @@ describe SourceCheckWorker do
 
     before do
       allow(JSON).to receive(:parse).and_return []
-      allow(RestClient).to receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records").and_return response
+      allow(RestClient::Request).to receive(:execute).with(
+        method: :get,
+        url: "#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records.json",
+        payload: nil,
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      ).and_return response
     end
 
     it 'retrieves landing urls from the API to check' do
-      expect(RestClient).to receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records",
-params: { api_key: ENV['HARVESTER_API_KEY'] }).and_return response
+      expect(RestClient::Request).to receive(:execute).with(
+        method: :get,
+        url: "#{ENV['API_HOST']}/harvester/sources/#{source.id}/link_check_records.json",
+        payload: nil,
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      ).and_return response
       worker.send(:source_records)
     end
   end
 
   describe 'source_active?' do
     before(:each) do
-      allow(RestClient).to receive(:get).and_return({ status: 'active' }.to_json)
+      allow(RestClient::Request).to receive(:execute)
+        .with(hash_including(method: :get))
+        .and_return({ status: 'active' }.to_json)
     end
 
     it 'retrieves the collections status' do
-      expect(RestClient).to receive(:get).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}", params: { api_key: ENV['HARVESTER_API_KEY'] })
+      expect(RestClient::Request).to receive(:execute).with(
+        method: :get,
+        url: "#{ENV['API_HOST']}/harvester/sources/#{source.id}.json",
+        payload: nil,
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      )
       worker.send(:source_active?)
     end
 
@@ -100,7 +116,9 @@ params: { api_key: ENV['HARVESTER_API_KEY'] }).and_return response
     end
 
     it 'returns false if the collection is suppressed' do
-      allow(RestClient).to receive(:get).and_return({ status: 'suppressed' }.to_json)
+      allow(RestClient::Request).to receive(:execute)
+        .with(hash_including(method: :get))
+        .and_return({ status: 'suppressed' }.to_json)
       expect(worker.send(:source_active?)).to be_falsey
     end
   end
@@ -140,14 +158,18 @@ params: { api_key: ENV['HARVESTER_API_KEY'] }).and_return response
 
   describe '#suppress_collection' do
     before do
-      allow(RestClient).to receive(:put)
+      allow(RestClient::Request).to receive(:execute).with(hash_including(method: :put))
       mailer = double(deliver: nil)
       allow(CollectionMailer).to receive(:collection_status).with(source, 'suppressed').and_return(mailer)
     end
 
     it 'suppresses the collection setting the status_updated_by as LINK CHECKER' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}",
-source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient::Request).to receive(:execute).with(
+        method: :put,
+        url: "#{ENV['API_HOST']}/harvester/sources/#{source.id}.json",
+        payload: { source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' } },
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      )
       worker.send(:suppress_collection)
     end
 
@@ -159,14 +181,18 @@ source: { status: 'suppressed', status_updated_by: 'LINK CHECKER' }, api_key: EN
 
   describe '#activate_collection' do
     before do
-      allow(RestClient).to receive(:put)
+      allow(RestClient::Request).to receive(:execute).with(hash_including(method: :put))
       mailer = double(deliver: nil)
       allow(CollectionMailer).to receive(:collection_status).with(source, 'activated').and_return(mailer)
     end
 
     it 'activates the collection and set the status_updated_by as LINK CHECKER' do
-      expect(RestClient).to receive(:put).with("#{ENV['API_HOST']}/harvester/sources/#{source.id}",
-source: { status: 'active', status_updated_by: 'LINK CHECKER' }, api_key: ENV['HARVESTER_API_KEY'])
+      expect(RestClient::Request).to receive(:execute).with(
+        method: :put,
+        url: "#{ENV['API_HOST']}/harvester/sources/#{source.id}.json",
+        payload: { source: { status: 'active', status_updated_by: 'LINK CHECKER' } },
+        headers: { 'Authentication-Token': ENV['HARVESTER_API_KEY'] }
+      )
       worker.send(:activate_collection)
     end
 
