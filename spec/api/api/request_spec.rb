@@ -64,5 +64,37 @@ RSpec.describe Api::Request do
       ))
       request.get
     end
+
+    it 'sends params in the URL if GET or DELETE' do
+      expected_hash = {
+        payload: nil,
+        headers: {
+          'Authentication-Token': ENV['HARVESTER_API_KEY'],
+          params: { param: :value }
+        }
+      }
+      expect(RestClient::Request).to receive(:execute).with(hash_including(expected_hash))
+      described_class.new('/test', { param: :value }).get
+
+      expect(RestClient::Request).to receive(:execute).with(hash_including(expected_hash))
+      described_class.new('/test', { param: :value }).delete
+    end
+
+    it 'sends params in the payload if PUT or PATCH or POST' do
+      expected_hash = {
+        payload: { param: :value },
+        headers: {
+          'Authentication-Token': ENV['HARVESTER_API_KEY'],
+        }
+      }
+      expect(RestClient::Request).to receive(:execute).with(hash_including(expected_hash))
+      described_class.new('/test', { param: :value }).put
+
+      expect(RestClient::Request).to receive(:execute).with(hash_including(expected_hash))
+      described_class.new('/test', { param: :value }).patch
+
+      expect(RestClient::Request).to receive(:execute).with(hash_including(expected_hash))
+      described_class.new('/test', { param: :value }).post
+    end
   end
 end

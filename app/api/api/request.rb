@@ -37,7 +37,7 @@ module Api
           url_params = {}
         else
           payload = nil
-          url_params = @params
+          url_params = @params.any? ? { params: @params } : {}
         end
 
         RestClient::Request.execute(
