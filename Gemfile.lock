@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: f4fffa127df6a53e8196fa2328ddaef961a635bc
-  tag: v2.10.5
+  revision: a04e358a59e5f7c363903449598b7eedbe3b10be
+  branch: rm/worker-ruby3
   specs:
     supplejack_common (0.0.2)
       actionpack (>= 6.0.3.5, < 6.1.5.0)
