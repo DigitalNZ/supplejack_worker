@@ -114,6 +114,9 @@ GEM
     aws-sdk-kms (1.50.0)
       aws-sdk-core (~> 3, >= 3.121.2)
       aws-sigv4 (~> 1.1)
+    aws-sdk-rekognition (1.59.0)
+      aws-sdk-core (~> 3, >= 3.121.2)
+      aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.104.0)
       aws-sdk-core (~> 3, >= 3.121.2)
       aws-sdk-kms (~> 1)
@@ -426,6 +429,7 @@ GEM
     zeitwerk (2.5.1)
 
 PLATFORMS
+  x86_64-darwin-19
   x86_64-darwin-20
   x86_64-linux
 
@@ -434,6 +438,7 @@ DEPENDENCIES
   active_model_serializers (~> 0.10.7)
   activeresource
   amazing_print
+  aws-sdk-rekognition (~> 1.59)
   aws-sdk-s3 (~> 1)
   brakeman
   chronic
