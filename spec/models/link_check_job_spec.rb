@@ -44,4 +44,12 @@ describe LinkCheckJob do
       link_check_job.send(:enqueue)
     end
   end
+
+  describe '#source' do
+    it 'calls source find' do
+      expect(Source).to receive(:find).with(link_check_job.source_id)
+
+      link_check_job.source
+    end
+  end
 end
