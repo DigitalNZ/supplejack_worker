@@ -11,13 +11,12 @@ class CollectionStatistics
   field :source_id, type: String
   field :day,                         type: Date
 
-  field :suppressed_count,            type: Integer, default: 0
-  field :deleted_count,               type: Integer, default: 0
-  field :activated_count,             type: Integer, default: 0
-
-  field :suppressed_records,       type: Array
-  field :deleted_records,          type: Array
-  field :activated_records,        type: Array
+  field :suppressed_count,   type: Integer, default: 0
+  field :deleted_count,      type: Integer, default: 0
+  field :activated_count,    type: Integer, default: 0
+  field :suppressed_records, type: Array
+  field :deleted_records,    type: Array
+  field :activated_records,  type: Array
 
   validates :source_id, uniqueness: { scope: :day }
   validates :source_id, :day, presence: true
@@ -31,13 +30,10 @@ class CollectionStatistics
   end
 
   def add_record!(record_id, status, landing_url)
-    return unless self.class.record_status_whitelist.include? status
+    return unless %w[suppressed activated deleted].include? status
+
     add_record_item(record_id, status, landing_url)
     save!
-  end
-
-  def self.record_status_whitelist
-    %w[suppressed activated deleted]
   end
 
   private
@@ -47,6 +43,7 @@ class CollectionStatistics
       records = send("#{status}_records")
       record = { record_id: record_id, landing_url: landing_url }
       return if records.include?(record)
+
       records << record
       inc("#{status}_count".to_sym => 1)
     end

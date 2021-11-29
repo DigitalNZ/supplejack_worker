@@ -47,12 +47,6 @@ describe CollectionStatistics do
     end
   end
 
-  describe '.record_status_whitelist' do
-    it 'returns the whitelist' do
-      expect(CollectionStatistics.record_status_whitelist).to eq %w[suppressed activated deleted]
-    end
-  end
-
   describe 'add_record_item' do
     it 'initializes an empty array if record_ids id nil' do
       collection_statistics.send(:add_record_item, 12_345, 'activated', 'http://goog.le/')
