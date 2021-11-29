@@ -8,9 +8,8 @@ class CollectionStatistics
   index({ source_id: 1, day: 1 }, unique: true)
   index({ collection_title: 1, day: 1 }, unique: true)
 
-  field :source_id, type: String
-  field :day,                         type: Date
-
+  field :source_id,          type: String
+  field :day,                type: Date
   field :suppressed_count,   type: Integer, default: 0
   field :deleted_count,      type: Integer, default: 0
   field :activated_count,    type: Integer, default: 0
