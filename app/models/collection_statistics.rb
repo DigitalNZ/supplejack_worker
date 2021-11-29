@@ -30,24 +30,24 @@ class CollectionStatistics
     CollectionMailer.daily_collection_stats(scope).deliver
   end
 
-  def add_record!(record_id, collection, landing_url)
-    return unless self.class.record_id_collection_whitelist.include? collection
-    add_record_item(record_id, collection, landing_url)
+  def add_record!(record_id, status, landing_url)
+    return unless self.class.record_status_whitelist.include? status
+    add_record_item(record_id, status, landing_url)
     save!
   end
 
-  def self.record_id_collection_whitelist
+  def self.record_status_whitelist
     %w[suppressed activated deleted]
   end
 
   private
-    def add_record_item(record_id, collection, landing_url)
-      send("#{collection}_records=", []) if send("#{collection}_records").nil?
+    def add_record_item(record_id, status, landing_url)
+      send("#{status}_records=", []) if send("#{status}_records").nil?
 
-      records = send("#{collection}_records")
+      records = send("#{status}_records")
       record = { record_id: record_id, landing_url: landing_url }
       return if records.include?(record)
       records << record
-      inc("#{collection}_count".to_sym => 1)
+      inc("#{status}_count".to_sym => 1)
     end
 end

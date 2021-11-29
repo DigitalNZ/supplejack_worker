@@ -47,9 +47,9 @@ describe CollectionStatistics do
     end
   end
 
-  describe '.record_id_collection_whitelist' do
+  describe '.record_status_whitelist' do
     it 'returns the whitelist' do
-      expect(CollectionStatistics.send(:record_id_collection_whitelist)).to include 'suppressed', 'activated', 'deleted'
+      expect(CollectionStatistics.record_status_whitelist).to eq %w[suppressed activated deleted]
     end
   end
 
