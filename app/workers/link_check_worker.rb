@@ -9,40 +9,38 @@ class LinkCheckWorker
 
   sidekiq_retry_in { |_count| 2 * Random.rand(1..5) }
 
+  # rubocop:disable Metrics/LineLength
   def perform(link_check_job_id, strike = 0)
-    return unless if link_check_job.present? && link_check_job.source.present?
+    @link_check_job_id = link_check_job_id
+    return unless link_check_job.present? && link_check_job.source.present?
 
     Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: For #{link_check_job_id} with strike #{strike}"
-    @link_check_job_id = link_check_job_id
 
     begin
-      if link_check_job.present? && link_check_job.source.present?
-        if rules.blank?
-          Sidekiq.logger.error "LinkCheckWorker[#{link_check_job.record_id}]: MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
-          ElasticAPM.report(MissingLinkCheckRuleError.new(link_check_job.source_id))
-          return
-        end
+      if rules.blank?
+        Sidekiq.logger.error "LinkCheckWorker[#{link_check_job.record_id}]: MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
+        ElasticAPM.report(MissingLinkCheckRuleError.new(link_check_job.source_id))
+        return
+      end
 
-        if rules.active
-          response = link_check(link_check_job.url, link_check_job.source.id)
-          if response && validate_link_check_rule(response, link_check_job.source.id)
-            Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: Unsuppressing Record for landing_url #{link_check_job.url}"
-            set_record_status(link_check_job.record_id, 'active') if strike.positive?
-          else
-            suppress_record(link_check_job_id, link_check_job.record_id, strike)
-          end
+      if rules.active
+        response = link_check(link_check_job.url, link_check_job.source.id)
+        if response && validate_link_check_rule(response, link_check_job.source.id)
+          Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: Unsuppressing Record for landing_url #{link_check_job.url}"
+          set_record_status(link_check_job.record_id, 'active') if strike.positive?
+        else
+          suppress_record(link_check_job_id, link_check_job.record_id, strike)
         end
       end
     rescue ThrottleLimitError
       # No operation here. Prevents ElasticAPM from notifying ThrottleLimitError.
     rescue StandardError => e
-      # rubocop:disable Metrics/LineLength
       Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: There was a unexpected errors."
       ElasticAPM.report(e)
       ElasticAPM.report_message("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
-      # rubocop:enable Metrics/LineLength
     end
   end
+  # rubocop:enable Metrics/LineLength
 
   private
     def add_record_stats(record_id, status)
@@ -89,10 +87,10 @@ class LinkCheckWorker
       timings = [1.hour, 5.hours, 72.hours]
 
       if strike >= 3
-        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record for landing_url #{link_check_job.url}"
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record"
         set_record_status(record_id, 'deleted')
       else
-        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Suppressing Record for landing_url #{link_check_job.url}"
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Suppressing Record"
         set_record_status(record_id, 'suppressed') unless strike.positive?
 
         Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Rescheduling check in #{timings[strike] / 3600} hours"
