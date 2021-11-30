@@ -10,12 +10,15 @@ class LinkCheckWorker
   sidekiq_retry_in { |_count| 2 * Random.rand(1..5) }
 
   def perform(link_check_job_id, strike = 0)
-    Sidekiq.logger.info "Starting LinkCheckWorker for #{link_check_job_id} with strike #{strike}"
+    return unless if link_check_job.present? && link_check_job.source.present?
+
+    Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: For #{link_check_job_id} with strike #{strike}"
     @link_check_job_id = link_check_job_id
+
     begin
       if link_check_job.present? && link_check_job.source.present?
         if rules.blank?
-          Sidekiq.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
+          Sidekiq.logger.error "LinkCheckWorker[#{link_check_job.record_id}]: MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
           ElasticAPM.report(MissingLinkCheckRuleError.new(link_check_job.source_id))
           return
         end
@@ -23,10 +26,9 @@ class LinkCheckWorker
         if rules.active
           response = link_check(link_check_job.url, link_check_job.source.id)
           if response && validate_link_check_rule(response, link_check_job.source.id)
-            Sidekiq.logger.info "Unsuppressing Record for landing_url #{link_check_job.url}"
+            Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: Unsuppressing Record for landing_url #{link_check_job.url}"
             set_record_status(link_check_job.record_id, 'active') if strike.positive?
           else
-            Sidekiq.logger.info "Suppressing Record for landing_url #{link_check_job.url}"
             suppress_record(link_check_job_id, link_check_job.record_id, strike)
           end
         end
@@ -35,6 +37,7 @@ class LinkCheckWorker
       # No operation here. Prevents ElasticAPM from notifying ThrottleLimitError.
     rescue StandardError => e
       # rubocop:disable Metrics/LineLength
+      Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: There was a unexpected errors."
       ElasticAPM.report(e)
       ElasticAPM.report_message("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
       # rubocop:enable Metrics/LineLength
@@ -44,6 +47,8 @@ class LinkCheckWorker
   private
     def add_record_stats(record_id, status)
       status = 'activated' if status == 'active'
+
+      Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: CollectionStatistics updated with status = #{status}"
       collection_stats.add_record!(record_id, status, link_check_job.url)
     end
 
@@ -71,7 +76,6 @@ class LinkCheckWorker
             RestClient.get(url)
           rescue StandardError => e
             Sidekiq.logger.info "ResctClient get failed for #{url}. Error: #{e.message}"
-            # This return will make the record to be suppressed
             return nil
           end
         else
@@ -85,9 +89,13 @@ class LinkCheckWorker
       timings = [1.hour, 5.hours, 72.hours]
 
       if strike >= 3
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record for landing_url #{link_check_job.url}"
         set_record_status(record_id, 'deleted')
       else
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Suppressing Record for landing_url #{link_check_job.url}"
         set_record_status(record_id, 'suppressed') unless strike.positive?
+
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Rescheduling check in #{timings[strike] / 3600} hours"
         LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
       end
     end
@@ -96,6 +104,6 @@ class LinkCheckWorker
       Api::Record.put(record_id, { record: { status: status } })
       add_record_stats(record_id, status)
     rescue StandardError
-      Sidekiq.logger.warn('Record not found when updating status in LinkChecking. Ignoring.')
+      Sidekiq.logger.warn("LinkCheckWorker[#{record_id}]: Record not found when updating status = #{status} in LinkChecking. Ignoring.")
     end
 end

@@ -37,6 +37,7 @@ module ValidatesResource
 
   def validate_xpath(xpath, response_body)
     return true if xpath.blank?
+
     doc = Nokogiri::HTML.parse(response_body)
     doc.xpath(xpath).empty?
   end
