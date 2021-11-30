@@ -35,7 +35,7 @@ class LinkCheckWorker
     rescue ThrottleLimitError
       # No operation here. Prevents ElasticAPM from notifying ThrottleLimitError.
     rescue StandardError => e
-      Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: There was a unexpected errors."
+      Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: There was an unexpected error."
       ElasticAPM.report(e)
       ElasticAPM.report_message("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
     end
@@ -84,7 +84,8 @@ class LinkCheckWorker
     end
 
     def suppress_record(link_check_job_id, record_id, strike)
-      timings = [1.hour, 5.hours, 72.hours]
+      # timings = [1.hour, 5.hours, 72.hours]
+      timings = [3.minutes, 4.minutes, 5.minutes]
 
       if strike >= 3
         Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record"
@@ -93,7 +94,7 @@ class LinkCheckWorker
         Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Suppressing Record"
         set_record_status(record_id, 'suppressed') unless strike.positive?
 
-        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Rescheduling check in #{timings[strike] / 3600} hours"
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Rescheduling check in #{timings[strike] / 60} minutes"
         LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
       end
     end
