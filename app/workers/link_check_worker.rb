@@ -9,6 +9,21 @@ class LinkCheckWorker
 
   sidekiq_retry_in { |_count| 2 * Random.rand(1..5) }
 
+  # How this job works
+  # 1. Fetches the job from LinkCheckJob
+  # 2. Fetches the rules from LinkCheckRule with source id
+  # 3. Request response for the url in the job is checked with blacklisted codes from the rule
+  # 4. Failure in step 3
+  #    - suppresses the record
+  #    - action is logged in CollectionStatistics
+  #    - a recheck is scheduled for 1 hour after the first check and 23 hours after the second check
+  # 5. Success in step 3
+  #    - unsuppressed the record if it was suppressed in the previous check
+  #    - action is logged in CollectionStatistics
+  # 6. Failure in the third check
+  #    - deletes the record
+  #    - action is logged in CollectionStatistics
+  #    - no recheck is scheduled
   def perform(job_id, strike = 0)
     @job_id = job_id
     return unless job.present? && job.source.present?
