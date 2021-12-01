@@ -29,7 +29,7 @@ class CollectionStatistics
   end
 
   def add_record!(record_id, status, landing_url)
-    return unless %w[suppressed activated deleted].include? status
+    return unless %w[activated deleted suppressed].include? status
 
     add_record_item(record_id, status, landing_url)
     save!
