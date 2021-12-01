@@ -9,7 +9,6 @@ class LinkCheckWorker
 
   sidekiq_retry_in { |_count| 2 * Random.rand(1..5) }
 
-  # rubocop:disable Metrics/LineLength
   def perform(link_check_job_id, strike = 0)
     @link_check_job_id = link_check_job_id
     return unless link_check_job.present? && link_check_job.source.present?
@@ -26,8 +25,10 @@ class LinkCheckWorker
       if rules.active
         response = link_check(link_check_job.url, link_check_job.source.id)
         if response && validate_link_check_rule(response, link_check_job.source.id)
-          Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: Unsuppressing Record for landing_url #{link_check_job.url}"
-          set_record_status(link_check_job.record_id, 'active') if strike.positive?
+          if strike.positive?
+            Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: Unsuppressing Record for landing_url #{link_check_job.url}"
+            set_record_status(link_check_job.record_id, 'active')
+          end
         else
           suppress_record(link_check_job_id, link_check_job.record_id, strike)
         end
@@ -40,7 +41,6 @@ class LinkCheckWorker
       ElasticAPM.report_message("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
     end
   end
-  # rubocop:enable Metrics/LineLength
 
   private
     def add_record_stats(record_id, status)

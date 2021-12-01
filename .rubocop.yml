@@ -16,6 +16,8 @@ AllCops:
 
 Metrics/MethodLength:
   Max: 25
+  Exclude:
+    - 'app/workers/link_check_worker.rb'
 
 Layout/MultilineOperationIndentation:
   Enabled: false
@@ -30,6 +32,7 @@ Layout/LineLength:
   Max: 150
   Exclude:
     - 'spec/**/**/*'
+    - 'app/workers/link_check_worker.rb'
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
