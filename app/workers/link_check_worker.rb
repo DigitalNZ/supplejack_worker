@@ -85,7 +85,6 @@ class LinkCheckWorker
 
     def suppress_record(job_id, record_id, strike)
       timings = [1.hour, 5.hours, 72.hours]
-      # timings = [3.minutes, 4.minutes, 5.minutes]
 
       if strike >= 3
         Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record"
@@ -96,7 +95,7 @@ class LinkCheckWorker
           set_record_status(record_id, 'suppressed')
         end
 
-        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Scheduling re-check in #{timings[strike] / 60} minutes"
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Scheduling re-check in #{timings[strike] / 3600} hours"
         LinkCheckWorker.perform_in(timings[strike], job_id, strike + 1)
       end
     end
