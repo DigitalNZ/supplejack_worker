@@ -84,9 +84,9 @@ class LinkCheckWorker
     end
 
     def suppress_record(job_id, record_id, strike)
-      timings = [1.hour, 5.hours, 72.hours]
+      timings = [1.hour, 23.hours]
 
-      if strike >= 3
+      if strike >= 2
         Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record"
         set_record_status(record_id, 'deleted')
       else
