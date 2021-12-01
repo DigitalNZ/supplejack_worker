@@ -18,9 +18,9 @@ describe LinkCheckWorker do
       expect(LinkCheckJob).to receive(:find).with(link_check_job.id.to_s)
     end
 
-    context 'job and source exist for worker' do
+    context 'when job and source exist' do
       before do
-        allow(worker).to receive(:link_check_job) { link_check_job }
+        allow(worker).to receive(:job) { link_check_job }
         allow(link_check_job).to receive_message_chain(:source, :id) { 'abc123' }
         allow(worker).to receive(:rules) { link_check_rule }
         allow(worker).to receive(:link_check) { response }
@@ -73,7 +73,7 @@ describe LinkCheckWorker do
                                                                     link_check_job.source.id)
         end
 
-        context 'and response is invalid' do
+        context 'when response is invalid' do
           before { allow(worker).to receive(:validate_link_check_rule) { false } }
 
           it 'suppresse the record with strike 0' do
@@ -82,10 +82,10 @@ describe LinkCheckWorker do
           end
         end
 
-        context 'and response is valid' do
+        context 'when response is valid' do
           before { allow(worker).to receive(:validate_link_check_rule) { true } }
 
-          context 'and strike is greated than 1' do
+          context 'when strike is greated than 1' do
             after { worker.perform(link_check_job.id.to_s, 1) }
 
             it 'updates the record as active' do
@@ -95,7 +95,7 @@ describe LinkCheckWorker do
           end
         end
 
-        context 'exceptions' do
+        context 'when there is an exception' do
           it 'handles throttling error' do
             allow(worker).to receive(:link_check).and_raise(ThrottleLimitError.new('ThrottleLimitError'))
             expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception
@@ -175,11 +175,12 @@ describe LinkCheckWorker do
   end
 
   describe '#link_check_job' do
-    before { worker.instance_variable_set(:@link_check_job_id, link_check_job.id) }
+    before { worker.instance_variable_set(:@job_id, link_check_job.id) }
 
     it 'memoizes the link check job' do
       expect(LinkCheckJob).to receive(:find).once.with(link_check_job.id)
-      worker.send(:link_check_job)
+
+      worker.send(:job)
     end
   end
 
@@ -187,7 +188,7 @@ describe LinkCheckWorker do
     let(:collection_statistics) { double(:collection_statistics) }
 
     before do
-      allow(worker).to receive(:link_check_job) { link_check_job }
+      allow(worker).to receive(:job) { link_check_job }
       allow(worker).to receive(:collection_stats) { collection_statistics }
     end
 
@@ -212,8 +213,8 @@ describe LinkCheckWorker do
     let(:relation) { double(:relation) }
 
     before do
-      allow(worker).to receive(:link_check_job) { link_check_job }
-      worker.instance_variable_set(:@link_check_job_id, link_check_job.id)
+      allow(worker).to receive(:job) { link_check_job }
+      worker.instance_variable_set(:@job_id, link_check_job.id)
     end
 
     it 'should find or create a collection statistics model with the collection_title' do
@@ -261,7 +262,7 @@ describe LinkCheckWorker do
       worker.send(:suppress_record, link_check_job.id.to_s, 'abc123', 1)
     end
 
-    context 'strike timings' do
+    describe 'strike timings' do
       it 'should perform the job in 1 hours on the 0th strike' do
         expect(LinkCheckWorker).to receive(:perform_in).with(1.hours, link_check_job.id.to_s, 1)
         worker.send(:suppress_record, link_check_job.id.to_s, 'abc123', 0)
@@ -278,7 +279,7 @@ describe LinkCheckWorker do
       end
     end
 
-    context 'strike three your out!' do
+    context 'when strike is three' do
       it 'should set the status of the record to deleted' do
         expect(worker).to receive(:set_record_status).with('abc123', 'deleted')
         worker.send(:suppress_record, link_check_job.id.to_s.to_s, 'abc123', 3)
@@ -290,7 +291,7 @@ describe LinkCheckWorker do
     before { allow(link_check_job).to receive_message_chain(:source, :id) { 'abc123' } }
 
     it 'should call link_check_rule with the source_id' do
-      expect(worker).to receive(:link_check_job) { link_check_job }
+      expect(worker).to receive(:job) { link_check_job }
       expect(worker).to receive(:link_check_rule).with('abc123') { link_check_rule }
 
       expect(worker.send(:rules)).to eq link_check_rule
