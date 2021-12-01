@@ -14,7 +14,7 @@ class LinkCheckWorker
     @link_check_job_id = link_check_job_id
     return unless link_check_job.present? && link_check_job.source.present?
 
-    Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: For #{link_check_job_id} with strike #{strike}"
+    Sidekiq.logger.info "LinkCheckWorker[#{link_check_job.record_id}]: Starting check for #{link_check_job.url} with strike #{strike}"
 
     begin
       if rules.blank?
