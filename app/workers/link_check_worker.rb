@@ -91,10 +91,12 @@ class LinkCheckWorker
         Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record"
         set_record_status(record_id, 'deleted')
       else
-        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Suppressing Record"
-        set_record_status(record_id, 'suppressed') unless strike.positive?
+        if strike.zero?
+          Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Suppressing Record"
+          set_record_status(record_id, 'suppressed')
+        end
 
-        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Rescheduling check in #{timings[strike] / 60} minutes"
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Scheduling re-check in #{timings[strike] / 60} minutes"
         LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
       end
     end
