@@ -9,58 +9,76 @@ class LinkCheckWorker
 
   sidekiq_retry_in { |_count| 2 * Random.rand(1..5) }
 
-  def perform(link_check_job_id, strike = 0)
-    Sidekiq.logger.info "Starting LinkCheckWorker for #{link_check_job_id} with strike #{strike}"
-    @link_check_job_id = link_check_job_id
-    begin
-      if link_check_job.present? && link_check_job.source.present?
-        if rules.blank?
-          Sidekiq.logger.error "MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{link_check_job.source_id}]"
-          ElasticAPM.report(MissingLinkCheckRuleError.new(link_check_job.source_id))
-          return
-        end
+  # How this job works
+  # 1. Fetches the job from LinkCheckJob
+  # 2. Fetches the rules from LinkCheckRule with source id
+  # 3. Request response for the url in the job is checked with blacklisted codes from the rule
+  # 4. Failure in step 3
+  #    - suppresses the record
+  #    - action is logged in CollectionStatistics
+  #    - a recheck is scheduled for 1 hour after the first check and 23 hours after the second check
+  # 5. Success in step 3
+  #    - unsuppressed the record if it was suppressed in the previous check
+  #    - action is logged in CollectionStatistics
+  # 6. Failure in the third check
+  #    - deletes the record
+  #    - action is logged in CollectionStatistics
+  #    - no recheck is scheduled
+  def perform(job_id, strike = 0)
+    @job_id = job_id
+    return unless job.present? && job.source.present?
 
-        if rules.active
-          response = link_check(link_check_job.url, link_check_job.source.id)
-          if response && validate_link_check_rule(response, link_check_job.source.id)
-            Sidekiq.logger.info "Unsuppressing Record for landing_url #{link_check_job.url}"
-            set_record_status(link_check_job.record_id, 'active') if strike.positive?
-          else
-            Sidekiq.logger.info "Suppressing Record for landing_url #{link_check_job.url}"
-            suppress_record(link_check_job_id, link_check_job.record_id, strike)
+    Sidekiq.logger.info "LinkCheckWorker[#{job.record_id}]: Starting check for url #{job.url} in job #{job_id} with strike #{strike}"
+
+    begin
+      if rules.blank?
+        Sidekiq.logger.error "LinkCheckWorker[#{job.record_id}]: MissingLinkCheckRuleError: No LinkCheckRule found for source_id: [#{job.source_id}]"
+        ElasticAPM.report(MissingLinkCheckRuleError.new(job.source_id))
+        return
+      end
+
+      if rules.active
+        response = link_check(job.url, job.source.id)
+        if response && validate_link_check_rule(response, job.source.id)
+          if strike.positive?
+            Sidekiq.logger.info "LinkCheckWorker[#{job.record_id}]: Unsuppressing Record for landing_url #{job.url}"
+            set_record_status(job.record_id, 'active')
           end
+        else
+          suppress_record(job_id, job.record_id, strike)
         end
       end
     rescue ThrottleLimitError
       # No operation here. Prevents ElasticAPM from notifying ThrottleLimitError.
     rescue StandardError => e
-      # rubocop:disable Metrics/LineLength
+      Sidekiq.logger.info "LinkCheckWorker[#{job.record_id}]: There was an unexpected error."
       ElasticAPM.report(e)
-      ElasticAPM.report_message("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{link_check_job.record_id} to update status to supressed")
-      # rubocop:enable Metrics/LineLength
+      ElasticAPM.report_message("There was a unexpected error when trying to POST to #{ENV['API_HOST']}/harvester/records/#{job.record_id} to update status to supressed")
     end
   end
 
   private
     def add_record_stats(record_id, status)
       status = 'activated' if status == 'active'
-      collection_stats.add_record!(record_id, status, link_check_job.url)
+
+      Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: CollectionStatistics updated with status = #{status}"
+      collection_stats.add_record!(record_id, status, job.url)
     end
 
     def collection_stats
-      @collection_stats ||= CollectionStatistics.find_or_create_by(day: Time.zone.today, source_id: link_check_job.source_id)
+      @collection_stats ||= CollectionStatistics.find_or_create_by(day: Time.zone.today, source_id: job.source_id)
     end
 
-    def link_check_job
-      @link_check_job ||= begin
-                            LinkCheckJob.find(@link_check_job_id)
-                          rescue StandardError
-                            nil
-                          end
+    def job
+      @job ||= begin
+                 LinkCheckJob.find(@job_id)
+               rescue StandardError
+                 nil
+               end
     end
 
     def rules
-      link_check_rule(link_check_job.source.id)
+      link_check_rule(job.source.id)
     end
 
     def link_check(url, collection)
@@ -71,24 +89,29 @@ class LinkCheckWorker
             RestClient.get(url)
           rescue StandardError => e
             Sidekiq.logger.info "ResctClient get failed for #{url}. Error: #{e.message}"
-            # This return will make the record to be suppressed
             return nil
           end
         else
-          Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}")
-          raise ThrottleLimitError, "Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@link_check_job_id}"
+          Sidekiq.logger.info("Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@job_id}")
+          raise ThrottleLimitError, "Hit #{collection} throttle limit, LinkCheckJob will automatically retry job #{@job_id}"
         end
       end
     end
 
-    def suppress_record(link_check_job_id, record_id, strike)
-      timings = [1.hour, 5.hours, 72.hours]
+    def suppress_record(job_id, record_id, strike)
+      timings = [1.hour, 23.hours]
 
-      if strike >= 3
+      if strike >= 2
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Deleting Record"
         set_record_status(record_id, 'deleted')
       else
-        set_record_status(record_id, 'suppressed') unless strike.positive?
-        LinkCheckWorker.perform_in(timings[strike], link_check_job_id, strike + 1)
+        if strike.zero?
+          Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Suppressing Record"
+          set_record_status(record_id, 'suppressed')
+        end
+
+        Sidekiq.logger.info "LinkCheckWorker[#{record_id}]: Scheduling re-check in #{timings[strike] / 3600} hours"
+        LinkCheckWorker.perform_in(timings[strike], job_id, strike + 1)
       end
     end
 
@@ -96,6 +119,6 @@ class LinkCheckWorker
       Api::Record.put(record_id, { record: { status: status } })
       add_record_stats(record_id, status)
     rescue StandardError
-      Sidekiq.logger.warn('Record not found when updating status in LinkChecking. Ignoring.')
+      Sidekiq.logger.warn("LinkCheckWorker[#{record_id}]: Record not found when updating status = #{status} in LinkChecking. Ignoring.")
     end
 end

@@ -3,28 +3,30 @@
 require 'rails_helper'
 
 describe CollectionStatistics do
-  let(:collection_statistics) { build(:collection_statistics, source_id: 'source_id', day: Date.today) }
+  let!(:collection_statistics) { create(:collection_statistics, source_id: 'source_id', day: Date.today) }
 
   context 'validations' do
     it 'validates uniqueness of collection name' do
-      collection_statistics.save
       collection_stats = build(:collection_statistics, source_id: 'source_id')
+
       expect(collection_stats).to_not be_valid
     end
 
     it 'validates the uniqueness of day' do
-      collection_statistics.save
       collection_stats = build(:collection_statistics, source_id: 'source_id', day: Date.today)
+
       expect(collection_stats).to_not be_valid
     end
 
     it 'validates presence of collection name' do
       collection_stats = build(:collection_statistics)
+
       expect(collection_stats).to_not be_valid
     end
 
     it 'validates the presence of day' do
       collection_stats = build(:collection_statistics, source_id: 'source_id')
+
       expect(collection_stats).to_not be_valid
     end
   end
@@ -40,16 +42,19 @@ describe CollectionStatistics do
   end
 
   describe 'add_record!' do
-    before { collection_statistics.save }
-
-    it 'should not try set the collection to an array if the collection does not exist' do
-      expect { collection_statistics.add_record!(12, 'bleh', 'http://google.gle') }.to_not raise_error
+    context 'with invalid status' do
+      it 'returns nil' do
+        expect(collection_statistics.add_record!(12, 'bleh', 'http://google.gle')).to be nil
+      end
     end
-  end
 
-  describe '.record_id_collection_whitelist' do
-    it 'returns the whitelist' do
-      expect(CollectionStatistics.send(:record_id_collection_whitelist)).to include 'suppressed', 'activated', 'deleted'
+    context 'with valid status' do
+      %w[suppressed activated deleted].each do |status|
+        it 'returns true' do
+          expect(collection_statistics.add_record!(12, status, 'http://google.gle')).to be true
+          expect(collection_statistics.send("#{status}_records")).to eq [{ record_id: 12, landing_url: 'http://google.gle' }]
+        end
+      end
     end
   end
 
