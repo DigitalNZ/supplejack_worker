@@ -98,13 +98,13 @@ describe LinkCheckWorker do
         end
 
         context 'when there is an exception' do
-          it 'handles throttling error' do
+          it 'swallows ThrottleLimitError' do
             allow(worker).to receive(:link_check).and_raise(ThrottleLimitError.new('ThrottleLimitError'))
 
             expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception
           end
 
-          it 'should handle networking errors' do
+          it 'swallows RestClient Exception' do
             allow(worker).to receive(:link_check).and_raise(StandardError.new('RestClient Exception'))
 
             expect { worker.perform(link_check_job.id.to_s) }.to_not raise_exception

@@ -1,0 +1,17 @@
+Metrics/MethodLength:
+  Exclude:
+    - 'app/workers/link_check_worker.rb'
+
+Layout/LineLength:
+  Exclude:
+    - 'spec/**/**/*'
+    - 'app/workers/link_check_worker.rb'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/**/*'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'app/helpers/records_helper.rb'
+    - 'spec/**/*'
