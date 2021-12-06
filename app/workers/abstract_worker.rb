@@ -2,7 +2,7 @@
 
 # app/workers/abstract_worker.rb
 class AbstractWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
 
   attr_reader :job_id
 

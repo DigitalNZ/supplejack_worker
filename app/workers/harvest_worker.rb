@@ -4,7 +4,7 @@ require 'snippet'
 
 # app/workers/harvest_worker.rb
 class HarvestWorker < AbstractWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
   include Matcher::ConceptMatcher
 
   sidekiq_options retry: 5, backtrace: true, queue: 'default'

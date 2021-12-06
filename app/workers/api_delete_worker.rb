@@ -2,7 +2,7 @@
 
 # app/workers/api_delete_worker.rb
 class ApiDeleteWorker < AbstractWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
   sidekiq_options queue: 'default', retry: 5, backtrace: true
   sidekiq_retry_in { 5.seconds }
 
