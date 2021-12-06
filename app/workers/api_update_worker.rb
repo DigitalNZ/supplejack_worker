@@ -2,7 +2,7 @@
 
 # app/workers/api_update_worker.rb
 class ApiUpdateWorker < AbstractWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
   sidekiq_options queue: 'default', retry: 5, backtrace: true
   sidekiq_retry_in { 5.seconds }
 

@@ -2,7 +2,7 @@
 
 # app/workers/source_check_worker.rb
 class SourceCheckWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
   include ValidatesResource
   sidekiq_options queue: 'default'
 

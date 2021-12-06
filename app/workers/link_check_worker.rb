@@ -2,7 +2,7 @@
 
 # app/workers/link_check_worker.rb
 class LinkCheckWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
   include ValidatesResource
 
   sidekiq_options retry: 100, queue: 'low'

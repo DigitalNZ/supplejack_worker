@@ -2,7 +2,7 @@
 
 # app/workers/enrichment_worker.rb
 class EnrichmentWorker < AbstractWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
   sidekiq_options retry: 5, queue: 'default'
 
   sidekiq_retries_exhausted do |msg|

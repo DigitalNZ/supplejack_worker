@@ -2,7 +2,7 @@
 
 # app/workers/enqueue_source_worker.rb
 class EnqueueSourceChecksWorker
-  include Sidekiq::Worker
+  include Sidekiq::Job
   sidekiq_options queue: 'default'
 
   def perform
