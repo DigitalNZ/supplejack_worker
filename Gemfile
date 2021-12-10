@@ -20,7 +20,7 @@ gem 'rails', '~> 6.1.4.1'
 gem 'responders'
 gem 'sidekiq', '~> 6.3.1'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.10.6'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.10.6.1'
 # gem 'supplejack_common', path: '~/webspace/supplejack_common'
 gem 'whenever', require: false
 gem 'brakeman'
