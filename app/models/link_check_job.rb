@@ -13,6 +13,7 @@ class LinkCheckJob
   after_create :enqueue
 
   validates :url, :record_id, :source_id, presence: true
+  validate :already_checked?
 
   def source
     Source.find(source_id)
@@ -21,6 +22,15 @@ class LinkCheckJob
   end
 
   private
+    def already_checked?
+      previous_job = LinkCheckJob.where(record_id: record_id).last
+
+      return unless previous_job
+
+      errors.add(:record_id,
+                 'Cannot create job for samerecord_id twice in 6 hours') if (DateTime.now.in_time_zone - previous_job.created_at) / 1.hour < 6
+    end
+
     def enqueue
       return unless ENV['LINK_CHECKING_ENABLED'] == 'true'
 
