@@ -28,7 +28,7 @@ class LinkCheckJob
       return unless previous_job
 
       errors.add(:record_id,
-                 'Cannot create job for samerecord_id twice in 6 hours') if (DateTime.now.in_time_zone - previous_job.created_at) / 1.hour < 6
+                 'Cannot create job for a record_id twice in 6 hours') if (DateTime.now.in_time_zone - previous_job.created_at) / 1.hour < 6
     end
 
     def enqueue

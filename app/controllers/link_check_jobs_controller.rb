@@ -3,7 +3,7 @@
 # app/controllers/link_check_jobs_controller.rb
 class LinkCheckJobsController < ApplicationController
   def create
-    @link_check = LinkCheckJob.create!(link_check_params)
+    @link_check = LinkCheckJob.create(link_check_params)
 
     render json: @link_check
   end
