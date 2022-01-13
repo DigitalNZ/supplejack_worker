@@ -27,8 +27,11 @@ class LinkCheckJob
 
       return unless previous_job
 
+      check_interval = ENV['LINK_CHECKING_INTERVAL'] || 6
+
       errors.add(:record_id,
-                 'Cannot create job for a record_id twice in 6 hours') if (DateTime.now.in_time_zone - previous_job.created_at) / 1.hour < 6
+                 I18n.t('link_check_job.error', record_id: record_id, check_interval: check_interval)
+                ) if (DateTime.now.in_time_zone - previous_job.created_at) / 1.hour < check_interval
     end
 
     def enqueue

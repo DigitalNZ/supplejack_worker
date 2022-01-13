@@ -45,6 +45,7 @@ describe LinkCheckJob do
             job = build(:link_check_job, url: 'http://google.co.nz', record_id: new_job.record_id)
 
             expect(job).to_not be_valid
+            expect(job.errors[:record_id]).to eq [I18n.t('link_check_job.error', record_id: job.record_id, check_interval: 6)]
           end
         end
       end
