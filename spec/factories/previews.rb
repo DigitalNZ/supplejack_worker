@@ -4,5 +4,10 @@
 
 FactoryBot.define do
   factory :preview do
+    parser_code { 'def foo;end' }
+    parser_id   { 123 }
+    index       { 0 }
+    user_id     { 123 }
+    format      { 'json' }
   end
 end
