@@ -3,9 +3,10 @@
 require 'rails_helper'
 
 describe Preview do
-  let(:preview_attributes) { { harvest_job: { user_id: 20, environment: 'preview', index: 150, parser_id: 'abc123', parser_code: 'code' } } }
   let(:job) { HarvestJob.new(environment: 'preview', index: 1, harvest_failure: {}) }
-  let(:preview) { build(:preview, id: 'abc123') }
+  let(:preview) { build(:preview, _id: 'abc123') }
+
+  before { allow(preview).to receive(:update_attributes) }
 
   describe '.spawn_preview_worker' do
     before do
@@ -14,23 +15,29 @@ describe Preview do
       allow(job).to        receive(:valid?).and_return true
     end
 
-    it 'creates a preview object' do
-      expect(Preview).to receive(:create)
-      Preview.spawn_preview_worker(preview_attributes)
-    end
 
     it 'creates a harvest job' do
-      expect(HarvestJob).to receive(:create).with(preview_attributes[:harvest_job]).and_return job
-      Preview.spawn_preview_worker(preview_attributes)
+      expect(HarvestJob).to receive(:create)
+                            .with({ environment: 'preview',
+                                    index: preview.index,
+                                    limit: preview.index + 1,
+                                    parser_code: preview.parser_code,
+                                    parser_id: preview.parser_id,
+                                    user_id: preview.user_id })
+                            .and_return job
+
+      preview.spawn_preview_worker
     end
 
     it 'enqueues the job' do
-      Preview.spawn_preview_worker(preview_attributes)
+      preview.spawn_preview_worker
+
       expect(PreviewWorker).to have_enqueued_sidekiq_job(job.id.to_s, preview.id)
     end
 
     it 'returns the preview_id' do
-      spawn_worker_response = Preview.spawn_preview_worker(preview_attributes)
+      spawn_worker_response = preview.spawn_preview_worker
+
       expect(spawn_worker_response).to eq preview
     end
 
@@ -49,12 +56,14 @@ describe Preview do
       it 'stops the currently active job' do
         expect(HarvestJob).to receive(:where).with(status: 'active', parser_id: job.parser_id, environment: 'preview') { [running_job] }
         expect(running_job).to receive(:stop!)
-        Preview.spawn_preview_worker(preview_attributes)
+
+        preview.spawn_preview_worker
       end
 
       it 'resaves the current running job' do
         expect(job).to receive(:save!)
-        Preview.spawn_preview_worker(preview_attributes)
+
+        preview.spawn_preview_worker
       end
     end
   end
