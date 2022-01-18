@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# https://github.com/rails/rails/issues/40904
-require "#{Rails.root}/lib/custom_logger"
-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -48,8 +45,4 @@ Rails.application.configure do
 
   # CUSTOM CONFIG GOES UNDER
   # this makes the upgrade process easier
-
-  config.log_level = ENV['LOG_LEVEL'] || :info
-  config.log_tags = [:request_id]
-  config.logger = ActiveSupport::TaggedLogging.new(CustomLogger.new(STDOUT))
 end
