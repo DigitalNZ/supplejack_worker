@@ -2,7 +2,7 @@
 
 class PreviewsController < ApplicationController
   def create
-    PreviewStartJob.perform_later(params[:preview][:id])
+    PreviewWorker.perform_async(params[:job_id], params[:preview_id])
 
     head :ok
   end
