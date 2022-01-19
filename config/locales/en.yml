@@ -30,4 +30,5 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  link_check_job:
+    error: Cannot create job for a %{record_id} twice in %{check_interval} hours
