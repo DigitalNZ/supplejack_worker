@@ -43,7 +43,7 @@ class HarvestJobsController < ApplicationController
       params.require(:harvest_job).permit(:created_at, :updated_at, :throughput, :invalid_records_count,
                                           :posted_records_count, :last_posted_record_id, :retried_records_count,
                                           :harvest_schedule_id, :_type, :limit, :index, :mode, :strategy,
-                                          :file_name, :stop, :parser_id, :version_id, :user_id, :environment,
+                                          :file_name, :stop, :parser_id, :parser_code, :version_id, :user_id, :environment,
                                           :start_time, :end_time, :records_count, :duration, :status,
                                           :status_message, :failed_records_count, :invalid_records,
                                           :harvest_failure, harvest_job: [:user_id, :parser_id, :version_id,
