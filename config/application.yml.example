@@ -14,6 +14,7 @@ test:
   HARVESTER_CACHING_ENABLED: "false"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   LINK_CHECKING_ENABLED: "true"
+  LINK_CHECKING_INTERVAL: 6
   LINKCHECKER_RECIPIENTS: "test@test.com"
   WORKER_KEY: YOUR_WORKER_KEY
 
@@ -24,6 +25,7 @@ development:
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
   HARVESTER_CACHING_ENABLED: "true"
   LINK_CHECKING_ENABLED: "true"
+  LINK_CHECKING_INTERVAL: 6
   LINKCHECKER_RECIPIENTS: "test@test.com"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   SECRET_KEY_BASE: 'some long hash value'
@@ -38,6 +40,7 @@ uat:
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
   HARVESTER_CACHING_ENABLED: "true"
   LINK_CHECKING_ENABLED: "true"
+  LINK_CHECKING_INTERVAL: 6
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   SECRET_KEY_BASE: 'some long hash value'
@@ -52,6 +55,7 @@ staging:
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
   HARVESTER_CACHING_ENABLED: "true"
   LINK_CHECKING_ENABLED: "true"
+  LINK_CHECKING_INTERVAL: 6
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   SECRET_KEY_BASE: 'some long hash value'
@@ -66,6 +70,7 @@ production:
   HARVESTER_API_KEY: YOUR_HARVESTER_API_KEY
   HARVESTER_CACHING_ENABLED: "true"
   LINK_CHECKING_ENABLED: "true"
+  LINK_CHECKING_INTERVAL: 6
   LINKCHECKER_RECIPIENTS: "bill@harvester.org"
   LINKCHECKER_EMAIL: "linkchecker@harvester.org"
   SECRET_KEY_BASE: 'some long hash value'

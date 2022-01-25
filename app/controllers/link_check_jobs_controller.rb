@@ -3,9 +3,15 @@
 # app/controllers/link_check_jobs_controller.rb
 class LinkCheckJobsController < ApplicationController
   def create
-    @link_check = LinkCheckJob.create!(link_check_params)
+    @job = LinkCheckJob.new(link_check_params)
 
-    render json: @link_check
+    if @job.valid?
+      @job.save!
+
+      render json: @job
+    else
+      render json: { errors: @job.errors.full_messages }, status: :bad_request
+    end
   end
 
   private
