@@ -20,8 +20,4 @@ class Preview < ActiveResource::Base
     attribute :harvest_job_errors,     :string
     attribute :format,                 :string
   end
-
-  def id
-    self._id
-  end
 end
