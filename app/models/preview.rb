@@ -18,6 +18,7 @@ class Preview < ActiveResource::Base
     attribute :validation_errors,      :string
     attribute :harvest_failure,        :string
     attribute :harvest_job_errors,     :string
+    attribute :enrichment_failures,    :string
     attribute :format,                 :string
   end
 end

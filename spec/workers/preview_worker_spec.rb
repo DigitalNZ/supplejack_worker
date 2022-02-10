@@ -7,12 +7,12 @@ describe PreviewWorker do
  Parser.new(strategy: 'xml', name: 'Natlib Pages', content: 'class NatlibPages < SupplejackCommon::Xml::Base; end', file_name: 'natlib_pages.rb',
 source: { source_id: 'source_id' }) }
   let(:job) { HarvestJob.new(environment: 'preview', parser_id: 'abc123', index: 3, harvest_failure: {}, last_posted_record_id: 1234) }
-  let(:preview) { mock_model(Preview, _id: '123').as_null_object }
+  let(:preview) { mock_model(Preview, _id: '123', enrichment_failures: nil).as_null_object }
 
   let(:worker) { PreviewWorker.new }
 
   let(:record1) {
- double(:record, raw_data: '{"id": "123"}', attributes: { title: 'Clip the dog', data_type: 'record' }, field_errors: {}, validation_errors: {}) }
+  double(:record, raw_data: '{"id": "123"}', attributes: { title: 'Clip the dog', data_type: 'record' }, field_errors: {}, validation_errors: {}) }
   let(:record2) { double(:record) }
 
   before do

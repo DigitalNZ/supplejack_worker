@@ -35,11 +35,7 @@ class EnrichmentWorker < AbstractWorker
       job.states.create!(page: 1)
     end
 
-    if records.blank?
-      job.finish!
-
-      return
-    end
+    return job.finish! if records.blank?
 
     while more_records?(records)
       records.each do |record|
@@ -62,6 +58,12 @@ class EnrichmentWorker < AbstractWorker
     enrichment_class.after(job.enrichment)
 
     job.finish! unless job.stopped?
+  rescue StandardError, ScriptError => e
+    job.create_enrichment_failure(
+      exception_class: e.class,
+      message: e.message,
+      backtrace: e.backtrace[0..30]
+    )
   end
   # rubocop:enable Metrics/MethodLength
 
@@ -102,6 +104,11 @@ class EnrichmentWorker < AbstractWorker
 
       enrichment.set_attribute_values
       if enrichment.errors.any?
+        job.create_enrichment_failure(
+          exception_class: 'AttributeError',
+          message: 'Exception raised in attribute blocks',
+          backtrace: enrichment.errors.map { |attr, errors| errors.map { |error| "#{attr}: #{error}" } }.flatten
+        )
         ElasticAPM.report(StandardError.new('Enrichment Error'))
         ElasticAPM.report_message("Enrichment Errors on #{enrichment_class} in Parser:
           #{@parser.id}. Backtrace:
@@ -122,6 +129,11 @@ class EnrichmentWorker < AbstractWorker
     ElasticAPM.report_message("Resource Not Found: #{enrichment.inspect}, this is occuring on #{job.enrichment} inside of #{@parser.id}")
 
   rescue StandardError => e
+    job.create_enrichment_failure(
+      exception_class: e.class,
+      message: e.message,
+      backtrace: e.backtrace[0..30]
+    )
     ElasticAPM.report(e)
     ElasticAPM.report_message("
       The enrichment #{job.enrichment} is erroring inside of parser #{@parser.id}. Backtrace:

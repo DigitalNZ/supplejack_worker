@@ -30,12 +30,12 @@ class PreviewWorker < HarvestWorker
 
     preview.update_attribute(:status, 'Worker starting. Loading parser and fetching data...')
 
-    unless stop_harvest?
-      job.records do |record, i|
-        next if i < job.index
-        process_record(record)
-        enrich_record(record)
-      end
+    job.records do |record, i|
+      break if stop_harvest?
+      next if i < job.index
+
+      process_record(record)
+      enrich_record(record)
     end
 
     job.finish!
@@ -101,6 +101,8 @@ class PreviewWorker < HarvestWorker
         enrichment_job.update_attribute(:record_id, current_record_id)
         worker = EnrichmentWorker.new
         worker.perform(enrichment_job.id)
+
+        update_preview_enrichment_failures(preview, enrichment_job)
       end
 
       preview.update_attribute(:status, 'All enrichments complete.')
@@ -111,5 +113,20 @@ class PreviewWorker < HarvestWorker
       return if preview_record.nil?
       preview.update_attribute(:api_record, strip_ids(preview_record.attributes).to_json)
       preview.update_attribute(:status, 'Preview complete.')
+    end
+
+    def update_preview_enrichment_failures(preview, enrichment_job)
+      enrichment_job.reload
+      return if enrichment_job.enrichment_failure.blank?
+
+      preview.update_attributes(
+        status: "Enrichment \"#{enrichment_job.enrichment}\" failed",
+        enrichment_failures: JSON.parse(preview.enrichment_failures || '[]').push(
+          enrichment_name: enrichment_job.enrichment,
+          exception_class: enrichment_job.enrichment_failure.exception_class,
+          message: enrichment_job.enrichment_failure.message,
+          backtrace: enrichment_job.enrichment_failure.backtrace
+        ).to_json
+      )
     end
 end

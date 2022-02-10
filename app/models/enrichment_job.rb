@@ -8,6 +8,7 @@ class EnrichmentJob < AbstractJob
 
   field :enrichment,  type: String
   field :record_id,   type: Integer
+  embeds_one :enrichment_failure
 
   validates :record_id, numericality: { other_than: 0, allow_nil: true, message: 'record_id cannot be zero' }
   validates_uniqueness_of :enrichment,
