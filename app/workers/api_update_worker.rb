@@ -23,7 +23,6 @@ class ApiUpdateWorker < AbstractWorker
   end
 
   def perform(path, attributes, job_id)
-    
     @job_id = job_id
     return if stop_harvest?
 
