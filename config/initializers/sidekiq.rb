@@ -12,6 +12,8 @@ Sidekiq.configure_client do |config|
   config.redis = { url: ENV['REDIS_URL'] }
 end
 
+Sidekiq.strict_args!
+
 
 # # Uncommment if you need to add HTTP Auth to Sidekiq dashboard
 # require 'sidekiq'
