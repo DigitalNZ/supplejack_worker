@@ -82,10 +82,10 @@ class HarvestWorker < AbstractWorker
     attributes.delete(:match_concepts)
 
     if async
-      ApiUpdateWorker.perform_async(path, { data_type => attributes, required_fragments: job.required_enrichments }, job.id.to_s)
+      ApiUpdateWorker.perform_async(path, { data_type => attributes, required_fragments: job.required_enrichments }.as_json, job.id.to_s)
     else
       api_update_worker = ApiUpdateWorker.new
-      api_update_worker.perform(path, { data_type => attributes, required_fragments: job.required_enrichments }, job.id.to_s)
+      api_update_worker.perform(path, { data_type => attributes, required_fragments: job.required_enrichments }.as_json, job.id.to_s)
     end
   end
 

@@ -56,7 +56,7 @@ module Matcher
           match_status: 'strong'
         }
 
-        ApiUpdateWorker.perform_async('/harvester/concepts.json', { concept: post_attributes }, args[:job_id])
+        ApiUpdateWorker.perform_async('/harvester/concepts.json', { concept: post_attributes }.as_json, args[:job_id])
         true
       end
   end
