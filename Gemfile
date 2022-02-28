@@ -16,11 +16,12 @@ gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
+# gem 'rails', '7.0.2.2'
 gem 'rails', '~> 6.1.4.4'
 gem 'responders'
 gem 'sidekiq', '~> 6.4.0'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.10.6.1'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'pm/rails-7'
 # gem 'supplejack_common', path: '~/webspace/supplejack_common'
 gem 'whenever', require: false
 gem 'brakeman'
