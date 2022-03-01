@@ -16,7 +16,7 @@ gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
-gem 'rails', '7.0.2.2'
+gem 'rails', '~> 7.0.2'
 gem 'responders'
 gem 'sidekiq', '~> 6.4.0'
 gem 'sinatra', require: nil
