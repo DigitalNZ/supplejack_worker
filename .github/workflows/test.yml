@@ -23,7 +23,7 @@ jobs:
 
     services:
       mongodb:
-        image: mongo:3.4.23
+        image: mongo:4.4
         ports:
           - 27017:27017
 
@@ -61,7 +61,7 @@ jobs:
       with:
         bundler-cache: true
 
-    - name: Run RSpec unit tests
+    - name: Run brakeman
       run: |
         gem install brakeman
         brakeman --run-all-checks
@@ -78,7 +78,7 @@ jobs:
       with:
         bundler-cache: true
 
-    - name: Run RSpec unit tests
+    - name: Run the gems audit
       run: |
         gem install bundler-audit
-        bundle audit check --update --ignore CVE-2021-22885 CVE-2021-22904 CVE-2021-22902 CVE-2021-22942
+        bundle audit check --update
