@@ -27,7 +27,7 @@ class LinkCheckJob
 
       return unless previous_job
 
-      check_interval = ENV['LINK_CHECKING_INTERVAL'] || 6
+      check_interval = ENV.fetch('LINK_CHECKING_INTERVAL', 6).to_i
 
       errors.add(:record_id,
                  I18n.t('link_check_job.error', record_id: record_id, check_interval: check_interval)
