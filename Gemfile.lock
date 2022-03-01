@@ -224,9 +224,6 @@ GEM
     kaminari-mongoid (1.0.2)
       kaminari-core (~> 1.0)
       mongoid
-    listen (3.0.8)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
     llhttp-ffi (0.4.0)
       ffi-compiler (~> 1.0)
       rake (~> 13.0)
@@ -341,9 +338,6 @@ GEM
       zeitwerk (~> 2.5)
     rainbow (3.1.1)
     rake (13.0.6)
-    rb-fsevent (0.11.1)
-    rb-inotify (0.10.1)
-      ffi (~> 1.0)
     redis (4.6.0)
     regexp_parser (2.2.1)
     request_store (1.5.1)
@@ -428,10 +422,6 @@ GEM
       rack (~> 2.2)
       rack-protection (= 2.2.0)
       tilt (~> 2.0)
-    spring (2.1.1)
-    spring-watcher-listen (2.0.1)
-      listen (>= 2.7, < 4.0)
-      spring (>= 1.2, < 3.0)
     strscan (3.0.1)
     thor (1.2.1)
     tilt (2.0.10)
@@ -470,7 +460,6 @@ DEPENDENCIES
   figaro
   kaminari
   kaminari-mongoid
-  listen (>= 3.0.5, < 3.2)
   lograge (~> 0.11.2)
   mimemagic (= 0.3.10)
   mongoid (~> 7.0)
@@ -492,8 +481,6 @@ DEPENDENCIES
   rubocop-rspec
   sidekiq (~> 6.4.0)
   sinatra
-  spring
-  spring-watcher-listen (~> 2.0.0)
   supplejack_common!
   timecop
   whenever
