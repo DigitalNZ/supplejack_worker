@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 38a7c9c38387ea10c007842f5c423502d5db9c94
-  branch: pm/rails-7
+  revision: 4f52eec3100774944178915a167fbc86f66c57dc
+  tag: v2.10.7
   specs:
     supplejack_common (0.0.2)
       actionpack (>= 6.0.3.5, < 7.0.3.0)
@@ -111,8 +111,8 @@ GEM
     amazing_print (1.4.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.560.0)
-    aws-sdk-core (3.127.0)
+    aws-partitions (1.565.0)
+    aws-sdk-core (3.129.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
@@ -204,7 +204,7 @@ GEM
     i18n (1.10.0)
       concurrent-ruby (~> 1.0)
     io-wait (0.2.1)
-    jmespath (1.6.0)
+    jmespath (1.6.1)
     json (2.6.1)
     jsonapi-renderer (0.2.2)
     jsonpath (0.5.8)
