@@ -16,13 +16,14 @@ class EnrichmentJob < AbstractJob
                           message: I18n.t('job.already_running', type: 'Enrichment'), if: :active?
 
   def self.create_from_harvest_job(job, enrichment)
-    create!(parser_id:         job.parser_id,
-            version_id:        job.version_id,
-            user_id:           job.user_id,
-            environment:       job.environment,
-            harvest_job_id:    job.id,
-            enrichment:        enrichment,
-            parser_code:       job.parser_code)
+    create!(parser_id:      job.parser_id,
+            version_id:     job.version_id,
+            source_id:      job.source_id,
+            user_id:        job.user_id,
+            environment:    job.environment,
+            harvest_job_id: job.id,
+            enrichment:     enrichment,
+            parser_code:    job.parser_code)
   end
 
   def enqueue

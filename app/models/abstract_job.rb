@@ -24,6 +24,7 @@ class AbstractJob
   field :user_id,               type: String
   field :parser_id,             type: String
   field :version_id,            type: String
+  field :source_id,             type: String
   field :environment,           type: String
   field :invalid_records_count, type: Integer,  default: 0
   field :failed_records_count,  type: Integer,  default: 0
