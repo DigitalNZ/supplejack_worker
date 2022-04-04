@@ -49,7 +49,7 @@ class AbstractJob
     valid_fields = %i[status environment parser_id]
 
     page = search_params.delete(:page) || 1
-    amount = search_params.delete(:limit) || 50
+    limit = search_params.delete(:limit) || 50
 
     search_params.delete_if { |key, _value| !valid_fields.include?(key) }
 
@@ -62,9 +62,7 @@ class AbstractJob
       end
     end
 
-    scope = scope.where(search_params)
-    scope = scope.limit(amount.to_i) if amount
-    scope
+    scope.where(search_params).limit(limit.to_i).to_a
   end
 
   def self.clear_raw_data
