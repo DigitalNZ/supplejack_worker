@@ -49,7 +49,7 @@ class AbstractJob
     valid_fields = %i[status environment parser_id]
 
     page = search_params.delete(:page) || 1
-    amount = search_params.delete(:limit) || nil
+    amount = search_params.delete(:limit) || 50
 
     search_params.delete_if { |key, _value| !valid_fields.include?(key) }
 
