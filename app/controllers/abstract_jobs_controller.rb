@@ -7,19 +7,23 @@ class AbstractJobsController < ApplicationController
   def index
     @abstract_jobs = AbstractJob.search(search_params)
 
-    headers = ['X-total', 'X-offset', 'X-limit']
-    values = %i[total_count offset_value limit_value]
+    header_values = {
+      'X-total' => :total_count,
+      'X-offset' => :offset_value,
+      'X-limit' => :limit_value
+    }
 
-    headers.zip(values) do |header, value|
+    header_values.each do |header, value|
       response.headers[header] = @abstract_jobs.send(value).to_s
     end
+
 
     render json: @abstract_jobs
   end
 
-  def jobs_since
-    render json: AbstractJob.jobs_since(search_params)
-  end
+  # def jobs_since
+  #   render json: AbstractJob.jobs_since(search_params)
+  # end
 
   private
     def search_params

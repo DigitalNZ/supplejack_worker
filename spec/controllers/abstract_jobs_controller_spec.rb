@@ -14,11 +14,13 @@ describe AbstractJobsController do
       allow(AbstractJob).to receive(:search).with(
         hash_including('status' => 'active')
       ).and_call_original
+
       get :index, params: { status: 'active' }
     end
 
     it 'should set pagination headers' do
       get :index, params: { status: 'active' }
+
       expect(response.headers['X-total']).to eq '45'
       expect(response.headers['X-offset']).to eq '0'
       expect(response.headers['X-limit']).to eq '20'
@@ -27,6 +29,7 @@ describe AbstractJobsController do
 
   it 'prevent access if worker_key is not provided' do
     get :index, params: { status: 'active' }
+
     expect(response.status).to eq(401)
   end
 end
