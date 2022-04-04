@@ -80,7 +80,8 @@ Rails.application.configure do
 
   # CUSTOM CONFIG GOES UNDER
   # this makes the upgrade process easier
-  ActionMailer::Base.smtp_settings = {
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
     address: ENV['SMTP_ADDRESS'],
     domain: ENV['SMTP_DOMAIN'],
     port: ENV['SMTP_PORT'],
