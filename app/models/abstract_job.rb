@@ -223,4 +223,8 @@ class AbstractJob
     return if states.count <= 5
     states.first.destroy!
   end
+
+  def source_id
+    parser.source.source_id
+  end
 end

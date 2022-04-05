@@ -22,6 +22,7 @@ class EnrichmentJobSerializer < ActiveModel::Serializer
     processed_count
     record_id
     last_posted_record_id
+    source_id
   ]
 
   # attribute starting with _ does not get serialized via attributes eg :_type

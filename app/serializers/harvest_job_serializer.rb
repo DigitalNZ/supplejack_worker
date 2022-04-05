@@ -24,6 +24,7 @@ class HarvestJobSerializer < ActiveModel::Serializer
     posted_records_count
     retried_records_count
     last_posted_record_id
+    source_id
   ]
 
   # attribute starting with _ does not get serialized via attributes eg :_type
