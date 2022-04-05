@@ -82,10 +82,6 @@ class HarvestJob < AbstractJob
     ElasticAPM.report(e)
   end
 
-  def source_id
-    parser.source.source_id
-  end
-
   def finish!
     flush_old_records if full_and_flush_available?
     super
