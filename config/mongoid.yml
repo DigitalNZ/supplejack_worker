@@ -1,124 +1,28 @@
-default:
+default: &default
   clients:
     default:
-      database: worker_uat
       hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
+      database: <%= ENV.fetch('MONGO_DATABASE', "worker_#{Rails.env}") %>
       options:
-        read:
-          mode: :primary
         auth_source: admin
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
-    api:
-      database: dnz_api_uat
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
+        user: <%= ENV.fetch('MONGO_USER', nil) %>
+        password: <%= ENV.fetch('MONGO_PASSWORD', nil) %>
+        connect: <%= ENV['MONGO_CONNECT_MODE'] %>
+        max_pool_size: <%= ENV.fetch('MONGO_MAX_POOL_SIZE', 500).to_i %>
         read:
-          mode: :primary
-        auth_source: admin
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
+          mode: <%= ENV.fetch('MONGO_READ_MODE', 'primary').to_sym %>
 
 development:
-  clients:
-    default:
-      database: worker_development
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-
-    api:
-      database: dnz_api_development
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :nearest
-  options:
+  <<: *default
 
 test:
-  clients:
-    default:
-      database: worker_test
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :nearest
-        max_retries: 1
-        retry_interval: 0
-    api:
-      database: dnz_api_test
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :nearest
+  <<: *default
 
 uat:
-  clients:
-    default:
-      database: worker_uat
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :primary
-        auth_source: admin
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
-    api:
-      database: dnz_api_uat
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :primary
-        auth_source: admin
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
+  <<: *default
+
 staging:
-  clients:
-    default:
-      database: worker_staging
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :primary
-        auth_source: admin
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
-    api:
-      database: dnz_api_staging
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :primary
-        auth_source: admin
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
+  <<: *default
 
 production:
-  clients:
-    default:
-      database: worker_production
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        read:
-          mode: :primary
-        auth_source: admin
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
-        connect: <%= ENV['MONGO_CONNECT_MODE'] %>
-    api:
-      database: dnz_api_production
-      hosts: <%= ENV.fetch('MONGO_HOSTS', 'localhost:27017').gsub(/\s+/, '')&.split(',') %>
-      options:
-        auth_source: admin
-        read:
-          mode: :primary_preferred
-        max_pool_size: 500
-        user: <%= ENV['MONGO_USER'] %>
-        password: <%= ENV['MONGO_PASSWORD'] %>
-        connect: <%= ENV['MONGO_CONNECT_MODE'] %>
+  <<: *default
