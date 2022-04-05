@@ -7,10 +7,7 @@ class AbstractJobsController < ApplicationController
   def index
     @abstract_jobs = AbstractJob.search(search_params)
 
-    headers = ['X-total', 'X-offset', 'X-limit']
-    values = %i[total_count offset_value limit_value]
-
-    headers.zip(values) do |header, value|
+    headers_and_values_for_pagination.each do |header, value|
       response.headers[header] = @abstract_jobs.send(value).to_s
     end
 
@@ -24,5 +21,11 @@ class AbstractJobsController < ApplicationController
   private
     def search_params
       params.permit(:status, :environment, :parser_id, :datetime, :page)
+    end
+
+    def headers_and_values_for_pagination
+      { 'X-total' => :total_count,
+        'X-offset' => :offset_value,
+        'X-limit' => :limit_value }
     end
 end

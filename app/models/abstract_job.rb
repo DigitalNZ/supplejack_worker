@@ -45,26 +45,21 @@ class AbstractJob
   scope :disposable, -> { lt(created_at: Time.zone.now - 3.months) }
 
   def self.search(params)
-    search_params = params.to_h.try(:symbolize_keys) || {}
-    valid_fields = %i[status environment parser_id]
+    params = params.to_h.try(:symbolize_keys) || {}
+    page = params.delete(:page) || 1
+    limit = params.delete(:limit) || 50
+    scope = self.page(page.to_i)
 
-    page = search_params.delete(:page) || 1
-    amount = search_params.delete(:limit) || nil
+    params.delete_if { |key, _value| %i[status environment parser_id].exclude?(key) }
 
-    search_params.delete_if { |key, _value| !valid_fields.include?(key) }
-
-    scope = self.page(page.to_i).desc(:start_time)
-
-    search_params.each_pair do |attribute, value|
+    params.each_pair do |attribute, value|
       if value.is_a?(Array)
         scope = scope.in(attribute => value)
-        search_params.delete(attribute)
+        params.delete(attribute)
       end
     end
 
-    scope = scope.where(search_params)
-    scope = scope.limit(amount.to_i) if amount
-    scope
+    scope.where(params).limit(limit.to_i).desc(:created_at)
   end
 
   def self.clear_raw_data
