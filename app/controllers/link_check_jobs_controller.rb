@@ -2,6 +2,8 @@
 
 # app/controllers/link_check_jobs_controller.rb
 class LinkCheckJobsController < ApplicationController
+  before_action :authenticate_user!
+
   def create
     @job = LinkCheckJob.new(link_check_params)
 
