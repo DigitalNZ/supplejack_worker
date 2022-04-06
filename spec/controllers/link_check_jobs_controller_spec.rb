@@ -10,6 +10,7 @@ describe LinkCheckJobsController do
       before do
         # This will stop it from running a sidekiq job
         ENV['LINK_CHECKING_ENABLED'] == 'true'
+        request.headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
         post :create, params: { link_check: attributes }
       end
 
@@ -33,6 +34,7 @@ describe LinkCheckJobsController do
         attributes = attributes_for(:link_check_job)
         attributes[:record_id] = job.record_id
 
+        request.headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
         post :create, params: { link_check: attributes }
       end
 
