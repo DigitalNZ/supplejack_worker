@@ -29,10 +29,10 @@ gem 'mimemagic', '= 0.3.10'
 gem "rexml", ">= 3.2.5"
 gem 'elastic-apm'
 
-
 # AWS gems required by parsers
+gem 'aws-sdk-comprehend', '~> 1.60'
 gem 'aws-sdk-s3', '~> 1'
-gem 'aws-sdk-rekognition', '~> 1.59'
+gem 'aws-sdk-rekognition', '~> 1.66'
 
 group :test do
   gem 'database_cleaner-mongoid'
