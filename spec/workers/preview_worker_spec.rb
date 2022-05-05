@@ -190,7 +190,7 @@ source: { source_id: 'source_id' }) }
       before { allow(record1).to receive(:valid?) { false } }
 
       it 'should update the preview object with validation errors' do
-        expect(preview).to receive(:validation_errors=).with([].to_json)
+        expect(preview).to receive(:validation_errors=).with({}.to_json)
         worker.send(:process_record, record1)
       end
     end
@@ -295,11 +295,13 @@ source: { source_id: 'source_id' }) }
   end
 
   describe '#validation_errors' do
-    let(:record) { double(:record) }
+    let(:record) { double(:record, attributes: { title: 'wrong' }) }
+
+    before { ErrorStruct = Struct.new(:attribute, :message, :detail) }
 
     it 'returns the validation errors' do
-      allow(record).to receive(:errors) { { title: 'WRONG!' } }
-      expect(worker.send(:validation_errors, record)).to eq([{ title: 'WRONG!' }])
+      allow(record).to receive(:errors) { [ErrorStruct.new(:title, 'invalid', { value: 'wrong' })] }
+      expect(worker.send(:validation_errors, record)).to eq({ title: ['invalid, value: wrong'] })
     end
 
     it 'returns an empty hash if there is no @last_processed_record ' do

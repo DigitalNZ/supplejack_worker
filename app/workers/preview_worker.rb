@@ -65,7 +65,17 @@ class PreviewWorker < HarvestWorker
     end
 
     def validation_errors(record)
-      !!record ? record.errors.map { |a, m| { a => m } } : {}
+      return {} if record.blank?
+
+      errors = Hash.new([])
+      record.errors.each do |error|
+        message = error.message
+        message += ", value: #{error.detail[:value]}" if error.detail[:value].present?
+
+        errors[error.attribute] += [message]
+      end
+
+      errors
     end
 
     def current_record_id
