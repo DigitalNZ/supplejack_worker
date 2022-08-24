@@ -356,9 +356,10 @@ thumbnails: {})
       expect(job.duration).to be_nil
     end
 
-    it 'returns nil end_time is nil' do
+    it 'returns now - start_time if end_time is nil' do
+      job.start_time = time - 10.seconds
       job.end_time = nil
-      expect(job.duration).to be_nil
+      expect(job.duration).to eq(Time.now.to_i - job.start_time.to_i)
     end
 
     it 'returns the proper duration' do
