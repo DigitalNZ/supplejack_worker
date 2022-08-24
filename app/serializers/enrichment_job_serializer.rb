@@ -18,6 +18,8 @@ class EnrichmentJobSerializer < ActiveModel::Serializer
     version_id
     environment
     enrichment
+    enrichment_failure
+    harvest_failure
     posted_records_count
     processed_count
     record_id
