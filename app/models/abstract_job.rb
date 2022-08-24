@@ -182,8 +182,8 @@ class AbstractJob
   end
 
   def duration
-    return nil unless start_time && end_time
-    end_time.to_i - start_time.to_i
+    return nil unless start_time
+    (end_time&.to_i || DateTime.now.to_i) - start_time.to_i
   end
 
   def calculate_errors_count
