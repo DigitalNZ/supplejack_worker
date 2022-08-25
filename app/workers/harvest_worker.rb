@@ -13,8 +13,7 @@ class HarvestWorker < AbstractWorker
     job_id = msg['args'].first
     job = AbstractJob.find(job_id)
     job.update_attribute(:end_time, Time.zone.now)
-    job.update_attribute(:status_message, "Failed with exception #{msg['error_message']}")
-    job.error!
+    job.fail_job("Failed with exception #{msg['error_message']}")
 
     Sidekiq.logger.warn "HarvestJob #{job_id} FAILED with exception #{msg['error_message']}"
   end

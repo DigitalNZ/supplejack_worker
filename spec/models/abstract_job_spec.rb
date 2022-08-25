@@ -362,9 +362,8 @@ thumbnails: {})
       expect(job.duration).to be_nil
     end
 
-    it 'returns now - start_time if end_time is nil' do
-      job.start_time = time - 10.seconds
-      job.end_time = nil
+    it 'returns now - start_time if end_time is nil and job is active' do
+      job.update(start_time: time - 10.seconds, end_time: nil, status: 'active')
       expect(job.duration).to eq(Time.now.to_i - job.start_time.to_i)
     end
 

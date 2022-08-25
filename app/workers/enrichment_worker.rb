@@ -12,9 +12,9 @@ class EnrichmentWorker < AbstractWorker
     job.create_enrichment_failure(
       exception_class: e.class,
       message: e.message,
-      backtrace: e.backtrace[0..30]
+      backtrace: e.backtrace && e.backtrace[0..30]
     )
-    fail_job("Failed with exception #{msg['error_message']}")
+    job.fail_job("Failed with exception #{msg['error_message']}")
 
     Sidekiq.logger.warn "EnrichmentJob #{job_id} FAILED with exception #{msg['error_message']}"
   end
