@@ -5,12 +5,16 @@ class EnrichmentWorker < AbstractWorker
   include Sidekiq::Job
   sidekiq_options retry: 5, queue: 'default'
 
-  sidekiq_retries_exhausted do |msg|
+  sidekiq_retries_exhausted do |msg, e|
     job_id = msg['args'].first
     job = AbstractJob.find(job_id)
     job.update_attribute(:end_time, Time.zone.now)
-    job.update_attribute(:status_message, "Failed with exception #{msg['error_message']}")
-    job.error!
+    job.create_enrichment_failure(
+      exception_class: e.class,
+      message: e.message,
+      backtrace: e.backtrace[0..30]
+    )
+    fail_job("Failed with exception #{msg['error_message']}")
 
     Sidekiq.logger.warn "EnrichmentJob #{job_id} FAILED with exception #{msg['error_message']}"
   end
@@ -58,12 +62,6 @@ class EnrichmentWorker < AbstractWorker
     enrichment_class.after(job.enrichment)
 
     job.finish! unless job.stopped?
-  rescue StandardError, ScriptError => e
-    job.create_enrichment_failure(
-      exception_class: e.class,
-      message: e.message,
-      backtrace: e.backtrace[0..30]
-    )
   end
   # rubocop:enable Metrics/MethodLength
 
