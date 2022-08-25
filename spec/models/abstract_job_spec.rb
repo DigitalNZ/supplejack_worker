@@ -356,6 +356,12 @@ thumbnails: {})
       expect(job.duration).to be_nil
     end
 
+    it 'returns nil if end_time is blank and job not active' do
+      job.stop!
+      job.update(start_time: time - 10.seconds, end_time: nil)
+      expect(job.duration).to be_nil
+    end
+
     it 'returns now - start_time if end_time is nil' do
       job.start_time = time - 10.seconds
       job.end_time = nil

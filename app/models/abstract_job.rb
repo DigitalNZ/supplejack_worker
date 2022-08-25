@@ -182,7 +182,7 @@ class AbstractJob
   end
 
   def duration
-    return nil unless start_time
+    return nil if start_time.blank? || (!active? && end_time.blank?)
     (end_time&.to_i || DateTime.now.to_i) - start_time.to_i
   end
 
