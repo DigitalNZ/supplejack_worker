@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+plugin 'metrics'
+
 # To avoid SIGTERMS on scaledown in ElasticAPM
 # https://www.rubydoc.info/gems/puma/Puma%2FDSL:raise_exception_on_sigterm
 raise_exception_on_sigterm false

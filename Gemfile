@@ -16,6 +16,7 @@ gem 'oai', '~> 1.1.0' # faraday needs to be updated for 1.2.0
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
+gem 'puma-metrics'
 gem 'rails', '~> 7.0.3'
 gem 'responders'
 gem 'sidekiq', '~> 6.4.0'
