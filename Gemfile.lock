@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 117f6bd1d38da4e7bd50d949ac5a29851c6cc220
-  tag: v2.10.8
+  revision: bac9f1ff04d82c8bfee2c7ed8d4ddc53c73b2bd4
+  tag: v2.11
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -207,7 +207,7 @@ GEM
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.1)
-    json (2.6.2)
+    json (2.6.3)
     jsonapi-renderer (0.2.2)
     jsonpath (0.5.8)
       multi_json
@@ -448,6 +448,7 @@ GEM
 PLATFORMS
   x86_64-darwin-19
   x86_64-darwin-20
+  x86_64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
@@ -493,4 +494,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   2.3.12
+   2.4.3
