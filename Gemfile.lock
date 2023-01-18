@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 56b914ad6304228b40a921a7f6353c3e865a9a5c
-  branch: rm/sj-scroll-harvest
+  revision: bac9f1ff04d82c8bfee2c7ed8d4ddc53c73b2bd4
+  tag: v2.11
   specs:
     supplejack_common (0.0.2)
       actionpack
