@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: bac9f1ff04d82c8bfee2c7ed8d4ddc53c73b2bd4
-  tag: v2.11
+  revision: 99c5ee55238ca6bfc57f20fb51bf0fd72095aba9
+  branch: rm/delete-if
   specs:
     supplejack_common (0.0.2)
       actionpack
@@ -415,7 +415,7 @@ GEM
       rubocop (~> 1.19)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
-    sanitize (6.0.0)
+    sanitize (6.0.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     sidekiq (6.4.1)

@@ -21,7 +21,7 @@ gem 'rails', '~> 7.0.3'
 gem 'responders'
 gem 'sidekiq', '~> 6.4.0'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.11'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'rm/delete-if'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
