@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 99c5ee55238ca6bfc57f20fb51bf0fd72095aba9
+  revision: 2202d1060f1a51d3de09e02288d8f628bea72ca4
   branch: rm/delete-if
   specs:
     supplejack_common (0.0.2)
@@ -246,7 +246,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2022.0105)
+    mime-types-data (3.2023.0218.1)
     mimemagic (0.3.10)
       nokogiri (~> 1)
       rake
