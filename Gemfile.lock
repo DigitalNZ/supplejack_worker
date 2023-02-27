@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/DigitalNZ/supplejack_common
-  revision: 2202d1060f1a51d3de09e02288d8f628bea72ca4
-  branch: rm/delete-if
+  revision: 79502528b3ad29a0eb58d76788fd0d00eecfdaaf
+  tag: v2.11.1
   specs:
     supplejack_common (0.0.2)
       actionpack
