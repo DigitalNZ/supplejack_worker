@@ -206,6 +206,7 @@ GEM
     http-form_data (2.3.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
+    jaro_winkler (1.5.4)
     jmespath (1.6.1)
     json (2.6.3)
     jsonapi-renderer (0.2.2)
@@ -440,6 +441,7 @@ GEM
     websocket-extensions (0.1.5)
     whenever (1.0.0)
       chronic (>= 0.6.3)
+    yomu (0.1.5)
     zeitwerk (2.6.7)
 
 PLATFORMS
@@ -462,6 +464,7 @@ DEPENDENCIES
   elastic-apm
   factory_bot_rails
   figaro
+  jaro_winkler
   kaminari
   kaminari-mongoid
   lograge (~> 0.11.2)
@@ -489,6 +492,7 @@ DEPENDENCIES
   supplejack_common!
   timecop
   whenever
+  yomu
 
 BUNDLED WITH
    2.4.3

@@ -37,7 +37,7 @@ services:
       - redis
 
   redis:
-    image: redis:2.8
+    image: redis:7
     restart: always
     ports:
       - 6379:6379
