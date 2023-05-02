@@ -35,7 +35,7 @@ ENV RAILS_ENV=$RAILS_ENV
 
 FROM ruby:3.0.3-alpine3.15
 
-ARG PACKAGES="build-base tzdata bash libxslt libxml2-dev libxslt-dev"
+ARG PACKAGES="build-base tzdata bash libxslt libxml2-dev libxslt-dev openjdk8-jre"
 
 # Change TimeZone
 ENV TZ=Pacific/Auckland
