@@ -29,6 +29,7 @@ gem 'mimemagic', '= 0.3.10'
 gem "rexml", ">= 3.2.5"
 gem 'elastic-apm'
 gem 'jaro_winkler'
+gem 'yomu'
 
 # AWS gems required by parsers
 gem 'aws-sdk-comprehend', '~> 1.60'

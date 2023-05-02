@@ -441,6 +441,7 @@ GEM
     websocket-extensions (0.1.5)
     whenever (1.0.0)
       chronic (>= 0.6.3)
+    yomu (0.1.5)
     zeitwerk (2.6.7)
 
 PLATFORMS
@@ -491,6 +492,7 @@ DEPENDENCIES
   supplejack_common!
   timecop
   whenever
+  yomu
 
 BUNDLED WITH
    2.4.3
