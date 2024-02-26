@@ -19,7 +19,7 @@ gem 'puma'
 gem 'puma-metrics'
 gem 'rails', '~> 7.0.4'
 gem 'responders'
-gem 'sidekiq', '~> 6.4.0'
+gem 'sidekiq', '6.5.10'
 gem 'sinatra', require: nil
 gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.11.1'
 gem 'whenever', require: false
@@ -50,4 +50,5 @@ group :test, :development do
   gem 'rubocop', require: false
   gem 'rubocop-rails_config', require: false
   gem 'rubocop-rspec', require: false
+  gem 'codeclimate_diff', github: 'boost/codeclimate_diff'
 end
