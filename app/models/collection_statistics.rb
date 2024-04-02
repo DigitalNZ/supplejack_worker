@@ -40,7 +40,7 @@ class CollectionStatistics
       send("#{status}_records=", []) if send("#{status}_records").nil?
 
       records = send("#{status}_records")
-      record = { record_id: record_id, landing_url: landing_url }
+      record = { record_id:, landing_url: }
       return if records.include?(record)
 
       records << record

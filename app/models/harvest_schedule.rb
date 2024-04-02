@@ -83,9 +83,9 @@ class HarvestSchedule
 
   def create_job
     if active?
-      harvest_jobs.create(parser_id: parser_id,
-                          environment: environment,
-                          mode: mode, enrichments: enrichments)
+      harvest_jobs.create(parser_id:,
+                          environment:,
+                          mode:, enrichments:)
 
       self.last_run_at = Time.zone.now
       self.status = 'inactive' unless recurrent

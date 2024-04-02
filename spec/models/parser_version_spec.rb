@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 describe ParserVersion do
-  let(:parser) { Parser.new(name: 'Europeana', id: '123', data_type: 'Record', source: source) }
+  let(:parser) { Parser.new(name: 'Europeana', id: '123', data_type: 'Record', source:) }
   let(:parser_version) { ParserVersion.new(parser_id: '123') }
   let(:parser_version_no_job) { ParserVersion.new(parser_id: '1') }
   let(:job) { mock_model(HarvestJob).as_null_object }

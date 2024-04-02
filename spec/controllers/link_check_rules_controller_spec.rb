@@ -20,7 +20,7 @@ describe LinkCheckRulesController do
       it 'performs a where if link_check_rule is defined' do
         params = { link_check_rule: { collection_title: 'link_check_rule' } }
         expect(LinkCheckRule).to receive(:where).with(params[:link_check_rule].stringify_keys)
-        get :index, params: params, format: 'json'
+        get :index, params:, format: 'json'
       end
     end
 

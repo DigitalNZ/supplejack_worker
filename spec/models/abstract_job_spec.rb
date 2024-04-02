@@ -450,7 +450,7 @@ thumbnails: {})
   describe '#job_states' do
     let(:stateful_job) { create(:harvest_job, :stateful) }
     let(:states) { build_list(:state, 5) }
-    let(:full_job)    { create(:harvest_job, states: states) }
+    let(:full_job)    { create(:harvest_job, states:) }
 
     it 'can have an embedded history of the job state' do
       expect(stateful_job.states.count).not_to eq(0)

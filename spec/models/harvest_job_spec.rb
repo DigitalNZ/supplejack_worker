@@ -29,7 +29,7 @@ describe HarvestJob do
 
     %w[normal full_and_flush incremental].each do |mode|
       it "is valid with mode of '#{mode}'" do
-        job1 = build(:harvest_job, parser_id: '333', mode: mode)
+        job1 = build(:harvest_job, parser_id: '333', mode:)
         expect(job1).to be_valid
       end
     end

@@ -11,7 +11,7 @@ class ParserVersion < ActiveResource::Base
 
   def last_harvested_at
     HarvestJob.where(
-      parser_id: parser_id,
+      parser_id:,
       status: 'finished',
       environment: { '$ne': 'preview' }
     ).max(:start_time)
