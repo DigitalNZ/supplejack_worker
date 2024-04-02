@@ -1,4 +1,4 @@
-FROM ruby:3.0.3-alpine3.15 AS builder
+FROM ruby:3.2.2-alpine3.18 AS builder
 
 ARG BUILD_PACKAGES="build-base curl-dev git"
 ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev"
@@ -33,7 +33,7 @@ ENV RAILS_ENV=$RAILS_ENV
 
 ############### Build step done ###############
 
-FROM ruby:3.0.3-alpine3.15
+FROM ruby:3.2.2-alpine3.18
 
 ARG PACKAGES="build-base tzdata bash libxslt libxml2-dev libxslt-dev"
 
@@ -45,6 +45,8 @@ WORKDIR /app
 # install packages
 RUN apk add --no-cache $PACKAGES
 
+# This is needed for the pipeline build (it breaks without the freedesktop package). 
+# There is no newer version of buster, so we will keep using this version for now
 COPY --from=ruby:3.0.0-buster /usr/share/mime/packages/freedesktop.org.xml /usr/share/mime/packages/
 COPY --from=builder $GEM_HOME $GEM_HOME
 COPY --from=builder /app /app
