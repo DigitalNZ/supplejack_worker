@@ -72,9 +72,9 @@ class AbstractJob
   def parser
     return @parser if @parser.present?
     if version_id.present?
-      @parser = ParserVersion.find(version_id, params: { parser_id: parser_id })
+      @parser = ParserVersion.find(version_id, params: { parser_id: })
     elsif environment.present? && !preview?
-      version = ParserVersion.find(:one, from: :current, params: { parser_id: parser_id, environment: environment })
+      version = ParserVersion.find(:one, from: :current, params: { parser_id:, environment: })
       version.parser_id = parser_id
       self.version_id = version.id if version.present?
       @parser = version

@@ -19,7 +19,7 @@ module Api
     def self.delete(id)
       Api::Request.new(
         '/harvester/records/delete',
-        { id: id }
+        { id: }
       ).put
     end
   end

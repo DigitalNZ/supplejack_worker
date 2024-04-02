@@ -116,7 +116,7 @@ class LinkCheckWorker
     end
 
     def set_record_status(record_id, status)
-      Api::Record.put(record_id, { record: { status: status } })
+      Api::Record.put(record_id, { record: { status: } })
       add_record_stats(record_id, status)
     rescue StandardError
       Sidekiq.logger.warn("LinkCheckWorker[#{record_id}]: Record not found when updating status = #{status} in LinkChecking. Ignoring.")

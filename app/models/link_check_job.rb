@@ -23,14 +23,14 @@ class LinkCheckJob
 
   private
     def already_checked?
-      previous_job = LinkCheckJob.where(record_id: record_id).last
+      previous_job = LinkCheckJob.where(record_id:).last
 
       return unless previous_job
 
       check_interval = ENV.fetch('LINK_CHECKING_INTERVAL', 6).to_i
 
       errors.add(:record_id,
-                 I18n.t('link_check_job.error', record_id: record_id, check_interval: check_interval)
+                 I18n.t('link_check_job.error', record_id:, check_interval:)
                 ) if (DateTime.now.in_time_zone - previous_job.created_at) / 1.hour < check_interval
     end
 

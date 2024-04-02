@@ -60,7 +60,7 @@ source: { source_id: 'source_id' }) }
   describe '#process_record' do
     let(:errors) { double(:errors, full_messages: []) }
     let(:record) {
- double(:record, attributes: { title: 'Hi', internal_identifier: ['record123'] }, valid?: true, raw_data: '</record>', errors: errors,
+ double(:record, attributes: { title: 'Hi', internal_identifier: ['record123'] }, valid?: true, raw_data: '</record>', errors:,
 full_raw_data: '</record>') }
 
     context 'record' do
@@ -148,7 +148,7 @@ full_raw_data: '</record>') }
     context 'concept' do
       let(:record) {
  double(:record, attributes: { label: ['Colin John McCahon'], internal_identifier: ['record123'], match_concepts: :create_or_match }, valid?: true,
-errors: errors).as_null_object }
+errors:).as_null_object }
       let(:parser) { double(:parser, data_type: 'concept', concept?: true, record?: false).as_null_object }
 
       before do

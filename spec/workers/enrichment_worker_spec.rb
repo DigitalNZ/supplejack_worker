@@ -300,13 +300,13 @@ describe EnrichmentWorker do
     let(:block) { proc { 'Hi' } }
 
     before(:each) do
-      allow(parser).to receive(:enrichment_definitions) { { ndha_rights: { block: block } } }
+      allow(parser).to receive(:enrichment_definitions) { { ndha_rights: { block: } } }
     end
 
     it 'should fetch the enrichment definition options' do
       job.enrichment = 'ndha_rights'
       worker.send(:setup_parser)
-      expect(worker.send(:enrichment_options)).to eq(block: block)
+      expect(worker.send(:enrichment_options)).to eq(block:)
     end
   end
 
@@ -314,7 +314,7 @@ describe EnrichmentWorker do
     let(:block) { proc { 'Hi' } }
 
     before(:each) do
-      allow(parser).to receive(:enrichment_definitions) { { ndha_rights: { block: block } } }
+      allow(parser).to receive(:enrichment_definitions) { { ndha_rights: { block: } } }
       job.enrichment = 'ndha_rights'
       worker.send(:setup_parser)
     end
@@ -326,7 +326,7 @@ describe EnrichmentWorker do
 
   describe '#post_to_api' do
     let(:record) { double(:record, id: 123) }
-    let(:enrichment) { double(:enrichment, record: record, record_attributes: { '1' => { title: 'foo' }, '2' => { category: 'books' } }) }
+    let(:enrichment) { double(:enrichment, record:, record_attributes: { '1' => { title: 'foo' }, '2' => { category: 'books' } }) }
 
     it 'enqueues an ApiUpdate job with record_id, attributes (including job_id) and enrichment_job_id for each enriched record' do
       worker.send(:post_to_api, enrichment)

@@ -85,10 +85,10 @@ class EnrichmentWorker < AbstractWorker
         { 'fragments.source_id' => job.parser.source.source_id }
       end
 
-      SupplejackApi::Record.find(query.merge(ENRICH_STATUS), page: page)
+      SupplejackApi::Record.find(query.merge(ENRICH_STATUS), page:)
     else
       klass = job.preview? ? SupplejackApi::PreviewRecord : SupplejackApi::Record
-      klass.find({ record_id: job.record_id }.merge(ENRICH_STATUS), page: page)
+      klass.find({ record_id: job.record_id }.merge(ENRICH_STATUS), page:)
     end
   end
 

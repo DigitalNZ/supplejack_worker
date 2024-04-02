@@ -6,7 +6,7 @@ module ValidatesResource
 
   def link_check_rule(source_id)
     @link_check_rule ||= begin
-                           LinkCheckRule.find_by(source_id: source_id)
+                           LinkCheckRule.find_by(source_id:)
                          rescue StandardError
                            nil
                          end

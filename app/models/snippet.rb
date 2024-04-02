@@ -10,8 +10,8 @@ class Snippet < ActiveResource::Base
   headers['Authorization'] = "Token token=#{ENV['WORKER_KEY']}"
 
   def self.find_by_name(name, environment)
-    find(:one, from: :current_version, params: { name: name,
-                                                 environment: environment })
+    find(:one, from: :current_version, params: { name:,
+                                                 environment: })
   rescue StandardError => e
     Rails.logger.error "Snippet with name: #{name} was not found"
     ElasticAPM.report(e)
