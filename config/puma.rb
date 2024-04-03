@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-plugin('metrics') if %w[uat staging production].include? ENV['RAILS_ENV']
-
 # To avoid SIGTERMS on scaledown in ElasticAPM
 # https://www.rubydoc.info/gems/puma/Puma%2FDSL:raise_exception_on_sigterm
 raise_exception_on_sigterm false
