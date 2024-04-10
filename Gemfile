@@ -12,7 +12,7 @@ gem 'kaminari'
 gem 'kaminari-mongoid'
 gem 'lograge', '~> 0.11.2'
 gem 'mongoid', '~> 7.0'
-gem 'oai', '~> 1.1.0' # faraday needs to be updated for 1.2.0
+gem 'oai'
 gem 'ougai', '~> 1.8'
 gem 'parse-cron'
 gem 'puma'
@@ -20,7 +20,7 @@ gem 'rails', '~> 7.0.8'
 gem 'responders'
 gem 'sidekiq', '6.5.10'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v2.11.1'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'pm/rspec-upgrade'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
