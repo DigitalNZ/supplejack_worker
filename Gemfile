@@ -20,7 +20,7 @@ gem 'rails', '~> 7.0.8'
 gem 'responders'
 gem 'sidekiq', '6.5.10'
 gem 'sinatra', require: nil
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'pm/rspec-upgrade'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v3.0.0'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
