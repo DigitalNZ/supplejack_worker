@@ -9,7 +9,7 @@ class AbstractJob
 
   index status: 1, start_time: 1, created_at: 1, updated_at: 1, parser_id: 1
 
-  after_save :check_if_job_should_be_resumed, if: :status_changed?
+  after_save :check_if_job_should_be_resumed, if: :status_previously_changed?
 
   after_save :clear_old_states!
 
@@ -215,7 +215,7 @@ class AbstractJob
   end
 
   def check_if_job_should_be_resumed
-    self.resume! if self.status_change.last == 'resume'
+    self.resume! if self.status_previous_change.last == 'resume'
   end
 
   def clear_old_states!
