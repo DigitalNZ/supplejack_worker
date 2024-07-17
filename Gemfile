@@ -24,8 +24,6 @@ gem 'supplejack_common', path: '~/Dev/supplejack/gems/supplejack_common'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
-gem 'mimemagic', '= 0.3.10'
-gem "rexml", ">= 3.2.5"
 gem 'elastic-apm'
 
 # AWS gems required by parsers
