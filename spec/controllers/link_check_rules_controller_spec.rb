@@ -51,7 +51,7 @@ source_id: 'source_id').permit!
 
       it 'updates all the attributes' do
         allow(LinkCheckRule).to receive(:find).and_return(link_check_rule)
-        expect(link_check_rule).to receive(:update).with('collection_title' => 'collection_title', 'status_codes' => '203,205')
+        expect(link_check_rule).to receive(:update).with({ 'collection_title' => 'collection_title', 'status_codes' => '203,205' })
         put :update, params: { id: link_check_rule.id, link_check_rule: { collection_title: 'collection_title', status_codes: '203,205' } }
       end
     end

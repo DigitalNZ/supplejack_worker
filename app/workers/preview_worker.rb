@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'snippet'
-
 # app/workers/preview_worker.rb
 class PreviewWorker < HarvestWorker
   sidekiq_options retry: 1, queue: 'critical'

@@ -6,7 +6,7 @@ class LinkCheckRulesController < ApplicationController
 
   def index
     @link_check_rules = if params[:link_check_rule].present?
-      LinkCheckRule.where(link_check_rule_params)
+      LinkCheckRule.where(link_check_rule_params.to_h)
     else
       LinkCheckRule.all
     end
@@ -30,7 +30,7 @@ class LinkCheckRulesController < ApplicationController
 
   def update
     @link_check_rule = LinkCheckRule.find(params[:id])
-    @link_check_rule.update(link_check_rule_params)
+    @link_check_rule.update(link_check_rule_params.to_h)
     render json: @link_check_rule
   end
 

@@ -6,7 +6,7 @@ class CollectionStatisticsController < ApplicationController
 
   def index
     @collection_statistics = if params[:collection_statistics]
-      CollectionStatistics.where(c_s_params)
+      CollectionStatistics.where(c_s_params.to_h)
     else
       CollectionStatistics.all
     end
