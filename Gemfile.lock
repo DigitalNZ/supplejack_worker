@@ -1,16 +1,7 @@
 GIT
-  remote: https://github.com/boost/codeclimate_diff
-  revision: 32e3101935976eecd8ac59b65a205cba3c85d933
-  specs:
-    codeclimate_diff (0.1.10)
-      colorize
-      json
-      optparse
-      pry-byebug
-      rest-client
-
-PATH
-  remote: ../../gems/supplejack_common
+  remote: https://github.com/DigitalNZ/supplejack_common
+  revision: 5c16659f88c278a4ce4b5cd60047707c2f848db6
+  branch: pm/upgrade
   specs:
     supplejack_common (3.0.0)
       actionpack (>= 7.0.0)
@@ -33,6 +24,17 @@ PATH
       retriable
       sanitize
       tzinfo
+
+GIT
+  remote: https://github.com/boost/codeclimate_diff
+  revision: 32e3101935976eecd8ac59b65a205cba3c85d933
+  specs:
+    codeclimate_diff (0.1.10)
+      colorize
+      json
+      optparse
+      pry-byebug
+      rest-client
 
 GEM
   remote: https://rubygems.org/
