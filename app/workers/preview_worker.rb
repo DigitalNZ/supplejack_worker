@@ -129,7 +129,7 @@ class PreviewWorker < HarvestWorker
       enrichment_job.reload
       return if enrichment_job.enrichment_failure.blank?
 
-      preview.update_attributes(
+      preview.update(
         status: "Enrichment \"#{enrichment_job.enrichment}\" failed",
         enrichment_failures: JSON.parse(preview.enrichment_failures || '[]').push(
           enrichment_name: enrichment_job.enrichment,
