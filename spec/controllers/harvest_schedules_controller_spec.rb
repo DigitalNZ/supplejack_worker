@@ -21,7 +21,7 @@ describe HarvestSchedulesController do
       context 'params[:harvest_schedule] is present' do
         it 'uses a where query ' do
           allow(HarvestSchedule).to receive(:where).and_return([schedule])
-          expect(HarvestSchedule).to receive(:where).with('parser_id' => 'abc123')
+          expect(HarvestSchedule).to receive(:where).with({ 'parser_id' => 'abc123' })
 
           get :index, params: { harvest_schedule: { parser_id: 'abc123' } }
           expect(assigns(:harvest_schedules)).to eq [schedule]
