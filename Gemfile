@@ -18,7 +18,7 @@ gem 'parse-cron'
 gem 'puma'
 gem 'rails', '~> 7.0.8'
 gem 'responders'
-gem 'sidekiq', '6.5.10'
+gem 'sidekiq', '~> 7.0'
 # gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v3.0.0'
 gem 'supplejack_common', path: '~/Dev/supplejack/gems/supplejack_common'
 gem 'whenever', require: false
