@@ -71,18 +71,31 @@ class AbstractJob
 
   def parser
     return @parser if @parser.present?
+
     if version_id.present?
-      @parser = ParserVersion.find(version_id, params: { parser_id: })
+      @parser = find_parser_from_version_id
     elsif environment.present? && !preview?
-      version = ParserVersion.find(:one, from: :current, params: { parser_id:, environment: })
-      version.parser_id = parser_id
-      self.version_id = version.id if version.present?
-      @parser = version
+      @parser = find_parser_from_current
     else
-      parser = Parser.find(parser_id)
-      parser.content = parser_code if parser_code.present?
-      @parser = parser
+      @parser = find_parser_from_parser_id
     end
+  end
+
+  def find_parser_from_version_id
+    ParserVersion.find(version_id, params: { parser_id: })
+  end
+
+  def find_parser_from_current
+    version = ParserVersion.find(:one, from: :current, params: { parser_id:, environment: })
+    version.parser_id = parser_id
+    self.version_id = version.id if version.present?
+    version
+  end
+
+  def find_parser_from_parser_id
+    parser = Parser.find(parser_id)
+    parser.content = parser_code if parser_code.present?
+    parser
   end
 
   def required_enrichments
