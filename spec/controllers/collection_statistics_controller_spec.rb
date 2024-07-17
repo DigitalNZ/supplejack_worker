@@ -17,7 +17,9 @@ describe CollectionStatisticsController do
     end
 
     it 'should get all of the collection statistics dates' do
-      allow(CollectionStatistics).to receive(:where).with('day' => Date.today.to_s).and_return([collection_statistic])
+      allow(CollectionStatistics).to receive(:where).with(
+        { 'day' => Date.today.to_s }
+      ).and_return([collection_statistic])
       get :index, params: { collection_statistics: { day: Date.today.to_s } }
       expect(assigns(:collection_statistics)).to eq [collection_statistic]
     end

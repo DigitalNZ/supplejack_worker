@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'snippet'
-
 # app/workers/harvest_worker.rb
 class HarvestWorker < AbstractWorker
   include Sidekiq::Job
