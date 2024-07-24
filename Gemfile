@@ -25,6 +25,7 @@ gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'pm/upgr
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
+gem 'rexml' # apps fail to boot without it with error "cannot load such file -- rexml/document"
 gem 'elastic-apm'
 
 # AWS gems required by parsers
