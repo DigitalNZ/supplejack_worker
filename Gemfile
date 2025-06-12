@@ -25,6 +25,7 @@ gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v3.0.1'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
+gem 'resolv-replace'
 gem 'rexml' # apps fail to boot without it with error "cannot load such file -- rexml/document"
 gem 'elastic-apm'
 
