@@ -21,10 +21,11 @@ gem 'responders'
 gem 'sidekiq', '~> 7.0'
 # gem 'supplejack_common', path: '~/Dev/supplejack/gems/supplejack_common'
 # gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', branch: 'pm/upgrade'
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v3.0.1'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v3.0.2'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
+gem 'resolv-replace'
 gem 'rexml' # apps fail to boot without it with error "cannot load such file -- rexml/document"
 gem 'elastic-apm'
 
