@@ -145,7 +145,7 @@ describe HarvestJob do
       job.finish!
     end
 
-    it 'does not flush records if a harvest failure occured' do
+    it 'does not flush records if a harvest failure occurred' do
       job.build_harvest_failure
       expect(job).to_not receive(:flush_old_records)
       job.finish!
