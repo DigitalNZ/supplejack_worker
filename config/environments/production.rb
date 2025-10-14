@@ -61,6 +61,8 @@ Rails.application.configure do
   # config.active_job.queue_adapter = :resque
   # config.active_job.queue_name_prefix = "harvester_worker_production"
 
+  # Disable caching for Action Mailer templates even if Action Controller
+  # caching is enabled.
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
@@ -79,7 +81,6 @@ Rails.application.configure do
   #   "example.com",     # Allow requests from example.com
   #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
   # ]
-
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
@@ -106,5 +107,5 @@ Rails.application.configure do
 
   config.log_level = ENV['LOG_LEVEL'] || :info
   config.log_tags = [:request_id]
-  config.logger = ActiveSupport::TaggedLogging.new(CustomLogger.new(STDOUT))
+  config.logger = ActiveSupport::TaggedLogging.new(CustomLogger.new(STDOUT))  
 end

@@ -54,7 +54,7 @@ describe ApiDeleteWorker do
 
       it 'creates a new instance of FailedRecord' do
         described_class.within_sidekiq_retries_exhausted_block do
-          expect(FailedRecord).to receive(:new).with(exception_class: 'ApiDeleteWorker', message: 'An error occured', backtrace: nil, raw_data: '[]')
+          expect(FailedRecord).to receive(:new).with(exception_class: 'ApiDeleteWorker', message: 'An error occurred', backtrace: nil, raw_data: '[]')
         end
       end
 
