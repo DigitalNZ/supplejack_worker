@@ -19,7 +19,7 @@ gem 'puma'
 gem 'rails', '~> 7.2.2.2'
 gem 'responders'
 gem 'sidekiq', '~> 7.0'
-gem 'supplejack_common', github: 'DigitalNZ/supplejack_common'
+gem 'supplejack_common', github: 'DigitalNZ/supplejack_common', tag: 'v3.0.3'
 gem 'whenever', require: false
 gem 'brakeman'
 gem 'amazing_print'
