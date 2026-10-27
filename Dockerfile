@@ -7,7 +7,8 @@ ARG RUBY_PACKAGES="tzdata shared-mime-info"
 WORKDIR /app
 
 # install packages
-RUN apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
+RUN apk upgrade --no-cache \
+    && apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
 
 COPY Gemfile Gemfile.lock ./
 COPY vendor/cache ./vendor/cache
@@ -43,7 +44,8 @@ ENV TZ=Pacific/Auckland
 WORKDIR /app
 
 # install packages
-RUN apk add --no-cache $PACKAGES
+RUN apk upgrade --no-cache \
+    && apk add --no-cache $PACKAGES
 
 # This is needed for the pipeline build (it breaks without the freedesktop package). 
 # There is no newer version of buster, so we will keep using this version for now
