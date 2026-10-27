@@ -1,4 +1,4 @@
-FROM ruby:3.4.4-alpine3.22 AS builder
+FROM ruby:3.4.12-alpine3.24 AS builder
 
 ARG BUILD_PACKAGES="build-base curl-dev git"
 ARG DEV_PACKAGES="yaml-dev zlib-dev libxml2-dev libxslt-dev"
@@ -7,7 +7,8 @@ ARG RUBY_PACKAGES="tzdata shared-mime-info"
 WORKDIR /app
 
 # install packages
-RUN apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
+RUN apk upgrade --no-cache \
+    && apk add --no-cache $BUILD_PACKAGES $DEV_PACKAGES $RUBY_PACKAGES
 
 COPY Gemfile Gemfile.lock ./
 COPY vendor/cache ./vendor/cache
@@ -33,7 +34,7 @@ ENV RAILS_ENV=$RAILS_ENV
 
 ############### Build step done ###############
 
-FROM ruby:3.4.4-alpine3.22
+FROM ruby:3.4.12-alpine3.24
 
 ARG PACKAGES="build-base tzdata bash libxslt libxml2-dev libxslt-dev"
 
@@ -43,7 +44,8 @@ ENV TZ=Pacific/Auckland
 WORKDIR /app
 
 # install packages
-RUN apk add --no-cache $PACKAGES
+RUN apk upgrade --no-cache \
+    && apk add --no-cache $PACKAGES
 
 # This is needed for the pipeline build (it breaks without the freedesktop package). 
 # There is no newer version of buster, so we will keep using this version for now
